@@ -3,7 +3,7 @@ from io import BytesIO
 
 from more import PrivKeyNode, PubKeyNode, Version, Bip32Path, Bip, Key, \
     mnemonic_sentence_length, checksum_length, correct_entropy_bits_value
-from helper import decode_base58
+from helper import decode_base58_check
 
 
 class TestVersion(unittest.TestCase):
@@ -195,8 +195,8 @@ class TestNode(unittest.TestCase):
     def test_parse_incorrect_type(self):
         xpriv = "xprv9s21ZrQH143K3YFDmG48xQj4BKHUn15if4xsQiMwSKX8bZ6YruYK6mV6oM5Tbodv1pLF7GMdPGaTcZBno3ZejMHbVVvymhsS5GcYC4hSKag"
         self.assertEqual(PrivKeyNode.parse(xpriv).extended_private_key(), xpriv)
-        self.assertEqual(PrivKeyNode.parse(decode_base58(xpriv, _type="extended")).extended_private_key(), xpriv)
-        self.assertEqual(PrivKeyNode.parse(BytesIO(decode_base58(xpriv, _type="extended"))).extended_private_key(), xpriv)
+        self.assertEqual(PrivKeyNode.parse(decode_base58_check(xpriv)).extended_private_key(), xpriv)
+        self.assertEqual(PrivKeyNode.parse(BytesIO(decode_base58_check(xpriv))).extended_private_key(), xpriv)
         self.assertRaises(ValueError, PrivKeyNode.parse, 1584784554)
 
     def test_check_fingerprint(self):

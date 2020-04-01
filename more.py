@@ -12,7 +12,8 @@ from typing import List
 
 from helper import (
     sha256, encode_base58_checksum, big_endian_to_int, int_to_big_endian,
-    decode_base58, h160_to_p2sh_address, hash160
+    h160_to_p2sh_address, hash160,
+    decode_base58_check
 )
 
 
@@ -374,6 +375,49 @@ class Bip32Path(object):
         )
 
 
+class PrivateKey(object):
+    def __init__(self, sec_exp):
+        self.sec_exp = sec_exp
+        self.k = ecdsa.SigningKey.from_secret_exponent(sec_exp, curve=SECP256k1)
+
+    def __bytes__(self):
+        return self.k.to_string()
+
+    def __eq__(self, other):
+        return self.sec_exp == other.sec_exp
+
+    def wif(self, compressed=True, testnet=False):
+        prefix = b"\xef" if testnet else b"\x80"
+        suffix = b"\x01" if compressed else b""
+        return encode_base58_checksum(prefix + bytes(self) + suffix)
+
+    @classmethod
+    def from_wif(cls, wif_str: str, compressed=True):
+        decoded = decode_base58_check(s=wif_str)
+        if compressed:
+            decoded = decoded[:-1]
+        return cls(sec_exp=big_endian_to_int(decoded[1:]))
+
+    @classmethod
+    def from_bytes(cls, byte_str: bytes):
+        return cls(sec_exp=big_endian_to_int(byte_str))
+
+
+class PublicKey(object):
+    def sec(self, compressed=True):
+        pass
+
+    @classmethod
+    def from_sec(cls):
+        pass
+
+    def h160(self, compressed=True):
+        pass
+
+    def address(self):
+        pass
+
+
 class PubKeyNode(object):
 
     mark = "M"
@@ -446,7 +490,7 @@ class PubKeyNode(object):
     @classmethod
     def parse(cls, s):
         if isinstance(s, str):
-            s = BytesIO(decode_base58(s, _type="extended"))
+            s = BytesIO(decode_base58_check(s=s))
         elif isinstance(s, bytes):
             s = BytesIO(s)
         elif isinstance(s, BytesIO):

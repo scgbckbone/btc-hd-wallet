@@ -14,7 +14,7 @@ TWO_WEEKS = 60 * 60 * 24 * 14
 
 def encode_base58(s: bytes) -> str:
     count = 0
-    for c in s:  # <1>
+    for c in s:
         if c == 0:
             count += 1
         else:
@@ -22,39 +22,44 @@ def encode_base58(s: bytes) -> str:
     num = int.from_bytes(s, 'big')
     prefix = '1' * count
     result = ''
-    while num > 0:  # <2>
+    while num > 0:
         num, mod = divmod(num, 58)
         result = BASE58_ALPHABET[mod] + result
-    return prefix + result  # <3>
+    return prefix + result
 
 
-def decode_base58(s: str, _type="addr") -> bytes:
-    # TODO --> do I know based on s len or smthg how many bytes will I need for num
+def encode_base58_checksum(b: bytes) -> str:
+    return encode_base58(b + hash256(b)[:4])
+
+
+def decode_base58(s: str) -> bytes:
     num = 0
-    for c in s:  # <1>
+    for c in s:
         num *= 58
         num += BASE58_ALPHABET.index(c)
-    if _type == "addr":
-        combined = num.to_bytes(25, byteorder='big')  # <2>
-    elif _type == "wif_uncompressed":
-        combined = num.to_bytes(37, byteorder="big")
-    elif _type == "wif_compressed":
-        combined = num.to_bytes(38, byteorder="big")
-    elif _type == "extended":
-        combined = num.to_bytes(82, byteorder="big")
-    else:
-        raise ValueError("incorrect type")
-    checksum = combined[-4:]
-    if hash256(combined[:-4])[:4] != checksum:
+
+    h = hex(num)[2:]
+    h = '0' + h if len(h) % 2 else h
+    return bytes.fromhex(h)
+
+
+def decode_base58_check(s: str) -> bytes:
+    """removes ONLY checksum"""
+    num_bytes = decode_base58(s=s)
+    checksum = num_bytes[-4:]
+    if hash256(num_bytes[:-4])[:4] != checksum:
         raise ValueError(
             'bad address: {} {}'.format(
                 checksum,
-                hash256(combined[:-4])[:4]
+                hash256(num_bytes[:-4])[:4]
             )
         )
-    if _type == "extended":
-        return combined[:-4]
-    return combined[1:-5] if _type == "wif_compressed" else combined[1:-4]
+    return num_bytes[:-4]
+
+
+def b58decode_addr(s: str) -> bytes:
+    """removes first byte --> mostly testnet/mainnet marker"""
+    return decode_base58_check(s=s)[1:]
 
 
 def hash160(s: bytes) -> bytes:
@@ -69,10 +74,6 @@ def hash256(s: bytes) -> bytes:
 
 def sha256(s: bytes) -> bytes:
     return hashlib.sha256(s).digest()
-
-
-def encode_base58_checksum(b: bytes) -> str:
-    return encode_base58(b + hash256(b)[:4])
 
 
 def little_endian_to_int(b: bytes) -> int:
