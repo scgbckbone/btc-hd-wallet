@@ -544,8 +544,8 @@ class PrivKeyNode(PubKeyNode):
 
     @property
     def private_key(self):
-        return ecdsa.SigningKey.from_string(
-            self._key if len(self._key) == 32 else self._key[1:],
+        return ecdsa.SigningKey.from_secret_exponent(
+            secexp=big_endian_to_int(self._key),
             curve=SECP256k1
         )
 
