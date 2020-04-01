@@ -633,7 +633,7 @@ class PrivKeyNode(PubKeyNode):
         path = Bip32Path.parse(s=path)
         node = m
         for index in path.to_list():
-            node = node.ckd_priv(index=index)
+            node = node.ckd(index=index)
         return node
 
     @classmethod
