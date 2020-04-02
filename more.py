@@ -396,9 +396,11 @@ class PrivateKey(object):
         return encode_base58_checksum(prefix + bytes(self) + suffix)
 
     @classmethod
-    def from_wif(cls, wif_str: str, compressed=True):
+    def from_wif(cls, wif_str: str):
         decoded = decode_base58_check(s=wif_str)
-        if compressed:
+        if wif_str[0] in ("K", "L", "c"):
+            # compressed key --> so remove last byte that has to be 01
+            assert decoded[-1] == 1
             decoded = decoded[:-1]
         return cls(sec_exp=big_endian_to_int(decoded[1:]))
 
