@@ -13,8 +13,8 @@ from typing import List
 from helper import (
     sha256, encode_base58_checksum, big_endian_to_int, int_to_big_endian,
     h160_to_p2sh_address, hash160,
-    decode_base58_check
-)
+    decode_base58_check,
+    h160_to_p2wpkh_address)
 
 
 random = random.SystemRandom()
@@ -378,7 +378,13 @@ class Bip32Path(object):
 class PrivateKey(object):
     def __init__(self, sec_exp):
         self.sec_exp = sec_exp
-        self.k = ecdsa.SigningKey.from_secret_exponent(sec_exp, curve=SECP256k1)
+        self.k = ecdsa.SigningKey.from_secret_exponent(
+            secexp=sec_exp,
+            curve=SECP256k1
+        )
+        self.K = PublicKey(
+            key_bytes=self.k.get_verifying_key().to_string(encoding="compressed")
+        )
 
     def __bytes__(self):
         return self.k.to_string()
@@ -404,18 +410,33 @@ class PrivateKey(object):
 
 
 class PublicKey(object):
+    def __init__(self, key: ecdsa.VerifyingKey):
+        self.K = key
+
     def sec(self, compressed=True):
-        pass
+        if compressed:
+            return self.K.to_string(encoding="compressed")
+        return self.K.to_string(encoding="uncompressed")
 
     @classmethod
-    def from_sec(cls):
-        pass
+    def from_sec(cls, sec_bytes):
+        return cls(ecdsa.VerifyingKey.from_string(sec_bytes, curve=SECP256k1))
+
+    @classmethod
+    def from_point(cls, point):
+        return cls(ecdsa.VerifyingKey.from_public_point(point, curve=SECP256k1))
 
     def h160(self, compressed=True):
-        pass
+        return hash160(self.sec(compressed=compressed))
 
-    def address(self):
-        pass
+    def address(self, compressed=True, testnet=True, addr_type="p2pkh"):
+        h160 = self.h160(compressed=compressed)
+        if addr_type == "p2pkh":
+            prefix = b"\x6f" if testnet else b"\x00"
+            return encode_base58_checksum(prefix + h160)
+        elif addr_type == "p2wpkh":
+            return h160_to_p2wpkh_address(h160=h160, testnet=testnet)
+        raise ValueError("Unsupported address type.")
 
 
 class PubKeyNode(object):
