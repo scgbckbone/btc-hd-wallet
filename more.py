@@ -382,9 +382,7 @@ class PrivateKey(object):
             secexp=sec_exp,
             curve=SECP256k1
         )
-        self.K = PublicKey(
-            key_bytes=self.k.get_verifying_key().to_string(encoding="compressed")
-        )
+        self.K = PublicKey(key=self.k.get_verifying_key())
 
     def __bytes__(self):
         return self.k.to_string()
@@ -405,7 +403,7 @@ class PrivateKey(object):
         return cls(sec_exp=big_endian_to_int(decoded[1:]))
 
     @classmethod
-    def from_bytes(cls, byte_str: bytes):
+    def parse(cls, byte_str: bytes):
         return cls(sec_exp=big_endian_to_int(byte_str))
 
 
@@ -419,8 +417,8 @@ class PublicKey(object):
         return self.K.to_string(encoding="uncompressed")
 
     @classmethod
-    def from_sec(cls, sec_bytes):
-        return cls(ecdsa.VerifyingKey.from_string(sec_bytes, curve=SECP256k1))
+    def parse(cls, key_bytes):
+        return cls(ecdsa.VerifyingKey.from_string(key_bytes, curve=SECP256k1))
 
     @classmethod
     def from_point(cls, point):
@@ -467,7 +465,7 @@ class PubKeyNode(object):
 
     @property
     def public_key(self):
-        return ecdsa.VerifyingKey.from_string(self._key, curve=SECP256k1)
+        return PublicKey.parse(key_bytes=self._key)
 
     @property
     def parent_fingerprint(self):
@@ -506,7 +504,7 @@ class PubKeyNode(object):
         return int_to_big_endian(self.index, 4)
 
     def fingerprint(self):
-        return hash160(self.public_key.to_string(encoding="compressed"))[:4]
+        return hash160(self.public_key.sec())[:4]
 
     @classmethod
     def parse(cls, s):
@@ -565,7 +563,7 @@ class PubKeyNode(object):
         )
         return self._serialize(
             version=int(version),
-            key=self.public_key.to_string(encoding="compressed")
+            key=self.public_key.sec()
         )
 
     def extended_public_key(self, bip=None) -> str:
@@ -585,7 +583,7 @@ class PubKeyNode(object):
             raise InvalidKeyError("greater or equal to curve order")
         point = ecdsa.SigningKey.from_string(
             IL, curve=SECP256k1
-        ).get_verifying_key().pubkey.point + self.public_key.pubkey.point
+        ).get_verifying_key().pubkey.point + self.public_key.K.pubkey.point
         if point == INFINITY:
             raise InvalidKeyError("point at infinity")
         Ki = ecdsa.VerifyingKey.from_public_point(point=point, curve=SECP256k1)
@@ -609,14 +607,11 @@ class PrivKeyNode(PubKeyNode):
 
     @property
     def private_key(self):
-        return ecdsa.SigningKey.from_secret_exponent(
-            secexp=big_endian_to_int(self._key),
-            curve=SECP256k1
-        )
+        return PrivateKey(sec_exp=big_endian_to_int(self._key))
 
     @property
     def public_key(self):
-        return self.private_key.get_verifying_key()
+        return self.private_key.K
 
     @classmethod
     def master_key(cls, bip32_seed: bytes):
@@ -656,7 +651,7 @@ class PrivKeyNode(PubKeyNode):
         )
         return self._serialize(
             version=int(version),
-            key=b"\x00" + self.private_key.to_string()
+            key=b"\x00" + bytes(self.private_key)
         )
 
     def extended_private_key(self, bip=None) -> str:
@@ -665,9 +660,9 @@ class PrivKeyNode(PubKeyNode):
     def ckd(self, index):
         if index >= 2**31:
             # hardened
-            data = b"\x00" + self.private_key.to_string() + index.to_bytes(4, "big")
+            data = b"\x00" + bytes(self.private_key) + index.to_bytes(4, "big")
         else:
-            data = self.public_key.to_string(encoding="compressed") + index.to_bytes(4, "big")
+            data = self.public_key.sec() + index.to_bytes(4, "big")
         I = hmac.new(
             key=self.chain_code,
             msg=data,
@@ -677,7 +672,7 @@ class PrivKeyNode(PubKeyNode):
         if big_endian_to_int(IL) >= CURVE_ORDER:
             InvalidKeyError("greater or equal to curve order")
         ki = (int.from_bytes(IL, "big") +
-              big_endian_to_int(self.private_key.to_string())) % CURVE_ORDER
+              big_endian_to_int(bytes(self.private_key))) % CURVE_ORDER
         if ki == 0:
             InvalidKeyError("is zero")
         child = self.__class__(

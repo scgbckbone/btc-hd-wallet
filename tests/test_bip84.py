@@ -19,10 +19,10 @@ class TestBip84(unittest.TestCase):
         address = "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu"
         # Account 0, first receiving address = m/84'/0'/0'/0/0
         node = PrivKeyNode.by_path(path="m/84'/0'/0'/0/0", mnemonic=mnemonic)
-        self.assertEqual(wif(node.private_key.to_string()), privkey)
-        self.assertEqual(node.public_key.to_string(encoding="compressed").hex(), pubkey)
+        self.assertEqual(node.private_key.wif(), privkey)
+        self.assertEqual(node.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(node.public_key.to_string(encoding="compressed"))),
+            h160_to_p2wpkh_address(hash160(node.public_key.sec())),
             address
         )
 
@@ -31,10 +31,10 @@ class TestBip84(unittest.TestCase):
         address = "bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g"
         # Account 0, second receiving address = m/84'/0'/0'/0/1
         node = PrivKeyNode.by_path(path="m/84'/0'/0'/0/1", mnemonic=mnemonic)
-        self.assertEqual(wif(node.private_key.to_string()), privkey)
-        self.assertEqual(node.public_key.to_string(encoding="compressed").hex(), pubkey)
+        self.assertEqual(node.private_key.wif(), privkey)
+        self.assertEqual(node.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(node.public_key.to_string(encoding="compressed"))),
+            h160_to_p2wpkh_address(hash160(node.public_key.sec())),
             address
         )
 
@@ -43,9 +43,9 @@ class TestBip84(unittest.TestCase):
         address = "bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el"
         # Account 0, first change address = m/84'/0'/0'/1/0
         node = PrivKeyNode.by_path(path="m/84'/0'/0'/1/0", mnemonic=mnemonic)
-        self.assertEqual(wif(node.private_key.to_string()), privkey)
-        self.assertEqual(node.public_key.to_string(encoding="compressed").hex(), pubkey)
+        self.assertEqual(node.private_key.wif(), privkey)
+        self.assertEqual(node.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(node.public_key.to_string(encoding="compressed"))),
+            h160_to_p2wpkh_address(hash160(node.public_key.sec())),
             address
         )
