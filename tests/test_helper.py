@@ -35,27 +35,6 @@ class HelperTest(unittest.TestCase):
         got = encode_base58_checksum(b'\x6f' + bytes.fromhex(h160))
         self.assertEqual(got, addr)
 
-    def test_base58_wif(self):
-        # TODO this should be moved to Private key test class
-        secret = 4226949130810261207757751156156787536530387212321569115516465271662024001999
-        sk0 = PrivateKey(sec_exp=secret)
-        sk1 = PrivateKey.from_wif(
-            'KwXsoVsi9NxKKYYgVc6J8JzWRucM6RfPE41bjCuX7tXUDuiRYCvC'
-        )
-        self.assertEqual(sk0, sk1)
-
-        secret = 0x0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D
-        sk0 = PrivateKey(sec_exp=secret)
-        self.assertEqual(
-            sk0.wif(compressed=False),
-            "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
-        )
-        sk1 = PrivateKey.from_wif(
-            compressed=False,
-            wif_str="5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
-        )
-        self.assertEqual(sk0, sk1)
-
     def test_p2pkh_address(self):
         h160 = bytes.fromhex('74d691da1574e6b3c192ecfb52cc8984ee7b6c56')
         want = '1BenRpVUFK65JFWcQSuHnJKzc4M8ZP8Eqa'

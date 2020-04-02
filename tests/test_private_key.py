@@ -30,3 +30,21 @@ class TestPrivateKey(unittest.TestCase):
         expected = "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
         self.assertEqual(PrivateKey.from_wif(expected), pk)
         self.assertEqual(pk.wif(compressed=False, testnet=False), expected)
+
+        secret = 4226949130810261207757751156156787536530387212321569115516465271662024001999
+        sk0 = PrivateKey(sec_exp=secret)
+        sk1 = PrivateKey.from_wif(
+            'KwXsoVsi9NxKKYYgVc6J8JzWRucM6RfPE41bjCuX7tXUDuiRYCvC'
+        )
+        self.assertEqual(sk0, sk1)
+
+        secret = 0x0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D
+        sk0 = PrivateKey(sec_exp=secret)
+        self.assertEqual(
+            sk0.wif(compressed=False),
+            "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
+        )
+        sk1 = PrivateKey.from_wif(
+            wif_str="5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
+        )
+        self.assertEqual(sk0, sk1)
