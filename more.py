@@ -411,6 +411,10 @@ class PublicKey(object):
     def __init__(self, key: ecdsa.VerifyingKey):
         self.K = key
 
+    @property
+    def point(self):
+        return self.K.pubkey.point
+
     def sec(self, compressed=True):
         if compressed:
             return self.K.to_string(encoding="compressed")
@@ -581,14 +585,12 @@ class PubKeyNode(object):
         IL, IR = I[:32], I[32:]
         if big_endian_to_int(IL) >= CURVE_ORDER:
             raise InvalidKeyError("greater or equal to curve order")
-        point = ecdsa.SigningKey.from_string(
-            IL, curve=SECP256k1
-        ).get_verifying_key().pubkey.point + self.public_key.K.pubkey.point
+        point = PrivateKey.parse(IL).K.point + self.public_key.point
         if point == INFINITY:
             raise InvalidKeyError("point at infinity")
-        Ki = ecdsa.VerifyingKey.from_public_point(point=point, curve=SECP256k1)
+        Ki = PublicKey.from_point(point=point)
         child = self.__class__(
-            key=Ki.to_string(encoding="compressed"),
+            key=Ki.sec(),
             chain_code=IR,
             index=index,
             depth=self.depth + 1,
