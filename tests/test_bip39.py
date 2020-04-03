@@ -1,5 +1,5 @@
 import unittest
-from more import (
+from bip32_hd_wallet import (
     mnemonic_from_entropy, bip32_seed_from_mnemonic, get_word_list, PrivKeyNode
 )
 

@@ -1,6 +1,7 @@
 import unittest
-from more import PrivKeyNode, bip32_seed_from_mnemonic, Bip
+from bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
 from helper import hash160, h160_to_p2wpkh_address
+from wallet_utils import Bip
 
 
 class TestBip84(unittest.TestCase):

@@ -1,9 +1,12 @@
 import unittest
 from io import BytesIO
 
-from more import PrivKeyNode, PubKeyNode, Version, Bip32Path, Bip, Key, \
+from bip32_hd_wallet import (
+    PrivKeyNode, PubKeyNode, Version, Bip32Path, Key,
     mnemonic_sentence_length, checksum_length, correct_entropy_bits_value
+)
 from helper import decode_base58_checksum
+from wallet_utils import Bip
 
 
 class TestVersion(unittest.TestCase):
