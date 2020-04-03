@@ -313,9 +313,9 @@ class PrivKeyNode(PubKeyNode):
     def ckd(self, index):
         if index >= 2**31:
             # hardened
-            data = b"\x00" + bytes(self.private_key) + index.to_bytes(4, "big")
+            data = b"\x00" + bytes(self.private_key) + int_to_big_endian(index, 4)
         else:
-            data = self.public_key.sec() + index.to_bytes(4, "big")
+            data = self.public_key.sec() + int_to_big_endian(index, 4)
         I = hmac.new(
             key=self.chain_code,
             msg=data,
