@@ -433,7 +433,7 @@ class PublicKey(object):
     def h160(self, compressed=True):
         return hash160(self.sec(compressed=compressed))
 
-    def address(self, compressed=True, testnet=True, addr_type="p2pkh"):
+    def address(self, compressed=True, testnet=False, addr_type="p2pkh"):
         h160 = self.h160(compressed=compressed)
         if addr_type == "p2pkh":
             prefix = b"\x6f" if testnet else b"\x00"

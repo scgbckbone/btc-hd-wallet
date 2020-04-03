@@ -40,7 +40,7 @@ class TestPublicKey(unittest.TestCase):
                 PublicKey.parse(bytes.fromhex(compressed)).point
             )
 
-    def test_address_p2pkh(self):
+    def test_address(self):
         data = [
             {
                 "secret": 888 ** 3,
@@ -56,12 +56,12 @@ class TestPublicKey(unittest.TestCase):
                 },
                 "p2wpkh": {
                     "main": {
-                        "addr": '148dY81A9BmdpMhvYEVznrM45kWN32vSCN',
-                        "data": {"compressed": True, "testnet": False}
+                        "addr": 'bc1qyfvunnpszmjwcqgfk9dsne6j4edq3fglx9y5x7',
+                        "data": {"addr_type": "p2wpkh", "testnet": False}
                     },
                     "test": {
-                        "addr": 'mieaqB68xDCtbUBYFoUNcmZNwk74xcBfTP',
-                        "data": {"compressed": True, "testnet": True}
+                        "addr": 'tb1qyfvunnpszmjwcqgfk9dsne6j4edq3fglvrl8ad',
+                        "data": {"addr_type": "p2wpkh", "testnet": True}
                     }
                 }
             },
@@ -79,12 +79,12 @@ class TestPublicKey(unittest.TestCase):
                 },
                 "p2wpkh": {
                     "main": {
-                        "addr": '148dY81A9BmdpMhvYEVznrM45kWN32vSCN',
-                        "data": {"compressed": True, "testnet": False}
+                        "addr": 'bc1qnk4u7vkat6ck9t4unlgvvle8dhsqp40mrssamm',
+                        "data": {"addr_type": "p2wpkh", "testnet": False}
                     },
                     "test": {
-                        "addr": 'mieaqB68xDCtbUBYFoUNcmZNwk74xcBfTP',
-                        "data": {"compressed": True, "testnet": True}
+                        "addr": 'tb1qnk4u7vkat6ck9t4unlgvvle8dhsqp40mfktwqg',
+                        "data": {"addr_type": "p2wpkh", "testnet": True}
                     }
                 }
             },
@@ -124,4 +124,11 @@ class TestPublicKey(unittest.TestCase):
                 obj["p2pkh"]["test"]["addr"]
             )
             # p2wpkh
-            # TODO finish it
+            self.assertEqual(
+                pubkey.address(**obj["p2wpkh"]["main"]["data"]),
+                obj["p2wpkh"]["main"]["addr"]
+            )
+            self.assertEqual(
+                pubkey.address(**obj["p2wpkh"]["test"]["data"]),
+                obj["p2wpkh"]["test"]["addr"]
+            )
