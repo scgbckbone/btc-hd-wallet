@@ -312,3 +312,10 @@ def count_bytes(lst):
     for item in lst:
         witness_bytes_len += len(item)
     return witness_bytes_len
+
+
+def p2wpkh_script_serialized(h160):
+    result = int_to_little_endian(0x00, 1)
+    result += int_to_little_endian(len(h160), 1)
+    result += h160
+    return result

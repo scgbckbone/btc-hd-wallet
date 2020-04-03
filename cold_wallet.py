@@ -2,7 +2,7 @@ from bip32_hd_wallet import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode,
     bip32_seed_from_mnemonic
 )
-from helper import hash160, h160_to_p2sh_address
+from helper import hash160, h160_to_p2sh_address, p2wpkh_script_serialized
 
 # m/44'/0'/0'/0
 BIP44_PATH = (44 + 2**31, 2**31, 2**31, 0)
@@ -13,12 +13,18 @@ BIP84_PATH = (84 + 2**31, 2**31, 2**31, 0)
 
 
 class ColdWallet(object):
-    def __init__(self, testnet=False, entropy=None, entropy_bits=256, password=""):
+    def __init__(self, testnet=False, entropy=None, entropy_bits=256,
+                 mnemonic=None, password=""):
         self.testnet = testnet
-        if entropy is None:
-            self.mnemonic = mnemonic_from_entropy_bits(entropy_bits=entropy_bits)
+        if mnemonic is None:
+            if entropy is None:
+                self.mnemonic = mnemonic_from_entropy_bits(
+                    entropy_bits=entropy_bits
+                )
+            else:
+                self.mnemonic = mnemonic_from_entropy(entropy=entropy)
         else:
-            self.mnemonic = mnemonic_from_entropy(entropy=entropy)
+            self.mnemonic = mnemonic
         self.master = PrivKeyNode.master_key(
             bip32_seed=bip32_seed_from_mnemonic(
                 mnemonic=self.mnemonic,
@@ -27,8 +33,12 @@ class ColdWallet(object):
         )
 
     @classmethod
-    def from_mnemonic(cls):
-        pass
+    def from_mnemonic(cls, mnemonic: str, password: str = "", testnet=False):
+        return cls(
+            mnemonic=mnemonic,
+            password=password,
+            testnet=testnet
+        )
 
     def bip44(self, index_list=BIP44_PATH, interval=(0, 20)):
         res = []
@@ -54,9 +64,7 @@ class ColdWallet(object):
                 str(child),
                 h160_to_p2sh_address(
                     h160=hash160(
-                        p2wpkh_script(
-                            h160=hash160(child.public_key.sec())
-                        ).raw_serialize()
+                        p2wpkh_script_serialized(child.public_key.h160())
                     ),
                     testnet=self.testnet
                 ),
