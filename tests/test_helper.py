@@ -6,7 +6,6 @@ from helper import (
     calculate_new_bits, merkle_root, merkle_parent, merkle_parent_level,
     bit_field_to_bytes, bytes_to_bit_field
 )
-from more import PrivateKey
 
 
 class HelperTest(unittest.TestCase):

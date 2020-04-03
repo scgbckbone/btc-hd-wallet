@@ -43,7 +43,7 @@ def decode_base58(s: str) -> bytes:
     return bytes.fromhex(h)
 
 
-def decode_base58_check(s: str) -> bytes:
+def decode_base58_checksum(s: str) -> bytes:
     """removes ONLY checksum"""
     num_bytes = decode_base58(s=s)
     checksum = num_bytes[-4:]
@@ -59,7 +59,7 @@ def decode_base58_check(s: str) -> bytes:
 
 def b58decode_addr(s: str) -> bytes:
     """removes first byte --> mostly testnet/mainnet marker"""
-    return decode_base58_check(s=s)[1:]
+    return decode_base58_checksum(s=s)[1:]
 
 
 def hash160(s: bytes) -> bytes:

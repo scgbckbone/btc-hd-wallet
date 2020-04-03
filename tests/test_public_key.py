@@ -1,5 +1,5 @@
 import unittest
-from more import PublicKey, PrivateKey
+from keys import PublicKey, PrivateKey
 
 
 class TestPublicKey(unittest.TestCase):

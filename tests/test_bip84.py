@@ -1,6 +1,6 @@
 import unittest
 from more import PrivKeyNode, bip32_seed_from_mnemonic, Bip
-from helper import hash160, h160_to_p2wpkh_address, wif
+from helper import hash160, h160_to_p2wpkh_address
 
 
 class TestBip84(unittest.TestCase):
