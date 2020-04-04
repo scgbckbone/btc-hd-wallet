@@ -25,7 +25,7 @@ class Version(object):
 
     __slots__ = (
         "key_type",
-        "bip",
+        "bip_type",
         "testnet"
     )
 
@@ -56,13 +56,13 @@ class Version(object):
 
     def __init__(self, key_type, bip, testnet):
         self.key_type = Key(key_type)
-        self.bip = Bip(bip)
+        self.bip_type = Bip(bip)
         self.testnet = testnet
 
     def __int__(self):
         if self.testnet:
-            return self.test[self.key_type.name][self.bip.name]
-        return self.main[self.key_type.name][self.bip.name]
+            return self.test[self.key_type.name][self.bip_type.name]
+        return self.main[self.key_type.name][self.bip_type.name]
 
     def __hex__(self):
         return hex(self.__int__())

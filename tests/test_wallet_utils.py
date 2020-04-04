@@ -11,19 +11,19 @@ class TestVersion(unittest.TestCase):
         self.assertEqual(int(v), 0x043587CF)
         self.assertEqual(v.testnet, True)
         self.assertEqual(v.key_type, Key.PUB)
-        self.assertEqual(v.bip, Bip.BIP44)
+        self.assertEqual(v.bip_type, Bip.BIP44)
 
         v = Version.parse(s=0x04b2430c)
         self.assertEqual(int(v), 0x04b2430c)
         self.assertEqual(v.testnet, False)
         self.assertEqual(v.key_type, Key.PRV)
-        self.assertEqual(v.bip, Bip.BIP84)
+        self.assertEqual(v.bip_type, Bip.BIP84)
 
         v = Version.parse(s=0x049d7cb2)
         self.assertEqual(int(v), 0x049d7cb2)
         self.assertEqual(v.testnet, False)
         self.assertEqual(v.key_type, Key.PUB)
-        self.assertEqual(v.bip, Bip.BIP49)
+        self.assertEqual(v.bip_type, Bip.BIP49)
 
 
 class TestBip32Path(unittest.TestCase):
