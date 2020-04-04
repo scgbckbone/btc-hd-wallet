@@ -165,6 +165,10 @@ class ColdWallet(object):
             node = PubKeyNode.parse(extended_key, testnet=version.testnet)
         return cls(testnet=version.testnet, master=node)
 
+    def by_path(self, path: str):
+        path = Bip32Path.parse(s=path)
+        return self.master.derive_path(index_list=path.to_list())
+
 
 if __name__ == "__main__":
     w = ColdWallet.from_extended_key(extended_key="vpub5b14oTd3mpWGzbxkqgaESn4Pq1MkbLbzvWZju8Y6LiqsN9JXX7ZzvdCp1qDDxLqeHGr6BUssz2yFmUDm5Fp9jTdz4madyxK6mwgsCvYdK5S")

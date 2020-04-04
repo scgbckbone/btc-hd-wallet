@@ -363,15 +363,5 @@ class PrivKeyNode(PubKeyNode):
         self.children.append(child)
         return child
 
-    # TODO this makes no sense to be part of low level derivation class
-    # @classmethod
-    # def by_path(cls, path: str, mnemonic: str, password: str = ""):
-    #     seed = bip32_seed_from_mnemonic(mnemonic=mnemonic, password=password)
-    #     m = cls.master_key(bip32_seed=seed)
-    #     path = Bip32Path.parse(s=path)
-    #     node = m
-    #     for index in path.to_list():
-    #         node = node.ckd(index=index)
-    #     return node
 
 
