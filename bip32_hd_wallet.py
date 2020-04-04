@@ -220,12 +220,6 @@ class PubKeyNode(object):
         return result
 
     def serialize_public(self, version: int = None):
-        # path = Bip32Path.parse(str(self))
-        # version = Version(
-        #     key_type=Key.PUB.value,
-        #     bip=bip if bip else path.bip(),
-        #     testnet=path.bitcoin_testnet
-        # )
         return self._serialize(
             version=self.pub_version if version is None else version,
             key=self.public_key.sec()
@@ -320,12 +314,6 @@ class PrivKeyNode(PubKeyNode):
         )
 
     def serialize_private(self, version: int = None):
-        # path = Bip32Path.parse(str(self))
-        # version = Version(
-        #     key_type=Key.PRV.value,
-        #     bip=bip if bip else path.bip(),
-        #     testnet=path.bitcoin_testnet
-        # )
         return self._serialize(
             version=self.priv_version if version is None else version,
             key=b"\x00" + bytes(self.private_key)
