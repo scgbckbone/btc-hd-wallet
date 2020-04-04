@@ -5,11 +5,11 @@ from bip32_hd_wallet import (
 from helper import hash160, h160_to_p2sh_address, p2wpkh_script_serialized
 
 # m/44'/0'/0'/0
-BIP44_PATH = (44 + 2**31, 2**31, 2**31, 0)
+BIP44_PATH = [44 + 2**31, 2**31, 2**31, 0]
 # m/49'/0'/0'/0
-BIP49_PATH = (49 + 2**31, 2**31, 2**31, 0)
+BIP49_PATH = [49 + 2**31, 2**31, 2**31, 0]
 # m/84'/0'/0'/0
-BIP84_PATH = (84 + 2**31, 2**31, 2**31, 0)
+BIP84_PATH = [84 + 2**31, 2**31, 2**31, 0]
 
 
 class ColdWallet(object):
@@ -25,12 +25,17 @@ class ColdWallet(object):
                 self.mnemonic = mnemonic_from_entropy(entropy=entropy)
         else:
             self.mnemonic = mnemonic
+        self.password = password
         self.master = PrivKeyNode.master_key(
             bip32_seed=bip32_seed_from_mnemonic(
                 mnemonic=self.mnemonic,
                 password=password
             )
         )
+
+    def __eq__(self, other):
+        return self.mnemonic == other.mnemonic \
+               and self.password == other.password
 
     @classmethod
     def from_mnemonic(cls, mnemonic: str, password: str = "", testnet=False):
@@ -40,8 +45,11 @@ class ColdWallet(object):
             testnet=testnet
         )
 
-    def bip44(self, index_list=BIP44_PATH, interval=(0, 20)):
+    def bip44(self, interval=(0, 20)):
         res = []
+        index_list = BIP44_PATH
+        if self.testnet:
+            index_list[1] += 1
         node = self.master.derive_path(index_list=index_list)
         for child in node.generate_children(interval=interval):
             res.append([
@@ -52,8 +60,11 @@ class ColdWallet(object):
             ])
         return res
 
-    def bip49(self, index_list=BIP49_PATH, interval=(0, 20)):
+    def bip49(self, interval=(0, 20)):
         res = []
+        index_list = BIP49_PATH
+        if self.testnet:
+            index_list[1] += 1
         node = self.master.derive_path(index_list=index_list)
         for child in node.generate_children(interval=interval):
             res.append([
@@ -70,8 +81,11 @@ class ColdWallet(object):
             ])
         return res
 
-    def bip84(self, index_list=BIP84_PATH, interval=(0, 20)):
+    def bip84(self, interval=(0, 20)):
         res = []
+        index_list = BIP84_PATH
+        if self.testnet:
+            index_list[1] += 1
         node = self.master.derive_path(index_list=index_list)
         for child in node.generate_children(interval=interval):
             res.append([
