@@ -254,6 +254,12 @@ class PubKeyNode(object):
     def generate_children(self, interval: tuple = (0, 20)):
         return [self.ckd(index=i) for i in range(*interval)]
 
+    def derive_path(self, index_list: List[int]):
+        node = self
+        for i in index_list:
+            node = self.ckd(index=i)
+        return node
+
 
 class PrivKeyNode(PubKeyNode):
     mark = "m"

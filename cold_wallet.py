@@ -42,9 +42,7 @@ class ColdWallet(object):
 
     def bip44(self, index_list=BIP44_PATH, interval=(0, 20)):
         res = []
-        node = self.master
-        for i in index_list:
-            node = node.ckd(index=i)
+        node = self.master.derive_path(index_list=index_list)
         for child in node.generate_children(interval=interval):
             res.append([
                 str(child),
@@ -56,9 +54,7 @@ class ColdWallet(object):
 
     def bip49(self, index_list=BIP49_PATH, interval=(0, 20)):
         res = []
-        node = self.master
-        for i in index_list:
-            node = node.ckd(index=i)
+        node = self.master.derive_path(index_list=index_list)
         for child in node.generate_children(interval=interval):
             res.append([
                 str(child),
@@ -76,9 +72,7 @@ class ColdWallet(object):
 
     def bip84(self, index_list=BIP84_PATH, interval=(0, 20)):
         res = []
-        node = self.master
-        for i in index_list:
-            node = node.ckd(index=i)
+        node = self.master.derive_path(index_list=index_list)
         for child in node.generate_children(interval=interval):
             res.append([
                 str(child),
