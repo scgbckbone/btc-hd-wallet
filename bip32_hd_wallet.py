@@ -94,6 +94,8 @@ class InvalidKeyError(Exception):
 class PubKeyNode(object):
 
     mark = "M"
+    testnet_version = 0x043587CF
+    mainnet_version = 0x0488B21E
 
     __slots__ = (
         "parent",
@@ -102,6 +104,7 @@ class PubKeyNode(object):
         "depth",
         "index",
         "_parent_fingerprint",
+        "_parsed_version",
         "testnet",
         "children"
     )
@@ -114,6 +117,7 @@ class PubKeyNode(object):
         self.depth = depth
         self.index = index
         self._parent_fingerprint = parent_fingerprint
+        self._parsed_version = None
         self.testnet = testnet
         self.children = []
 
@@ -130,6 +134,12 @@ class PubKeyNode(object):
                 raise RuntimeError()
             fingerprint = self._parent_fingerprint
         return fingerprint
+
+    @property
+    def pub_version(self):
+        if self.testnet:
+            return PubKeyNode.testnet_version
+        return PubKeyNode.mainnet_version
 
     def check_fingerprint(self):
         if self.parent and self._parent_fingerprint:
@@ -173,25 +183,27 @@ class PubKeyNode(object):
         return cls._parse(s)
 
     @classmethod
-    def _parse(cls, s):
-        version = Version.parse(s=big_endian_to_int(s.read(4)))
+    def _parse(cls, s, testnet=False):
+        version = big_endian_to_int(s.read(4))
         depth = big_endian_to_int(s.read(1))
         parent_fingerprint = s.read(4)
         index = big_endian_to_int(s.read(4))
         chain_code = s.read(32)
         key_bytes = s.read(33)
-        return cls(
+        key = cls(
             key=key_bytes,
             chain_code=chain_code,
             index=index,
             depth=depth,
-            testnet=version.testnet,
+            testnet=testnet,
             parent_fingerprint=parent_fingerprint,
         )
+        key._parsed_version = version
+        return key
 
-    def _serialize(self, version, key):
+    def _serialize(self, key: bytes, version: int = None):
         # 4 byte: version bytes
-        result = int_to_big_endian(int(version), 4)
+        result = int_to_big_endian(version, 4)
         # 1 byte: depth: 0x00 for master nodes, 0x01 for level-1 derived keys
         result += int_to_big_endian(self.depth, 1)
         # 4 bytes: the fingerprint of the parent key (0x00000000 if master key)
@@ -208,20 +220,20 @@ class PubKeyNode(object):
         result += key
         return result
 
-    def serialize_public(self, bip=None):
-        path = Bip32Path.parse(str(self))
-        version = Version(
-            key_type=Key.PUB.value,
-            bip=bip if bip else path.bip(),
-            testnet=path.bitcoin_testnet
-        )
+    def serialize_public(self, version: int = None):
+        # path = Bip32Path.parse(str(self))
+        # version = Version(
+        #     key_type=Key.PUB.value,
+        #     bip=bip if bip else path.bip(),
+        #     testnet=path.bitcoin_testnet
+        # )
         return self._serialize(
-            version=int(version),
+            version=self.pub_version if version is None else version,
             key=self.public_key.sec()
         )
 
-    def extended_public_key(self, bip=None) -> str:
-        return encode_base58_checksum(self.serialize_public(bip=bip))
+    def extended_public_key(self, version: int = None) -> str:
+        return encode_base58_checksum(self.serialize_public(version=version))
 
     def ckd(self, index):
         if index >= 2 ** 31:
@@ -262,6 +274,8 @@ class PubKeyNode(object):
 
 class PrivKeyNode(PubKeyNode):
     mark = "m"
+    testnet_version = 0x04358394
+    mainnet_version = 0x0488ADE4
 
     @property
     def private_key(self):
@@ -270,6 +284,12 @@ class PrivKeyNode(PubKeyNode):
     @property
     def public_key(self):
         return self.private_key.K
+
+    @property
+    def priv_version(self):
+        if self.testnet:
+            return PrivKeyNode.testnet_version
+        return PrivKeyNode.mainnet_version
 
     @classmethod
     def master_key(cls, bip32_seed: bytes):
@@ -300,20 +320,20 @@ class PrivKeyNode(PubKeyNode):
             chain_code=IR
         )
 
-    def serialize_private(self, bip=None):
-        path = Bip32Path.parse(str(self))
-        version = Version(
-            key_type=Key.PRV.value,
-            bip=bip if bip else path.bip(),
-            testnet=path.bitcoin_testnet
-        )
+    def serialize_private(self, version: int = None):
+        # path = Bip32Path.parse(str(self))
+        # version = Version(
+        #     key_type=Key.PRV.value,
+        #     bip=bip if bip else path.bip(),
+        #     testnet=path.bitcoin_testnet
+        # )
         return self._serialize(
-            version=int(version),
+            version=self.priv_version if version is None else version,
             key=b"\x00" + bytes(self.private_key)
         )
 
-    def extended_private_key(self, bip=None) -> str:
-        return encode_base58_checksum(self.serialize_private(bip=bip))
+    def extended_private_key(self, version: int = None) -> str:
+        return encode_base58_checksum(self.serialize_private(version=version))
 
     def ckd(self, index):
         if index >= 2**31:
@@ -344,14 +364,15 @@ class PrivKeyNode(PubKeyNode):
         self.children.append(child)
         return child
 
-    @classmethod
-    def by_path(cls, path: str, mnemonic: str, password: str = ""):
-        seed = bip32_seed_from_mnemonic(mnemonic=mnemonic, password=password)
-        m = cls.master_key(bip32_seed=seed)
-        path = Bip32Path.parse(s=path)
-        node = m
-        for index in path.to_list():
-            node = node.ckd(index=index)
-        return node
+    # TODO this makes no sense to be part of low level derivation class
+    # @classmethod
+    # def by_path(cls, path: str, mnemonic: str, password: str = ""):
+    #     seed = bip32_seed_from_mnemonic(mnemonic=mnemonic, password=password)
+    #     m = cls.master_key(bip32_seed=seed)
+    #     path = Bip32Path.parse(s=path)
+    #     node = m
+    #     for index in path.to_list():
+    #         node = node.ckd(index=index)
+    #     return node
 
 
