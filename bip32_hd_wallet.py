@@ -13,7 +13,6 @@ from helper import (
     sha256, encode_base58_checksum, big_endian_to_int, int_to_big_endian,
     decode_base58_checksum, hash160
 )
-from wallet_utils import Bip32Path, Version, Key
 
 
 random = random.SystemRandom()
@@ -146,7 +145,7 @@ class PubKeyNode(object):
             return self.parent.fingerprint() == self._parent_fingerprint
 
     def __repr__(self):
-        if self.is_master():
+        if self.is_master() or self.is_root():
             return self.mark
         if self.is_hardened():
             index = str(self.index - 2**31) + "'"
@@ -171,7 +170,7 @@ class PubKeyNode(object):
         return hash160(self.public_key.sec())[:4]
 
     @classmethod
-    def parse(cls, s):
+    def parse(cls, s, testnet=False):
         if isinstance(s, str):
             s = BytesIO(decode_base58_checksum(s=s))
         elif isinstance(s, bytes):
@@ -180,7 +179,7 @@ class PubKeyNode(object):
             pass
         else:
             raise ValueError("has to be bytes, str or BytesIO")
-        return cls._parse(s)
+        return cls._parse(s, testnet=testnet)
 
     @classmethod
     def _parse(cls, s, testnet=False):
