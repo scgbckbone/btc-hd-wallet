@@ -63,6 +63,25 @@ class ColdWallet(object):
             testnet=testnet
         )
 
+    def _from_pub_key(self, children, addr_type):
+        return [
+            [
+                str(child),
+                child.public_key.address(
+                    testnet=self.testnet,
+                    addr_type=addr_type
+                ),
+                child.public_key.sec().hex(),
+                None if self.watch_only else child.private_key.wif(
+                    testnet=self.testnet
+                )
+            ]
+            for child in children
+        ]
+
+    def _bip44(self, children):
+        return self._from_pub_key(children=children, addr_type="p2pkh")
+
     def bip44(self, interval=(0, 20)):
         res = []
         index_list = BIP44_PATH
@@ -77,6 +96,24 @@ class ColdWallet(object):
                 child.private_key.wif(testnet=self.testnet)
             ])
         return res
+
+    def _bip49(self, children):
+        return [
+            [
+                str(child),
+                h160_to_p2sh_address(
+                    h160=hash160(
+                        p2wpkh_script_serialized(child.public_key.h160())
+                    ),
+                    testnet=self.testnet
+                ),
+                child.public_key.sec().hex(),
+                None if self.watch_only else child.private_key.wif(
+                    testnet=self.testnet
+                )
+            ]
+            for child in children
+        ]
 
     def bip49(self, interval=(0, 20)):
         res = []
@@ -100,18 +137,7 @@ class ColdWallet(object):
         return res
 
     def _bip84(self, children):
-        return [
-            [
-                str(child),
-                child.public_key.address(
-                    testnet=self.testnet,
-                    addr_type="p2wpkh"
-                ),
-                child.public_key.sec().hex(),
-                None if self.watch_only else child.private_key.wif(testnet=self.testnet)
-            ]
-            for child in children
-        ]
+        return self._from_pub_key(children=children, addr_type="p2wpkh")
 
     def bip84(self, interval=(0, 20)):
         index_list = BIP84_PATH
