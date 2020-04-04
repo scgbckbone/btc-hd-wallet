@@ -15,7 +15,6 @@ BIP84_PATH = [84 + 2**31, 2**31, 2**31, 0]
 class ColdWallet(object):
     def __init__(self, testnet=False, entropy=None, entropy_bits=256,
                  mnemonic=None, password=""):
-        self.testnet = testnet
         if mnemonic is None:
             if entropy is None:
                 self.mnemonic = mnemonic_from_entropy_bits(
@@ -25,6 +24,8 @@ class ColdWallet(object):
                 self.mnemonic = mnemonic_from_entropy(entropy=entropy)
         else:
             self.mnemonic = mnemonic
+
+        self.testnet = testnet
         self.password = password
         self.master = PrivKeyNode.master_key(
             bip32_seed=bip32_seed_from_mnemonic(
