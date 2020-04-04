@@ -1,5 +1,6 @@
 import enum
 
+
 class Bip(enum.Enum):
     BIP44 = 0
     BIP49 = 1
@@ -21,6 +22,13 @@ def list_get(lst: list, i: int):
 
 
 class Version(object):
+
+    __slots__ = (
+        "key_type",
+        "bip",
+        "testnet"
+    )
+
     main = {
         Key.PUB.name: {
             Bip.BIP44.name: 0x0488B21E,

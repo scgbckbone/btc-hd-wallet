@@ -11,8 +11,7 @@ from typing import List
 from keys import PrivateKey, PublicKey
 from helper import (
     sha256, encode_base58_checksum, big_endian_to_int, int_to_big_endian,
-    h160_to_p2sh_address, hash160,
-    decode_base58_checksum,
+    decode_base58_checksum, hash160
 )
 from wallet_utils import Bip32Path, Version, Key
 

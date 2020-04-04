@@ -10,6 +10,13 @@ SECP256k1 = ecdsa.curves.SECP256k1
 
 
 class PrivateKey(object):
+
+    __slots__ = (
+        "sec_exp",
+        "k",
+        "K"
+    )
+
     def __init__(self, sec_exp):
         self.sec_exp = sec_exp
         self.k = ecdsa.SigningKey.from_secret_exponent(
@@ -44,6 +51,11 @@ class PrivateKey(object):
 
 
 class PublicKey(object):
+
+    __slots__ = (
+        "K"
+    )
+
     def __init__(self, key: ecdsa.VerifyingKey):
         self.K = key
 

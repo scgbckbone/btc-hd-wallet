@@ -13,6 +13,14 @@ BIP84_PATH = [84 + 2**31, 2**31, 2**31, 0]
 
 
 class ColdWallet(object):
+
+    __slots__ = (
+        "mnemonic",
+        "testnet",
+        "password",
+        "master"
+    )
+
     def __init__(self, testnet=False, entropy=None, entropy_bits=256,
                  mnemonic=None, password=""):
         if mnemonic is None:
