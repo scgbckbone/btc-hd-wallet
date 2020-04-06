@@ -41,8 +41,9 @@ class ColdWallet(object):
             self.master = PrivKeyNode.master_key(
                 bip32_seed=bip32_seed_from_mnemonic(
                     mnemonic=self.mnemonic,
-                    password=password
-                )
+                    password=password,
+                ),
+                testnet=testnet
             )
         else:
             self.master = master
@@ -164,6 +165,9 @@ class ColdWallet(object):
             # is this just assuming? or really pub if not priv
             node = PubKeyNode.parse(extended_key, testnet=version.testnet)
         return cls(testnet=version.testnet, master=node)
+
+    def to_extended_key(self):
+        pass
 
     def by_path(self, path: str):
         path = Bip32Path.parse(s=path)

@@ -285,7 +285,7 @@ class PrivKeyNode(PubKeyNode):
         return PrivKeyNode.mainnet_version
 
     @classmethod
-    def master_key(cls, bip32_seed: bytes):
+    def master_key(cls, bip32_seed: bytes, testnet=False):
         """
         * Generate a seed byte sequence S of a chosen length
           (between 128 and 512 bits; 256 bits is advised) from a (P)RNG.
@@ -310,7 +310,8 @@ class PrivKeyNode(PubKeyNode):
         IR = I[32:]
         return cls(
             key=IL,
-            chain_code=IR
+            chain_code=IR,
+            testnet=testnet
         )
 
     def serialize_private(self, version: int = None):

@@ -98,8 +98,9 @@ class TestColdWallet(unittest.TestCase):
     def test_bip44_testnet(self):
         m44h1h0h0 = "tprv8htjzxdtooRZnSeSzKZX1s1Ln4VxCpawvMXhiHsHy7knBtRvty8YLkzuUqoRKQa8kngdtyUNYhEdE5wtywK45XDn1QXcWJ4sZRviQTVbgJP"
         M44h1h0h0 = "tpubDEan9Ng8xB7EfugEsyE7RGfTM61tN9mrVf8UzoubPPZB2NghXMx8XFcmexNZRUCQ5iZXMbYGtJAbgKW8rpcrSvscgFv1cJxqixRrkdjufFV"
-        # node_m44h1h0h0 = self.cold_wallet_testnet.by_path(path="m/44'/1'/0'/0")
-        # self.assertEqual(node_m44h1h0h0.extended_private_key(), m44h1h0h0)
+        node_m44h1h0h0 = self.cold_wallet_testnet.by_path(path="m/44'/1'/0'/0")
+        self.assertEqual(node_m44h1h0h0.extended_private_key(), m44h1h0h0)
+        self.assertEqual(node_m44h1h0h0.extended_public_key(), M44h1h0h0)
         wallet = self.cold_wallet_testnet.bip44()
         csv_f = self.load_csv_file(
             _file="data/bip44_vast_tell_razor_drip_stick_one_engine-testnet"
