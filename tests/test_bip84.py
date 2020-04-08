@@ -1,7 +1,6 @@
 import unittest
 from bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
 from helper import hash160, h160_to_p2wpkh_address
-from wallet_utils import Bip
 
 
 class TestBip84(unittest.TestCase):
@@ -44,6 +43,56 @@ class TestBip84(unittest.TestCase):
         address = "bc1q8c6fshw2dlwun7ekn9qwf37cu2rn755upcp6el"
         # Account 0, first change address = m/84'/0'/0'/1/0
         child = node.derive_path(index_list=[84 + 2**31, 2**31, 2**31, 1, 0])
+        self.assertEqual(child.private_key.wif(), privkey)
+        self.assertEqual(child.public_key.sec().hex(), pubkey)
+        self.assertEqual(
+            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            address
+        )
+
+    def test_vector_2(self):
+        mnemonic = "banner list crush drill oxygen grit donate chair expect cloud artist window dignity company salad clinic follow drive narrow crater enlist tortoise stay rain"
+        root_prv = "zprvAWgYBBk7JR8GkcWB8q5mgDpogpFeNqyVjpci1VHK6JYJnnihE2a6wqAJJevA6HXD58vzF74DHBrpAZPEQNrugy6y1ZocLGuR4fMbkVtQBYJ"
+        root_pub = "zpub6jftahH18ngZy6aeErcn3MmYEr68nJhM73YJosgvee5Hfb3qmZtMVdUn9vmFPn81ZLTMwbC6b2zLcw17wGfg97jjZMYftosaCFee3wNg4ih"
+        node = PrivKeyNode.master_key(
+            bip32_seed=bip32_seed_from_mnemonic(mnemonic=mnemonic)
+        )
+        self.assertEqual(node.extended_public_key(version=0x04b24746), root_pub)
+        self.assertEqual(node.extended_private_key(version=0x04b2430c),
+                         root_prv)
+
+        privkey = "KwPVPXy7HXg7h575VFENH8VEZedSNKmVEww9SBwVcY97oWf4iXZb"
+        pubkey = "027b2dedd385c39132883a9ee31a4176fc7951a3ce61bfa9138c3eb9f818391b74"
+        address = "bc1q0xc3z0qkux40884uqzan8ny4hmth4srl9fm5f3"
+        # Account 0, first receiving address = m/84'/0'/0'/0/0
+        child = node.derive_path(
+            index_list=[84 + 2 ** 31, 2 ** 31, 2 ** 31, 0, 0])
+        self.assertEqual(child.private_key.wif(), privkey)
+        self.assertEqual(child.public_key.sec().hex(), pubkey)
+        self.assertEqual(
+            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            address
+        )
+
+        privkey = "L3XXZ8mcJ4j2E39T6CC9GSk4coPKH6srRn9sGdj9UJahRfUasqNk"
+        pubkey = "024c128fbc3d35d13de68fc6d641dd9a3f220117d2565546aeb9051c9f37617d14"
+        address = "bc1qzhrav6ktxvgyet00uup8pw7lwr7s2p9z4p5uar"
+        # Account 0, second receiving address = m/84'/0'/0'/0/1
+        child = node.derive_path(
+            index_list=[84 + 2 ** 31, 2 ** 31, 2 ** 31, 0, 1])
+        self.assertEqual(child.private_key.wif(), privkey)
+        self.assertEqual(child.public_key.sec().hex(), pubkey)
+        self.assertEqual(
+            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            address
+        )
+
+        privkey = "L1tEGjKn8oCY5ZoAQFo9PQk9ttcidcV5qkwXsMZfum13LFizmdoQ"
+        pubkey = "039d576e00f67c7953776d8bbd3f2f82b8eb139ab1251e284efb143a136be6c57b"
+        address = "bc1qsr3a7v4cmnakvharlacssz034vjrqw8sd03cp9"
+        # Account 0, first change address = m/84'/0'/0'/1/0
+        child = node.derive_path(
+            index_list=[84 + 2 ** 31, 2 ** 31, 2 ** 31, 1, 0])
         self.assertEqual(child.private_key.wif(), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(

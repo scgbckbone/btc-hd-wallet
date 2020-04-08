@@ -65,6 +65,7 @@ class ColdWallet(object):
         )
 
     def _from_pub_key(self, children, addr_type):
+        # TODO this routine has to be renamed
         return [
             [
                 str(child),
