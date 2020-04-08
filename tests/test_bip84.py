@@ -58,8 +58,7 @@ class TestBip84(unittest.TestCase):
             bip32_seed=bip32_seed_from_mnemonic(mnemonic=mnemonic)
         )
         self.assertEqual(node.extended_public_key(version=0x04b24746), root_pub)
-        self.assertEqual(node.extended_private_key(version=0x04b2430c),
-                         root_prv)
+        self.assertEqual(node.extended_private_key(version=0x04b2430c), root_prv)
 
         privkey = "KwPVPXy7HXg7h575VFENH8VEZedSNKmVEww9SBwVcY97oWf4iXZb"
         pubkey = "027b2dedd385c39132883a9ee31a4176fc7951a3ce61bfa9138c3eb9f818391b74"
@@ -97,5 +96,55 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
             h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            address
+        )
+
+    def test_vector_3(self):
+        mnemonic = "alone process notice pool egg gift foster session code bright service change"
+        root_prv = "vprv9DMUxX4ShgxMMf69wwuvPuDoLNQec5t9WDkURn5kzoDMia4gd8ZuJEmVvSnJZSWtYeKtFto2SPDBWQg6ShkRBdza5DpbrrNtjVdnHnscZaa"
+        root_pub = "vpub5SLqN2bLY4Wea9Ad3ySvm3AXtQF91YbzsSg5EAVNZ8kLbNPqAft9r35ymifdRaDHzhqi3bQ3fWtbDLV6aUVVHzCmErvLYkA6uc8MxA88EDm"
+        node = PrivKeyNode.master_key(
+            bip32_seed=bip32_seed_from_mnemonic(mnemonic=mnemonic),
+            testnet=True
+        )
+        self.assertEqual(node.extended_public_key(version=0x045f1cf6), root_pub)
+        self.assertEqual(node.extended_private_key(version=0x045f18bc), root_prv)
+
+        privkey = "cUoZgoxZFeYqzs8iFaH7ENTb9NRVYNYYR9RT9s8EQdsiEN6miTna"
+        pubkey = "02cbe61535f7b1730e0ca98ad845dbd3a3f79401104fc388971e32124b606cfb2c"
+        address = "tb1qpfz8s3yzkph276vh0k3l72apgg5g4ptrvas0sf"
+        # Account 0, first receiving address = m/84'/1'/0'/0/0
+        child = node.derive_path(
+            index_list=[84 + 2 ** 31, 1 + 2 ** 31, 2 ** 31, 0, 0])
+        self.assertEqual(child.private_key.wif(testnet=True), privkey)
+        self.assertEqual(child.public_key.sec().hex(), pubkey)
+        self.assertEqual(
+            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            address
+        )
+
+        privkey = "cSCJB57PH4DwNnNKkJabyJzAwG2kgwyP7RtVWXHnCcccHV9jBVpf"
+        pubkey = "03a4495d811eb515cd047a304cb74708e7e9dc8d53359465f9c23a9bbb131b015b"
+        address = "tb1q95pfzgslydz9mhl6ngjv74u5k74zg98ntc5ghe"
+        # Account 0, second receiving address = m/84'/1'/0'/0/1
+        child = node.derive_path(
+            index_list=[84 + 2 ** 31, 1 + 2 ** 31, 2 ** 31, 0, 1])
+        self.assertEqual(child.private_key.wif(testnet=True), privkey)
+        self.assertEqual(child.public_key.sec().hex(), pubkey)
+        self.assertEqual(
+            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            address
+        )
+
+        privkey = "cV5iKGZAXmHJrb52DqiwaGvrFQboMBtu1yiR4uRGPApwTgq7jPu6"
+        pubkey = "0348649e2c2623e62d7cbab33d02d15615528e31a09ea350ede98ba706ab72dc1a"
+        address = "tb1qt52wa6r76n4evqps6a9wt30lh26ylpgnmddu6g"
+        # Account 0, first change address = m/84'/0'/0'/1/0
+        child = node.derive_path(
+            index_list=[84 + 2 ** 31, 1 + 2 ** 31, 2 ** 31, 1, 0])
+        self.assertEqual(child.private_key.wif(testnet=True), privkey)
+        self.assertEqual(child.public_key.sec().hex(), pubkey)
+        self.assertEqual(
+            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
             address
         )
