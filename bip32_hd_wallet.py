@@ -18,6 +18,7 @@ from helper import (
 random = random.SystemRandom()
 
 PBKDF2_ROUNDS = 2048
+CORRECT_ENTROPY_BITS = [128, 160, 192, 224, 256]
 
 SECP256k1 = ecdsa.curves.SECP256k1
 CURVE_GEN = ecdsa.ecdsa.generator_secp256k1
@@ -33,7 +34,7 @@ def get_word_list() -> List[str]:
 
 
 def correct_entropy_bits_value(entropy_bits: int) -> None:
-    if entropy_bits not in [128, 160, 192, 224, 256]:
+    if entropy_bits not in CORRECT_ENTROPY_BITS:
         raise ValueError("incorrect entropy bits")
 
 
@@ -48,7 +49,7 @@ def mnemonic_sentence_length(entropy_bits: int) -> int:
 def mnemonic_from_entropy_bits(entropy_bits: int = 256) -> str:
     correct_entropy_bits_value(entropy_bits=entropy_bits)
     entropy_int = random.getrandbits(entropy_bits)
-    entropy_bytes = int_to_big_endian(entropy_int, 32)
+    entropy_bytes = int_to_big_endian(entropy_int, int(entropy_bits / 8))
     return mnemonic_from_entropy(entropy_bytes.hex())
 
 

@@ -90,6 +90,28 @@ class TestMnemonic(unittest.TestCase):
                 target_mnemonic
             )
 
+    def test_mnemonic_from_entropy_bits(self):
+        self.assertEqual(
+            len(mnemonic_from_entropy_bits(entropy_bits=128).split()),
+            12
+        )
+        self.assertEqual(
+            len(mnemonic_from_entropy_bits(entropy_bits=160).split()),
+            15
+        )
+        self.assertEqual(
+            len(mnemonic_from_entropy_bits(entropy_bits=192).split()),
+            18
+        )
+        self.assertEqual(
+            len(mnemonic_from_entropy_bits(entropy_bits=224).split()),
+            21
+        )
+        self.assertEqual(
+            len(mnemonic_from_entropy_bits(entropy_bits=256).split()),
+            24
+        )
+
 
 class TestNode(unittest.TestCase):
 
