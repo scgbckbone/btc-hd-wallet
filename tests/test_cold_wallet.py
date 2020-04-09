@@ -29,7 +29,7 @@ class TestColdWallet(unittest.TestCase):
         M44h0h0h0 = "xpub6EkvzwmRQYYq8RERoVi3fCkraMf8pGJPsjqiEQxyGt98g8oybJkTBu8soiUJM76gtQtGx1ZKU7y6CwbVFeCER3q95MVbNRquYCfyPLzbdpF"
         wallet = self.cold_wallet.bip44()
         csv_f = self.load_csv_file(
-            _file="data/bip44_vast_tell_razor_drip_stick_one_engine"
+            _file="tests/data/bip44_vast_tell_razor_drip_stick_one_engine"
         )
         wallet0 = ColdWallet.from_extended_key(extended_key=m44h0h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -54,7 +54,7 @@ class TestColdWallet(unittest.TestCase):
         M49h0h0h0 = "ypub6YVDJjB6kKU4X83L1q1RQo5TxjgQBTdG5U3QN9C9va6a8FKhVBcVqq7vWayS3iDNdKj9siFtDuhjJ9KJatTFjtiZ9HLEbhYBeRz7TsKmmz1"
         wallet = self.cold_wallet.bip49()
         csv_f = self.load_csv_file(
-            _file="data/bip49_vast_tell_razor_drip_stick_one_engine"
+            _file="tests/data/bip49_vast_tell_razor_drip_stick_one_engine"
         )
         wallet0 = ColdWallet.from_extended_key(extended_key=m49h0h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -77,7 +77,7 @@ class TestColdWallet(unittest.TestCase):
         M84h0h0h0 = "zpub6sU8fzSUnZubeSj1kLitoJ8MaXSoWs6MLDA4TMEQjBggmEygDoXsAu8H4Qk5mvh4qL6QCi97z7EmAytC7CZe1q2Z6HnMje2ibgEctsit7zV"
         wallet = self.cold_wallet.bip84()
         csv_f = self.load_csv_file(
-            _file="data/bip84_vast_tell_razor_drip_stick_one_engine"
+            _file="tests/data/bip84_vast_tell_razor_drip_stick_one_engine"
         )
         wallet0 = ColdWallet.from_extended_key(extended_key=m84h0h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -103,7 +103,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(node_m44h1h0h0.extended_public_key(), M44h1h0h0)
         wallet = self.cold_wallet_testnet.bip44()
         csv_f = self.load_csv_file(
-            _file="data/bip44_vast_tell_razor_drip_stick_one_engine-testnet"
+            _file="tests/data/bip44_vast_tell_razor_drip_stick_one_engine-testnet"
         )
         wallet0 = ColdWallet.from_extended_key(extended_key=m44h1h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -128,7 +128,7 @@ class TestColdWallet(unittest.TestCase):
         M49h1h0h0 = "upub5FoumQCH5G2m5Vc1aJP3eJQ5YdpZfupJwNeM2VoERorZJNbP2kcb5EkDWor7CCFSnmYhXGu47xRfhxZ1dBc9H3ssrCMaJpdNzSkk2X8Kz6m"
         wallet = self.cold_wallet_testnet.bip49()
         csv_f = self.load_csv_file(
-            _file="data/bip49_vast_tell_razor_drip_stick_one_engine-testnet"
+            _file="tests/data/bip49_vast_tell_razor_drip_stick_one_engine-testnet"
         )
         wallet0 = ColdWallet.from_extended_key(extended_key=m49h1h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -151,7 +151,7 @@ class TestColdWallet(unittest.TestCase):
         M84h1h0h0 = "vpub5b14oTd3mpWGzbxkqgaESn4Pq1MkbLbzvWZju8Y6LiqsN9JXX7ZzvdCp1qDDxLqeHGr6BUssz2yFmUDm5Fp9jTdz4madyxK6mwgsCvYdK5S"
         wallet = self.cold_wallet_testnet.bip84()
         csv_f = self.load_csv_file(
-            _file="data/bip84_vast_tell_razor_drip_stick_one_engine-testnet"
+            _file="tests/data/bip84_vast_tell_razor_drip_stick_one_engine-testnet"
         )
         wallet0 = ColdWallet.from_extended_key(extended_key=m84h1h0h0)
         self.assertFalse(wallet0.watch_only)

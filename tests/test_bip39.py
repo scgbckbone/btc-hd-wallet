@@ -1,6 +1,6 @@
 import unittest
 from bip32_hd_wallet import (
-    mnemonic_from_entropy, bip32_seed_from_mnemonic, get_word_list, PrivKeyNode
+    mnemonic_from_entropy, bip32_seed_from_mnemonic, PrivKeyNode
 )
 
 
@@ -169,15 +169,10 @@ class TestData(object):
 
 class TestMnemonic(unittest.TestCase):
 
-    word_list = get_word_list()
-
     def test_bip39(self):
         for data in test_data:
             data = TestData(data)
-            mnemonic_sentence = mnemonic_from_entropy(
-                data.entropy,
-                word_list=self.word_list
-            )
+            mnemonic_sentence = mnemonic_from_entropy(data.entropy)
             self.assertEqual(data.mnemonic, mnemonic_sentence)
             seed = bip32_seed_from_mnemonic(mnemonic_sentence, password="TREZOR")
             self.assertEqual(data.bip32_seed, seed.hex())

@@ -3,8 +3,8 @@ from io import BytesIO
 
 from bip32_hd_wallet import (
     PrivKeyNode, PubKeyNode, correct_entropy_bits_value, checksum_length,
-    mnemonic_sentence_length, get_word_list, mnemonic_from_entropy,
-    mnemonic_from_entropy_bits
+    mnemonic_sentence_length, mnemonic_from_entropy_bits, mnemonic_from_entropy
+
 )
 from helper import decode_base58_checksum
 
@@ -37,7 +37,6 @@ class TestMnemonic(unittest.TestCase):
         self.assertEqual(mnemonic_sentence_length(256), 24)
 
     def test_mnemonic_from_entropy(self):
-        word_list = get_word_list()
         data = [
             (
                 "551bf03d054209b3d512dc4090a5067ae4bd41e487d9f14e5f709551d23564fe",
@@ -86,7 +85,7 @@ class TestMnemonic(unittest.TestCase):
         ]
         for entropy_hex, target_mnemonic in data:
             self.assertEqual(
-                mnemonic_from_entropy(entropy=entropy_hex, word_list=word_list),
+                mnemonic_from_entropy(entropy=entropy_hex),
                 target_mnemonic
             )
 

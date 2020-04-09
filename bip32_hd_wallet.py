@@ -3,7 +3,6 @@ import hmac
 import ecdsa
 import random
 import hashlib
-import requests
 import unicodedata
 from io import BytesIO
 from typing import List
@@ -13,6 +12,7 @@ from helper import (
     sha256, encode_base58_checksum, big_endian_to_int, int_to_big_endian,
     decode_base58_checksum, hash160
 )
+from bip39_wordlist import word_list
 
 
 random = random.SystemRandom()
@@ -25,12 +25,6 @@ CURVE_GEN = ecdsa.ecdsa.generator_secp256k1
 CURVE_ORDER = CURVE_GEN.order()
 FIELD_ORDER = SECP256k1.curve.p()
 INFINITY = ecdsa.ellipticcurve.INFINITY
-
-
-def get_word_list() -> List[str]:
-    url = "https://raw.githubusercontent.com"
-    uri = "/bitcoin/bips/master/bip-0039/english.txt"
-    return requests.get(url + uri).text.split()
 
 
 def correct_entropy_bits_value(entropy_bits: int) -> None:
@@ -53,9 +47,7 @@ def mnemonic_from_entropy_bits(entropy_bits: int = 256) -> str:
     return mnemonic_from_entropy(entropy_bytes.hex())
 
 
-def mnemonic_from_entropy(entropy: str, word_list=None) -> str:
-    if word_list is None:
-        word_list = get_word_list()
+def mnemonic_from_entropy(entropy: str) -> str:
     entropy_bits = len(entropy) * 4
     entropy_bytes = bytes.fromhex(entropy)
     entropy_int = big_endian_to_int(entropy_bytes)
