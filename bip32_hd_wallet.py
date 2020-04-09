@@ -164,9 +164,6 @@ class PubKeyNode(object):
     def is_root(self):
         return self.parent is None
 
-    def serialize_index(self):
-        return int_to_big_endian(self.index, 4)
-
     def fingerprint(self):
         return hash160(self.public_key.sec())[:4]
 
@@ -213,7 +210,7 @@ class PubKeyNode(object):
             result += self.parent_fingerprint
         # 4 bytes: child number. This is ser32(i) for i in xi = xpar/i,
         # with xi the key being serialized. (0x00000000 if master key)
-        result += self.serialize_index()
+        result += int_to_big_endian(self.index, 4)
         # 32 bytes: the chain code
         result += self.chain_code
         # 33 bytes: the public key serP(K)
