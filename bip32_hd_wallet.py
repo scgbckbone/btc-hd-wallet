@@ -130,8 +130,6 @@ class PubKeyNode(object):
         if self.parent:
             fingerprint = self.parent.fingerprint()
         else:
-            if self._parent_fingerprint is None:
-                raise RuntimeError()
             fingerprint = self._parent_fingerprint
         return fingerprint
 
