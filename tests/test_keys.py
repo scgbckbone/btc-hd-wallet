@@ -159,6 +159,15 @@ class TestPublicKey(unittest.TestCase):
                 PublicKey.parse(bytes.fromhex(compressed)).point
             )
 
+    def test_incorrect_address_type(self):
+        pubkey = PrivateKey(sec_exp=6516151654156).K
+        with self.assertRaises(ValueError):
+            pubkey.address(addr_type="p2sh")
+        with self.assertRaises(ValueError):
+            pubkey.address(addr_type="p2ep")
+        with self.assertRaises(ValueError):
+            pubkey.address(addr_type="incorrect")
+
     def test_address(self):
         data = [
             {
