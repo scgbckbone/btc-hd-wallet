@@ -2,7 +2,7 @@ import ecdsa
 
 from helper import (
     encode_base58_checksum, decode_base58_checksum, big_endian_to_int,
-    hash160, h160_to_p2wpkh_address
+    hash160, h160_to_p2wpkh_address, h160_to_p2pkh_address
 )
 
 
@@ -82,8 +82,7 @@ class PublicKey(object):
     def address(self, compressed=True, testnet=False, addr_type="p2pkh"):
         h160 = self.h160(compressed=compressed)
         if addr_type == "p2pkh":
-            prefix = b"\x6f" if testnet else b"\x00"
-            return encode_base58_checksum(prefix + h160)
+            return h160_to_p2pkh_address(h160=h160, testnet=testnet)
         elif addr_type == "p2wpkh":
             return h160_to_p2wpkh_address(h160=h160, testnet=testnet)
         raise ValueError("Unsupported address type.")
