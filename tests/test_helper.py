@@ -2,9 +2,8 @@ import unittest
 
 from helper import (
     little_endian_to_int, int_to_little_endian, encode_base58_checksum,
-    b58decode_addr, h160_to_p2pkh_address, h160_to_p2sh_address,
-    calculate_new_bits, merkle_root, merkle_parent, merkle_parent_level,
-    bit_field_to_bytes, bytes_to_bit_field
+    b58decode_addr, h160_to_p2pkh_address, h160_to_p2sh_address, merkle_root,
+    merkle_parent, merkle_parent_level, bit_field_to_bytes, bytes_to_bit_field
 )
 
 
@@ -26,13 +25,52 @@ class HelperTest(unittest.TestCase):
         want = b'\x99\xc3\x98\x00\x00\x00\x00\x00'
         self.assertEqual(int_to_little_endian(n, 8), want)
 
-    def test_base58(self):
-        addr = 'mnrVtF8DWjMu839VW3rBfgYaAfKk8983Xf'
-        h160 = b58decode_addr(addr).hex()
-        want = '507b27411ccf7f16f10297de6cef3f291623eddf'
-        self.assertEqual(h160, want)
-        got = encode_base58_checksum(b'\x6f' + bytes.fromhex(h160))
-        self.assertEqual(got, addr)
+    def test_base58_invalid_checksum(self):
+        with self.assertRaises(ValueError):
+            b58decode_addr(s="1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNb")
+
+    def test_base58_invalid_char(self):
+        with self.assertRaises(ValueError):
+            b58decode_addr(s="1A1zP1eP5QGefi2DlPTfTL5SLmv7DivfNb")
+
+    def test_address_base58_decode_testnet(self):
+        data = [
+            (
+                b"\x6f",
+                "mnrVtF8DWjMu839VW3rBfgYaAfKk8983Xf",
+                "507b27411ccf7f16f10297de6cef3f291623eddf",
+            ),
+            (
+                b"\x6f",
+                "n337594KZxc8CdCH8EzH4zkpqcQCSWwLUv",
+                "ec0e72801d338d8bf3485addd59701d089d84019"
+            ),
+            (
+                b"\xc4",
+                "2MxZwbBQsdeF4RJj4pDeMav6KgkkcVdkUt7",
+                "3a62d7f2da01f5baa5da704275ee849669b13300"
+            ),
+            (
+                b"\xc4",
+                "2NDMpG6PP1ka6h9VaEw8hfk6XE2qxBa2Knm",
+                "dca19ee9e64d8479c094da2c9fc830e5898254c7"
+            ),
+            (
+                b"\x00",
+                "1GbU5hVBc2kKdiW7uMYGqaXM9GJc7ysSBJ",
+                "ab0ea2b2a3fef9dd85d399380d698f647685f7ec",
+            ),
+            (
+                b"\x05",
+                "371LHnv92VQLHdkkbALU9CLzLzikAaXCJJ",
+                "3a4f729c13c3af6853a1a758d95708ece0859381"
+            )
+        ]
+        for prefix, address, h160_hex_target in data:
+            h160 = b58decode_addr(address).hex()
+            self.assertEqual(h160, h160_hex_target)
+            got = encode_base58_checksum(prefix + bytes.fromhex(h160))
+            self.assertEqual(got, address)
 
     def test_p2pkh_address(self):
         h160 = bytes.fromhex('74d691da1574e6b3c192ecfb52cc8984ee7b6c56')
@@ -47,12 +85,6 @@ class HelperTest(unittest.TestCase):
         self.assertEqual(h160_to_p2sh_address(h160, testnet=False), want)
         want = '2N3u1R6uwQfuobCqbCgBkpsgBxvr1tZpe7B'
         self.assertEqual(h160_to_p2sh_address(h160, testnet=True), want)
-
-    def test_calculate_new_bits(self):
-        prev_bits = bytes.fromhex('54d80118')
-        time_differential = 302400
-        want = bytes.fromhex('00157617')
-        self.assertEqual(calculate_new_bits(prev_bits, time_differential), want)
 
     def test_merkle_parent(self):
         tx_hash0 = bytes.fromhex(

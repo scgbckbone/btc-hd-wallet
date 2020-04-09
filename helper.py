@@ -5,9 +5,6 @@ from typing import List
 import bech32
 
 
-SIGHASH_ALL = 1
-SIGHASH_NONE = 2
-SIGHASH_SINGLE = 3
 BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 TWO_WEEKS = 60 * 60 * 24 * 14
 
@@ -35,12 +32,25 @@ def encode_base58_checksum(b: bytes) -> str:
 def decode_base58(s: str) -> bytes:
     num = 0
     for c in s:
+        if c not in BASE58_ALPHABET:
+            raise ValueError(
+                "character {} is not valid base58 character".format(c)
+            )
         num *= 58
         num += BASE58_ALPHABET.index(c)
 
     h = hex(num)[2:]
     h = '0' + h if len(h) % 2 else h
-    return bytes.fromhex(h)
+    res = bytes.fromhex(h)
+
+    # Add padding back.
+    pad = 0
+    for c in s[:-1]:
+        if c == BASE58_ALPHABET[0]:
+            pad += 1
+        else:
+            break
+    return b'\x00' * pad + res
 
 
 def decode_base58_checksum(s: str) -> bytes:
@@ -134,12 +144,6 @@ def h160_to_p2pkh_address(h160: bytes, testnet: bool = False) -> str:
     return encode_base58_checksum(prefix + h160)
 
 
-def wif(key_bytes, compressed=True, testnet=False):
-    prefix = b"\xef" if testnet else b"\x80"
-    suffix = b"\x01" if compressed else b""
-    return encode_base58_checksum(prefix + key_bytes + suffix)
-
-
 def h160_to_p2sh_address(h160: bytes, testnet: bool = False) -> str:
     """Takes a byte sequence hash160 and returns a p2sh address string"""
     # p2sh has a prefix of b'\x05' for mainnet, b'\xc4' for testnet
@@ -163,44 +167,6 @@ def h256_to_p2wsh_address(h256: bytes, testnet: bool = False, witver: int = 0) -
 def bech32_decode_address(addr: str, testnet: bool = False) -> bytes:
     hrp = "tb" if testnet else "bc"
     return bytes(bech32.decode(hrp=hrp, addr=addr)[1])
-
-
-def bits_to_target(bits):
-    exponent = bits[-1]
-    coefficient = little_endian_to_int(bits[:-1])
-    return coefficient * 256 ** (exponent - 3)
-
-
-def target_to_bits(target):
-    raw_bytes = int_to_big_endian(target, 32)
-    raw_bytes = raw_bytes.lstrip(b"\x00")
-    if raw_bytes[0] > 0xf7:
-        exponent = len(raw_bytes + 1)
-        coefficient = b"\x00" + raw_bytes[:2]
-    else:
-        exponent = len(raw_bytes)
-        coefficient = raw_bytes[:3]
-    new_bits = coefficient[::-1] + bytes([exponent])
-    return new_bits
-
-
-def calculate_new_bits(previous_bits, time_differential):
-    """
-    Calculates the new bits given
-    a 2016-block time differential and the previous bits
-    """
-    # if the time differential is greater than 8 weeks, set to 8 weeks
-    if time_differential > TWO_WEEKS * 4:
-        time_differential = TWO_WEEKS * 4
-    # if the time differential is less than half a week, set to half a week
-    if time_differential < TWO_WEEKS // 4:
-        time_differential = TWO_WEEKS // 4
-    # the new target is the previous target * time differential / two weeks
-    new_target = bits_to_target(previous_bits) * time_differential // TWO_WEEKS
-    # if the new target is bigger than MAX_TARGET, set to MAX_TARGET
-    # TODO ^^^
-    # convert the new target to bits
-    return target_to_bits(new_target)
 
 
 def merkle_parent(hash1: bytes, hash2: bytes) -> bytes:
@@ -305,13 +271,6 @@ def murmur3(data: bytes, seed: int = 0) -> int:
     h1 *= 0xc2b2ae35
     h1 ^= ((h1 & 0xffffffff) >> 16)
     return h1 & 0xffffffff
-
-
-def count_bytes(lst):
-    witness_bytes_len = 0
-    for item in lst:
-        witness_bytes_len += len(item)
-    return witness_bytes_len
 
 
 def p2wpkh_script_serialized(h160):
