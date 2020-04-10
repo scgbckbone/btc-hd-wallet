@@ -31,4 +31,3 @@ def get_word_list() -> List[str]:
 
 
 word_list = get_word_list()
-

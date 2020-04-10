@@ -84,10 +84,9 @@ class InvalidKeyError(Exception):
 
 
 class PubKeyNode(object):
-
     mark = "M"
-    testnet_version = 0x043587CF
-    mainnet_version = 0x0488B21E
+    testnet_version = None
+    mainnet_version = None
 
     __slots__ = (
         "parent",
@@ -255,8 +254,8 @@ class PubKeyNode(object):
 
 class PrivKeyNode(PubKeyNode):
     mark = "m"
-    testnet_version = 0x04358394
-    mainnet_version = 0x0488ADE4
+    testnet_version = None
+    mainnet_version = None
 
     @property
     def private_key(self):
@@ -341,4 +340,29 @@ class PrivKeyNode(PubKeyNode):
         return child
 
 
+class Bip32PrivateNode(PrivKeyNode):
+    testnet_version = 0x04358394
+    mainnet_version = 0x0488ADE4
 
+    @property
+    def priv_version(self):
+        if self.testnet:
+            return Bip32PrivateNode.testnet_version
+        return Bip32PrivateNode.mainnet_version
+
+    @property
+    def pub_version(self):
+        if self.testnet:
+            return Bip32PublicNode.testnet_version
+        return Bip32PublicNode.mainnet_version
+
+
+class Bip32PublicNode(PubKeyNode):
+    testnet_version = 0x043587CF
+    mainnet_version = 0x0488B21E
+
+    @property
+    def pub_version(self):
+        if self.testnet:
+            return Bip32PublicNode.testnet_version
+        return Bip32PublicNode.mainnet_version

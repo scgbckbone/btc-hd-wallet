@@ -1,10 +1,10 @@
 import unittest
 from io import BytesIO
 
-from bip32_hd_wallet import (
-    PrivKeyNode, PubKeyNode, correct_entropy_bits_value, checksum_length,
-    mnemonic_sentence_length, mnemonic_from_entropy_bits, mnemonic_from_entropy
-
+from bip32 import (
+    Bip32PrivateNode, Bip32PublicNode, correct_entropy_bits_value,
+    mnemonic_sentence_length, mnemonic_from_entropy_bits, mnemonic_from_entropy,
+    checksum_length
 )
 from helper import decode_base58_checksum
 
@@ -117,20 +117,20 @@ class TestNode(unittest.TestCase):
     def test_parse(self):
         xpub = "xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH"
         xpriv = "xprv9vHkqa6EV4sPZHYqZznhT2NPtPCjKuDKGY38FBWLvgaDx45zo9WQRUT3dKYnjwih2yJD9mkrocEZXo1ex8G81dwSM1fwqWpWkeS3v86pgKt"
-        pub_node = PubKeyNode.parse(s=xpub)
+        pub_node = Bip32PublicNode.parse(s=xpub)
         self.assertEqual(pub_node.extended_public_key(), xpub)
-        self.assertEqual(PrivKeyNode.parse(s=xpriv).extended_private_key(), xpriv)
+        self.assertEqual(Bip32PrivateNode.parse(s=xpriv).extended_private_key(), xpriv)
 
     def test_parse_incorrect_type(self):
         xpriv = "xprv9s21ZrQH143K3YFDmG48xQj4BKHUn15if4xsQiMwSKX8bZ6YruYK6mV6oM5Tbodv1pLF7GMdPGaTcZBno3ZejMHbVVvymhsS5GcYC4hSKag"
-        self.assertEqual(PrivKeyNode.parse(xpriv).extended_private_key(), xpriv)
-        self.assertEqual(PrivKeyNode.parse(decode_base58_checksum(xpriv)).extended_private_key(), xpriv)
-        self.assertEqual(PrivKeyNode.parse(BytesIO(decode_base58_checksum(xpriv))).extended_private_key(), xpriv)
-        self.assertRaises(ValueError, PrivKeyNode.parse, 1584784554)
+        self.assertEqual(Bip32PrivateNode.parse(xpriv).extended_private_key(), xpriv)
+        self.assertEqual(Bip32PrivateNode.parse(decode_base58_checksum(xpriv)).extended_private_key(), xpriv)
+        self.assertEqual(Bip32PrivateNode.parse(BytesIO(decode_base58_checksum(xpriv))).extended_private_key(), xpriv)
+        self.assertRaises(ValueError, Bip32PrivateNode.parse, 1584784554)
 
     def test_check_fingerprint(self):
         xpriv = "xprv9s21ZrQH143K4EK4Fdy4ddWeDMy1x4tg2s292J5ynk23sn3hxSZ9MqqLZCTj2dHPP16CsTdAFeznbnNhSN3v66TtSKzJf4hPZSqDjjp9t42"
-        m = PrivKeyNode.parse(xpriv)
+        m = Bip32PrivateNode.parse(xpriv)
         self.assertIsNone(m.check_fingerprint())
         m0 = m.ckd(index=0)
         m0._parent_fingerprint = m.fingerprint()
@@ -141,9 +141,9 @@ class TestBip32(unittest.TestCase):
 
     def test_ckd_pub_ckd_priv_matches_public_key(self):
         seed = "b4385b54033b047216d71031bd83b3c059d041590f24c666875c980353c9a5d3322f723f74d1f5e893de7af80d80307f51683e13557ad1e4a2fe151b1c7f0d8b"
-        m = PrivKeyNode.master_key(bip32_seed=bytes.fromhex(seed))
+        m = Bip32PrivateNode.master_key(bip32_seed=bytes.fromhex(seed))
         master_xpub = m.extended_public_key()
-        M = PubKeyNode.parse(s=master_xpub)
+        M = Bip32PublicNode.parse(s=master_xpub)
         m44 = m.ckd(index=44)
         M44 = M.ckd(index=44)
         self.assertEqual(m44.extended_public_key(), M44.extended_public_key())
@@ -185,7 +185,7 @@ class TestBip32(unittest.TestCase):
 
     def test_ckd_pub_hardened_failure(self):
         xpub = "xpub6FUwZTpNvcMeHRJGUQoy4WTqXjzmGLUFNe3sUKeWChEbzTJDpBjZjn2cMysV5Ffw874VUVooxmupZeLjrdpM5wXLUxkatTdnayXGy6Ln7kR"
-        M = PubKeyNode.parse(s=xpub)
+        M = Bip32PublicNode.parse(s=xpub)
         self.assertRaises(RuntimeError, M.ckd, 2**31)
         self.assertRaises(RuntimeError, M.ckd, 2**31 + 256)
 
@@ -194,7 +194,7 @@ class TestBip32(unittest.TestCase):
         seed ="000102030405060708090a0b0c0d0e0f"
         xpub = "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8"
         xpriv = "xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi"
-        m = PrivKeyNode.master_key(bip32_seed=bytes.fromhex(seed))
+        m = Bip32PrivateNode.master_key(bip32_seed=bytes.fromhex(seed))
         self.assertEqual(m.extended_public_key(), xpub)
         self.assertEqual(m.extended_private_key(), xpriv)
         self.assertEqual(m.__repr__(), "m")
@@ -208,7 +208,7 @@ class TestBip32(unittest.TestCase):
         self.assertEqual(m0h.__repr__(), "m/0'")
 
         # chain M/0'
-        M0h = PubKeyNode.parse(xpub)
+        M0h = Bip32PublicNode.parse(xpub)
         # chain M/0'/1
         M0h1 = M0h.ckd(index=1)
         public_only_xpub = M0h1.extended_public_key()
@@ -239,7 +239,7 @@ class TestBip32(unittest.TestCase):
         self.assertEqual(m0h12h2.__repr__(), "m/0'/1/2'/2")
 
         # chain M/0'/1/2'/2
-        M0h12h2 = PubKeyNode.parse(xpub)
+        M0h12h2 = Bip32PublicNode.parse(xpub)
         # chain M/0'/1/2'/2/1000000000
         M0h12h21000000000 = M0h12h2.ckd(index=1000000000)
         public_only_xpub = M0h12h21000000000.extended_public_key()
@@ -258,7 +258,7 @@ class TestBip32(unittest.TestCase):
         seed = "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542"
         xpub = "xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB"
         xpriv = "xprv9s21ZrQH143K31xYSDQpPDxsXRTUcvj2iNHm5NUtrGiGG5e2DtALGdso3pGz6ssrdK4PFmM8NSpSBHNqPqm55Qn3LqFtT2emdEXVYsCzC2U"
-        m = PrivKeyNode.master_key(bip32_seed=bytes.fromhex(seed))
+        m = Bip32PrivateNode.master_key(bip32_seed=bytes.fromhex(seed))
         self.assertEqual(m.extended_public_key(), xpub)
         self.assertEqual(m.extended_private_key(), xpriv)
         self.assertEqual(m.__repr__(), "m")
@@ -308,7 +308,7 @@ class TestBip32(unittest.TestCase):
         seed = "4b381541583be4423346c643850da4b320e46a87ae3d2a4e6da11eba819cd4acba45d239319ac14f863b8d5ab5a0d0c64d2e8a1e7d1457df2e5a3c51c73235be"
         xpub = "xpub661MyMwAqRbcEZVB4dScxMAdx6d4nFc9nvyvH3v4gJL378CSRZiYmhRoP7mBy6gSPSCYk6SzXPTf3ND1cZAceL7SfJ1Z3GC8vBgp2epUt13"
         xpriv = "xprv9s21ZrQH143K25QhxbucbDDuQ4naNntJRi4KUfWT7xo4EKsHt2QJDu7KXp1A3u7Bi1j8ph3EGsZ9Xvz9dGuVrtHHs7pXeTzjuxBrCmmhgC6"
-        m = PrivKeyNode.master_key(bip32_seed=bytes.fromhex(seed))
+        m = Bip32PrivateNode.master_key(bip32_seed=bytes.fromhex(seed))
         self.assertEqual(m.extended_public_key(), xpub)
         self.assertEqual(m.extended_private_key(), xpriv)
         self.assertEqual(m.__repr__(), "m")

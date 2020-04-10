@@ -1,4 +1,4 @@
-from bip32_hd_wallet import (
+from bip32 import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
     bip32_seed_from_mnemonic
 )

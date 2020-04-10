@@ -1,6 +1,6 @@
 import unittest
-from bip32_hd_wallet import (
-    mnemonic_from_entropy, bip32_seed_from_mnemonic, PrivKeyNode
+from bip32 import (
+    mnemonic_from_entropy, bip32_seed_from_mnemonic, Bip32PrivateNode
 )
 
 
@@ -176,5 +176,5 @@ class TestMnemonic(unittest.TestCase):
             self.assertEqual(data.mnemonic, mnemonic_sentence)
             seed = bip32_seed_from_mnemonic(mnemonic_sentence, password="TREZOR")
             self.assertEqual(data.bip32_seed, seed.hex())
-            master_k = PrivKeyNode.master_key(bip32_seed=seed)
+            master_k = Bip32PrivateNode.master_key(bip32_seed=seed)
             self.assertEqual(master_k.extended_private_key(), data.xpriv)
