@@ -95,7 +95,7 @@ class PubKeyNode(object):
         "depth",
         "index",
         "_parent_fingerprint",
-        "_parsed_version",
+        "parsed_version",
         "testnet",
         "children"
     )
@@ -108,7 +108,7 @@ class PubKeyNode(object):
         self.depth = depth
         self.index = index
         self._parent_fingerprint = parent_fingerprint
-        self._parsed_version = None
+        self.parsed_version = None
         self.testnet = testnet
         self.children = []
 
@@ -195,7 +195,7 @@ class PubKeyNode(object):
             testnet=testnet,
             parent_fingerprint=parent_fingerprint,
         )
-        key._parsed_version = version
+        key.parsed_version = version
         return key
 
     def _serialize(self, key: bytes, version: int = None):

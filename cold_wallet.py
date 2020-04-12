@@ -158,7 +158,7 @@ class ColdWallet(object):
     @classmethod
     def from_extended_key(cls, extended_key: str):
         # just need version, key type does not matter in here
-        version_int = PrivKeyNode.parse(s=extended_key)._parsed_version
+        version_int = PrivKeyNode.parse(s=extended_key).parsed_version
         version = Version.parse(s=version_int)
         if version.key_type == Key.PRV:
             node = PrivKeyNode.parse(extended_key, testnet=version.testnet)
