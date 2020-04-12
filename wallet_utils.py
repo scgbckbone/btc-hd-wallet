@@ -189,7 +189,7 @@ class Bip32Path(object):
                     raise ValueError("has to be int")
 
     def __repr__(self):
-        items = [self.repr_hardened(i) for i in self.to_list() if i is not None]
+        items = [self.repr_hardened(i) for i in self.to_list()]
         items = [self.m] + items
         return "/".join(items)
 

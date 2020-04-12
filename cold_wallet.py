@@ -3,10 +3,10 @@ from bip32_hd_wallet import (
     bip32_seed_from_mnemonic
 )
 from helper import hash160, h160_to_p2sh_address, p2wpkh_script_serialized
+from wallet_utils import Bip32Path, Version, Key
+
 
 # m/44'/0'/0'/0
-from wallet_utils import Bip32Path, Version, Key, Bip
-
 BIP44_PATH = [44 + 2**31, 2**31, 2**31, 0]
 # m/49'/0'/0'/0
 BIP49_PATH = [49 + 2**31, 2**31, 2**31, 0]
@@ -173,13 +173,3 @@ class ColdWallet(object):
     def by_path(self, path: str):
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())
-
-
-if __name__ == "__main__":
-    w = ColdWallet.from_extended_key(extended_key="vpub5b14oTd3mpWGzbxkqgaESn4Pq1MkbLbzvWZju8Y6LiqsN9JXX7ZzvdCp1qDDxLqeHGr6BUssz2yFmUDm5Fp9jTdz4madyxK6mwgsCvYdK5S")
-
-    import pprint
-    pprint.pprint(w._bip84(w.master.generate_children()))
-    print(w.watch_only)
-    x = 1
-

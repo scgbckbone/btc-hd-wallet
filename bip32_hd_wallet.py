@@ -84,7 +84,6 @@ class InvalidKeyError(Exception):
 
 
 class PubKeyNode(object):
-
     mark = "M"
     testnet_version = 0x043587CF
     mainnet_version = 0x0488B21E
