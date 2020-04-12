@@ -17,7 +17,7 @@ class PrivateKey(object):
         "K"
     )
 
-    def __init__(self, sec_exp):
+    def __init__(self, sec_exp: int):
         self.sec_exp = sec_exp
         self.k = ecdsa.SigningKey.from_secret_exponent(
             secexp=sec_exp,
@@ -25,13 +25,13 @@ class PrivateKey(object):
         )
         self.K = PublicKey(key=self.k.get_verifying_key())
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self.k.to_string()
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.sec_exp == other.sec_exp
 
-    def wif(self, compressed=True, testnet=False):
+    def wif(self, compressed=True, testnet=False) -> str:
         prefix = b"\xef" if testnet else b"\x80"
         suffix = b"\x01" if compressed else b""
         return encode_base58_checksum(prefix + bytes(self) + suffix)
@@ -63,7 +63,7 @@ class PublicKey(object):
     def point(self):
         return self.K.pubkey.point
 
-    def sec(self, compressed=True):
+    def sec(self, compressed=True) -> bytes:
         if compressed:
             return self.K.to_string(encoding="compressed")
         return self.K.to_string(encoding="uncompressed")
@@ -76,10 +76,10 @@ class PublicKey(object):
     def from_point(cls, point):
         return cls(ecdsa.VerifyingKey.from_public_point(point, curve=SECP256k1))
 
-    def h160(self, compressed=True):
+    def h160(self, compressed=True) -> bytes:
         return hash160(self.sec(compressed=compressed))
 
-    def address(self, compressed=True, testnet=False, addr_type="p2pkh"):
+    def address(self, compressed=True, testnet=False, addr_type="p2pkh") -> str:
         h160 = self.h160(compressed=compressed)
         if addr_type == "p2pkh":
             return h160_to_p2pkh_address(h160=h160, testnet=testnet)
