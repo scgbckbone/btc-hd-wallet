@@ -136,6 +136,26 @@ class TestNode(unittest.TestCase):
         m0._parent_fingerprint = m.fingerprint()
         self.assertTrue(m0.check_fingerprint())
 
+    def test_equality(self):
+        xpriv = "xprv9s21ZrQH143K4EK4Fdy4ddWeDMy1x4tg2s292J5ynk23sn3hxSZ9MqqLZCTj2dHPP16CsTdAFeznbnNhSN3v66TtSKzJf4hPZSqDjjp9t42"
+        m0 = PrivKeyNode.parse(s=xpriv)
+        m1 = PrivKeyNode.parse(s=xpriv)
+        self.assertEqual(m0, m1)
+
+        xpub = "xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH"
+        M0 = PubKeyNode.parse(s=xpub)
+        M1 = PubKeyNode.parse(s=xpub)
+        self.assertEqual(M0, M1)
+
+        seed = "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542"
+        m0 = PrivKeyNode.master_key(bip32_seed=bytes.fromhex(seed))
+        m1 = PrivKeyNode.parse(s=m0.extended_private_key())
+        self.assertEqual(m0, m1)
+
+        m0 = PrivKeyNode.parse(s=xpriv)
+        M0 = PubKeyNode.parse(s=m0.extended_public_key())
+        self.assertNotEqual(m0, M0)
+
 
 class TestBip32(unittest.TestCase):
 

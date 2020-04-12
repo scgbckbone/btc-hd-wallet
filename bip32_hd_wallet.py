@@ -112,6 +112,16 @@ class PubKeyNode(object):
         self.testnet = testnet
         self.children = []
 
+    def __eq__(self, other):
+        if type(self) != type(other):
+            return False
+        return big_endian_to_int(self._key) == big_endian_to_int(other._key) and \
+            self.chain_code == other.chain_code and \
+            self.depth == other.depth and \
+            self.index == other.index and \
+            self.testnet == other.testnet and \
+            self.parent_fingerprint == other.parent_fingerprint
+
     @property
     def public_key(self):
         return PublicKey.parse(key_bytes=self._key)
@@ -122,7 +132,8 @@ class PubKeyNode(object):
             fingerprint = self.parent.fingerprint()
         else:
             fingerprint = self._parent_fingerprint
-        return fingerprint
+        # in case there is still None here - it is master
+        return fingerprint or b"\x00\x00\x00\x00"
 
     @property
     def pub_version(self):
