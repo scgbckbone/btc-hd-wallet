@@ -1,5 +1,5 @@
 import unittest
-from helper import p2wpkh_script_serialized, hash160, h160_to_p2sh_address
+from helper import p2wpkh_script_raw_serialize, hash160, h160_to_p2sh_address
 from bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
 
 
@@ -32,7 +32,7 @@ class TestBip49(unittest.TestCase):
         addr = "2Mww8dCYPUpKHofjgcXcBCEGmniw9CoaiD2"
 
         pub_key_hash = m49h1h0h00.public_key.h160()
-        script_sig = p2wpkh_script_serialized(h160=pub_key_hash)
+        script_sig = p2wpkh_script_raw_serialize(h160=pub_key_hash)
         h160_script_sig = hash160(script_sig)
         address = h160_to_p2sh_address(h160=h160_script_sig, testnet=True)
 

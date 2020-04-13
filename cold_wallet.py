@@ -2,7 +2,7 @@ from bip32_hd_wallet import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
     bip32_seed_from_mnemonic
 )
-from helper import hash160, h160_to_p2sh_address, p2wpkh_script_serialized
+from helper import hash160, h160_to_p2sh_address, p2wpkh_script_raw_serialize
 from wallet_utils import Bip32Path, Version, Key
 
 
@@ -105,7 +105,7 @@ class ColdWallet(object):
                 str(child),
                 h160_to_p2sh_address(
                     h160=hash160(
-                        p2wpkh_script_serialized(child.public_key.h160())
+                        p2wpkh_script_raw_serialize(child.public_key.h160())
                     ),
                     testnet=self.testnet
                 ),
@@ -128,7 +128,7 @@ class ColdWallet(object):
                 str(child),
                 h160_to_p2sh_address(
                     h160=hash160(
-                        p2wpkh_script_serialized(child.public_key.h160())
+                        p2wpkh_script_raw_serialize(child.public_key.h160())
                     ),
                     testnet=self.testnet
                 ),

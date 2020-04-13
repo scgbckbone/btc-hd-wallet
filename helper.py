@@ -273,7 +273,7 @@ def murmur3(data: bytes, seed: int = 0) -> int:
     return h1 & 0xffffffff
 
 
-def p2wpkh_script_serialized(h160):
+def p2wpkh_script_raw_serialize(h160):
     result = int_to_little_endian(0x00, 1)
     result += int_to_little_endian(len(h160), 1)
     result += h160
