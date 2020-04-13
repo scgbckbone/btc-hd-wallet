@@ -8,7 +8,10 @@ from helper import (
 
 
 SECP256k1 = ecdsa.curves.SECP256k1
-any_point = Union[ecdsa.ellipticcurve.Point, ecdsa.ellipticcurve.PointJacobi]
+Point_or_PointJacobi = Union[
+    ecdsa.ellipticcurve.Point,
+    ecdsa.ellipticcurve.PointJacobi
+]
 
 
 class PrivateKey(object):
@@ -75,7 +78,7 @@ class PublicKey(object):
         return cls(ecdsa.VerifyingKey.from_string(key_bytes, curve=SECP256k1))
 
     @classmethod
-    def from_point(cls, point: any_point) -> "PublicKey":
+    def from_point(cls, point: Point_or_PointJacobi) -> "PublicKey":
         return cls(ecdsa.VerifyingKey.from_public_point(point, curve=SECP256k1))
 
     def h160(self, compressed: bool = True) -> bytes:
