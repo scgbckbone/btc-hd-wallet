@@ -80,7 +80,7 @@ def bip32_seed_from_mnemonic(mnemonic: str, password: str = "") -> bytes:
 
 
 class InvalidKeyError(Exception):
-    pass
+    """Raised when derived key is invalid"""
 
 
 class PubKeyNode(object):
@@ -237,10 +237,14 @@ class PubKeyNode(object):
         ).digest()
         IL, IR = I[:32], I[32:]
         if big_endian_to_int(IL) >= CURVE_ORDER:
-            raise InvalidKeyError("greater or equal to curve order")
+            InvalidKeyError(
+                "public key {} is greater/equal to curve order".format(
+                    big_endian_to_int(IL)
+                )
+            )
         point = PrivateKey.parse(IL).K.point + self.public_key.point
         if point == INFINITY:
-            raise InvalidKeyError("point at infinity")
+            raise InvalidKeyError("public key is a point at infinity")
         Ki = PublicKey.from_point(point=point)
         child = self.__class__(
             key=Ki.sec(),
@@ -303,7 +307,11 @@ class PrivKeyNode(PubKeyNode):
         if int_left_key == 0:
             raise InvalidKeyError("master key is zero")
         if int_left_key >= CURVE_ORDER:
-            raise InvalidKeyError("master key is greater/equal to curve order")
+            raise InvalidKeyError(
+                "master key {} is greater/equal to curve order".format(
+                    int_left_key
+                )
+            )
         # chain code
         IR = I[32:]
         return cls(
@@ -334,11 +342,15 @@ class PrivKeyNode(PubKeyNode):
         ).digest()
         IL, IR = I[:32], I[32:]
         if big_endian_to_int(IL) >= CURVE_ORDER:
-            InvalidKeyError("greater or equal to curve order")
+            InvalidKeyError(
+                "private key {} is greater/equal to curve order".format(
+                    big_endian_to_int(IL)
+                )
+            )
         ki = (int.from_bytes(IL, "big") +
               big_endian_to_int(bytes(self.private_key))) % CURVE_ORDER
         if ki == 0:
-            InvalidKeyError("is zero")
+            InvalidKeyError("private key is zero")
         child = self.__class__(
             key=int_to_big_endian(ki, 32),
             chain_code=IR,
