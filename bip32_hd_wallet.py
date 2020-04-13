@@ -232,9 +232,26 @@ class PubKeyNode(object):
         return encode_base58_checksum(self.serialize_public(version=version))
 
     def ckd(self, index: int) -> "PubKeyNode":
+        """
+        The function CKDpub((Kpar, cpar), i) → (Ki, ci) computes a child
+        extended public key from the parent extended public key.
+        It is only defined for non-hardened child keys.
+
+        * Check whether i ≥ 231 (whether the child is a hardened key).
+        * If so (hardened child):
+            return failure
+        * If not (normal child):
+            let I = HMAC-SHA512(Key=cpar, Data=serP(Kpar) || ser32(i)).
+        * Split I into two 32-byte sequences, IL and IR.
+        * The returned child key Ki is point(parse256(IL)) + Kpar.
+        * The returned chain code ci is IR.
+        * In case parse256(IL) ≥ n or Ki is the point at infinity,
+            the resulting key is invalid, and one should proceed with the next
+             value for i.
+        """
         if index >= 2 ** 31:
             # (hardened child): return failure
-            raise RuntimeError("failure: hardened child")
+            raise RuntimeError("failure: hardened child for public ckd")
         I = hmac.new(
             key=self.chain_code,
             msg=self._key + int_to_big_endian(index, 4),
@@ -337,6 +354,23 @@ class PrivKeyNode(PubKeyNode):
         return encode_base58_checksum(self.serialize_private(version=version))
 
     def ckd(self, index: int) -> "PrivKeyNode":
+        """
+        The function CKDpriv((kpar, cpar), i) → (ki, ci) computes
+        a child extended private key from the parent extended private key:
+
+        * Check whether i ≥ 231 (whether the child is a hardened key).
+        * If so (hardened child):
+            let I = HMAC-SHA512(Key=cpar, Data=0x00 || ser256(kpar) || ser32(i))
+            (Note: The 0x00 pads the private key to make it 33 bytes long.)
+        * If not (normal child):
+            let I = HMAC-SHA512(Key=cpar, Data=serP(point(kpar)) || ser32(i))
+        * Split I into two 32-byte sequences, IL and IR.
+        * The returned child key ki is parse256(IL) + kpar (mod n).
+        * The returned chain code ci is IR.
+        * In case parse256(IL) ≥ n or ki = 0, the resulting key is invalid,
+            and one should proceed with the next value for i.
+            (Note: this has probability lower than 1 in 2127.)
+        """
         if index >= 2**31:
             # hardened
             data = b"\x00"+bytes(self.private_key) + int_to_big_endian(index, 4)
