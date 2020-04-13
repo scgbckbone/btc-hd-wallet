@@ -5,7 +5,7 @@ import random
 import hashlib
 import unicodedata
 from io import BytesIO
-from typing import List
+from typing import List, Union
 
 from keys import PrivateKey, PublicKey
 from helper import (
@@ -84,9 +84,9 @@ class InvalidKeyError(Exception):
 
 
 class PubKeyNode(object):
-    mark = "M"
-    testnet_version = 0x043587CF
-    mainnet_version = 0x0488B21E
+    mark: str = "M"
+    testnet_version: int = 0x043587CF
+    mainnet_version: int = 0x0488B21E
 
     __slots__ = (
         "parent",
@@ -100,8 +100,10 @@ class PubKeyNode(object):
         "children"
     )
 
-    def __init__(self, key, chain_code, index=0, depth=0, testnet=False,
-                 parent=None, parent_fingerprint=None):
+    def __init__(self, key: bytes, chain_code: bytes, index: int = 0,
+                 depth: int = 0, testnet: bool = False,
+                 parent: Union["PubKeyNode", "PrivKeyNode"] = None,
+                 parent_fingerprint: bytes = None):
         self.parent = parent
         self._key = key
         self.chain_code = chain_code
@@ -112,10 +114,12 @@ class PubKeyNode(object):
         self.testnet = testnet
         self.children = []
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         if type(self) != type(other):
             return False
-        return big_endian_to_int(self._key) == big_endian_to_int(other._key) and \
+        self_key = big_endian_to_int(self._key)
+        other_key = big_endian_to_int(other._key)
+        return self_key == other_key and \
             self.chain_code == other.chain_code and \
             self.depth == other.depth and \
             self.index == other.index and \
@@ -123,11 +127,11 @@ class PubKeyNode(object):
             self.parent_fingerprint == other.parent_fingerprint
 
     @property
-    def public_key(self):
+    def public_key(self) -> PublicKey:
         return PublicKey.parse(key_bytes=self._key)
 
     @property
-    def parent_fingerprint(self):
+    def parent_fingerprint(self) -> bytes:
         if self.parent:
             fingerprint = self.parent.fingerprint()
         else:
@@ -136,16 +140,16 @@ class PubKeyNode(object):
         return fingerprint or b"\x00\x00\x00\x00"
 
     @property
-    def pub_version(self):
+    def pub_version(self) -> int:
         if self.testnet:
             return PubKeyNode.testnet_version
         return PubKeyNode.mainnet_version
 
-    def check_fingerprint(self):
+    def check_fingerprint(self) -> Union[None, bool]:
         if self.parent and self._parent_fingerprint:
             return self.parent.fingerprint() == self._parent_fingerprint
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.is_master() or self.is_root():
             return self.mark
         if self.is_hardened():
@@ -155,20 +159,20 @@ class PubKeyNode(object):
         parent = str(self.parent) if self.parent else self.mark
         return parent + "/" + index
 
-    def is_hardened(self):
+    def is_hardened(self) -> bool:
         return self.index >= 2**31
 
-    def is_master(self):
+    def is_master(self) -> bool:
         return self.depth == 0 and self.index == 0 and self.parent is None
 
-    def is_root(self):
+    def is_root(self) -> bool:
         return self.parent is None
 
-    def fingerprint(self):
+    def fingerprint(self) -> bytes:
         return hash160(self.public_key.sec())[:4]
 
     @classmethod
-    def parse(cls, s, testnet=False):
+    def parse(cls, s: Union[str, bytes, BytesIO], testnet: bool = False):
         if isinstance(s, str):
             s = BytesIO(decode_base58_checksum(s=s))
         elif isinstance(s, bytes):
@@ -180,7 +184,7 @@ class PubKeyNode(object):
         return cls._parse(s, testnet=testnet)
 
     @classmethod
-    def _parse(cls, s, testnet=False):
+    def _parse(cls, s: BytesIO, testnet: bool = False):
         version = big_endian_to_int(s.read(4))
         depth = big_endian_to_int(s.read(1))
         parent_fingerprint = s.read(4)
@@ -198,7 +202,7 @@ class PubKeyNode(object):
         key.parsed_version = version
         return key
 
-    def _serialize(self, key: bytes, version: int = None):
+    def _serialize(self, key: bytes, version: int = None) -> bytes:
         # 4 byte: version bytes
         result = int_to_big_endian(version, 4)
         # 1 byte: depth: 0x00 for master nodes, 0x01 for level-1 derived keys
@@ -213,11 +217,12 @@ class PubKeyNode(object):
         result += int_to_big_endian(self.index, 4)
         # 32 bytes: the chain code
         result += self.chain_code
-        # 33 bytes: the public key serP(K)
+        # 33 bytes: the public key or private key data
+        # (serP(K) for public keys, 0x00 || ser256(k) for private keys)
         result += key
         return result
 
-    def serialize_public(self, version: int = None):
+    def serialize_public(self, version: int = None) -> bytes:
         return self._serialize(
             version=self.pub_version if version is None else version,
             key=self.public_key.sec()
@@ -226,7 +231,7 @@ class PubKeyNode(object):
     def extended_public_key(self, version: int = None) -> str:
         return encode_base58_checksum(self.serialize_public(version=version))
 
-    def ckd(self, index):
+    def ckd(self, index: int) -> "PubKeyNode":
         if index >= 2 ** 31:
             # (hardened child): return failure
             raise RuntimeError("failure: hardened child")
@@ -257,10 +262,12 @@ class PubKeyNode(object):
         self.children.append(child)
         return child
 
-    def generate_children(self, interval: tuple = (0, 20)):
+    def generate_children(self, interval: tuple = (0, 20)
+                          ) -> List[Union["PrivKeyNode", "PubKeyNode"]]:
         return [self.ckd(index=i) for i in range(*interval)]
 
-    def derive_path(self, index_list: List[int]):
+    def derive_path(self, index_list: List[int]
+                    ) -> Union["PrivKeyNode", "PubKeyNode"]:
         node = self
         for i in index_list:
             node = node.ckd(index=i)
@@ -268,26 +275,26 @@ class PubKeyNode(object):
 
 
 class PrivKeyNode(PubKeyNode):
-    mark = "m"
-    testnet_version = 0x04358394
-    mainnet_version = 0x0488ADE4
+    mark: str = "m"
+    testnet_version: int = 0x04358394
+    mainnet_version: int = 0x0488ADE4
 
     @property
-    def private_key(self):
+    def private_key(self) -> PrivateKey:
         return PrivateKey(sec_exp=big_endian_to_int(self._key))
 
     @property
-    def public_key(self):
+    def public_key(self) -> PublicKey:
         return self.private_key.K
 
     @property
-    def priv_version(self):
+    def priv_version(self) -> int:
         if self.testnet:
             return PrivKeyNode.testnet_version
         return PrivKeyNode.mainnet_version
 
     @classmethod
-    def master_key(cls, bip32_seed: bytes, testnet=False):
+    def master_key(cls, bip32_seed: bytes, testnet=False) -> "PrivKeyNode":
         """
         * Generate a seed byte sequence S of a chosen length
           (between 128 and 512 bits; 256 bits is advised) from a (P)RNG.
@@ -320,7 +327,7 @@ class PrivKeyNode(PubKeyNode):
             testnet=testnet
         )
 
-    def serialize_private(self, version: int = None):
+    def serialize_private(self, version: int = None) -> bytes:
         return self._serialize(
             version=self.priv_version if version is None else version,
             key=b"\x00" + bytes(self.private_key)
@@ -329,10 +336,10 @@ class PrivKeyNode(PubKeyNode):
     def extended_private_key(self, version: int = None) -> str:
         return encode_base58_checksum(self.serialize_private(version=version))
 
-    def ckd(self, index):
+    def ckd(self, index: int) -> "PrivKeyNode":
         if index >= 2**31:
             # hardened
-            data = b"\x00" + bytes(self.private_key) + int_to_big_endian(index, 4)
+            data = b"\x00"+bytes(self.private_key) + int_to_big_endian(index, 4)
         else:
             data = self.public_key.sec() + int_to_big_endian(index, 4)
         I = hmac.new(
