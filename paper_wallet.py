@@ -14,7 +14,7 @@ BIP49_PATH = [49 + 2**31, 2**31, 2**31, 0]
 BIP84_PATH = [84 + 2**31, 2**31, 2**31, 0]
 
 
-class ColdWallet(object):
+class PaperWallet(object):
 
     __slots__ = (
         "mnemonic",
@@ -41,7 +41,7 @@ class ColdWallet(object):
             self.master = PrivKeyNode.master_key(
                 bip32_seed=bip32_seed_from_mnemonic(
                     mnemonic=self.mnemonic,
-                    password=password,
+                    password=self.password,
                 ),
                 testnet=testnet
             )
@@ -49,8 +49,7 @@ class ColdWallet(object):
             self.master = master
 
     def __eq__(self, other):
-        return self.mnemonic == other.mnemonic \
-               and self.password == other.password
+        return self.master == other.master
 
     @property
     def watch_only(self):
@@ -63,6 +62,18 @@ class ColdWallet(object):
             password=password,
             testnet=testnet
         )
+
+    @classmethod
+    def from_extended_key(cls, extended_key: str) -> "PaperWallet":
+        # just need version, key type does not matter in here
+        version_int = PrivKeyNode.parse(s=extended_key).parsed_version
+        version = Version.parse(s=version_int)
+        if version.key_type == Key.PRV:
+            node = PrivKeyNode.parse(extended_key, testnet=version.testnet)
+        else:
+            # is this just assuming? or really pub if not priv
+            node = PubKeyNode.parse(extended_key, testnet=version.testnet)
+        return cls(testnet=version.testnet, master=node)
 
     def _from_pub_key(self, children, addr_type):
         # TODO this routine has to be renamed
@@ -154,21 +165,6 @@ class ColdWallet(object):
             "bip49": self.bip49(),
             "bip84": self.bip84(),
         }
-
-    @classmethod
-    def from_extended_key(cls, extended_key: str):
-        # just need version, key type does not matter in here
-        version_int = PrivKeyNode.parse(s=extended_key).parsed_version
-        version = Version.parse(s=version_int)
-        if version.key_type == Key.PRV:
-            node = PrivKeyNode.parse(extended_key, testnet=version.testnet)
-        else:
-            # is this just assuming? or really pub if not priv
-            node = PubKeyNode.parse(extended_key, testnet=version.testnet)
-        return cls(testnet=version.testnet, master=node)
-
-    def to_extended_key(self):
-        pass
 
     def by_path(self, path: str):
         path = Bip32Path.parse(s=path)

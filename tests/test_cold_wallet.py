@@ -1,6 +1,6 @@
 import csv
 import unittest
-from cold_wallet import ColdWallet
+from paper_wallet import PaperWallet
 
 
 class TestColdWallet(unittest.TestCase):
@@ -9,8 +9,8 @@ class TestColdWallet(unittest.TestCase):
         "width sport else try scare phone blouse view "
         "program ketchup pole rapid use length student raven"
     )
-    cold_wallet = ColdWallet(mnemonic=mnemonic)
-    cold_wallet_testnet = ColdWallet(mnemonic=mnemonic, testnet=True)
+    cold_wallet = PaperWallet(mnemonic=mnemonic)
+    cold_wallet_testnet = PaperWallet(mnemonic=mnemonic, testnet=True)
 
     @staticmethod
     def load_csv_file(_file):
@@ -19,9 +19,9 @@ class TestColdWallet(unittest.TestCase):
         return csv_f
 
     def test_from_mnemonic(self):
-        cw = ColdWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd")
+        cw = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd")
         self.assertEqual(cw, self.cold_wallet)
-        cw = ColdWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd", testnet=True)
+        cw = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd", testnet=True)
         self.assertEqual(cw, self.cold_wallet_testnet)
 
     def test_bip44(self):
@@ -31,11 +31,11 @@ class TestColdWallet(unittest.TestCase):
         csv_f = self.load_csv_file(
             _file="tests/data/bip44_vast_tell_razor_drip_stick_one_engine"
         )
-        wallet0 = ColdWallet.from_extended_key(extended_key=m44h0h0h0)
+        wallet0 = PaperWallet.from_extended_key(extended_key=m44h0h0h0)
         self.assertFalse(wallet0.watch_only)
         wallet0 = wallet0._bip44(children=wallet0.master.generate_children())
 
-        wallet1 = ColdWallet.from_extended_key(extended_key=M44h0h0h0)
+        wallet1 = PaperWallet.from_extended_key(extended_key=M44h0h0h0)
         self.assertTrue(wallet1.watch_only)
         wallet1 = wallet1._bip44(children=wallet1.master.generate_children())
 
@@ -56,11 +56,11 @@ class TestColdWallet(unittest.TestCase):
         csv_f = self.load_csv_file(
             _file="tests/data/bip49_vast_tell_razor_drip_stick_one_engine"
         )
-        wallet0 = ColdWallet.from_extended_key(extended_key=m49h0h0h0)
+        wallet0 = PaperWallet.from_extended_key(extended_key=m49h0h0h0)
         self.assertFalse(wallet0.watch_only)
         wallet0 = wallet0._bip49(children=wallet0.master.generate_children())
 
-        wallet1 = ColdWallet.from_extended_key(extended_key=M49h0h0h0)
+        wallet1 = PaperWallet.from_extended_key(extended_key=M49h0h0h0)
         self.assertTrue(wallet1.watch_only)
         wallet1 = wallet1._bip49(children=wallet1.master.generate_children())
 
@@ -79,11 +79,11 @@ class TestColdWallet(unittest.TestCase):
         csv_f = self.load_csv_file(
             _file="tests/data/bip84_vast_tell_razor_drip_stick_one_engine"
         )
-        wallet0 = ColdWallet.from_extended_key(extended_key=m84h0h0h0)
+        wallet0 = PaperWallet.from_extended_key(extended_key=m84h0h0h0)
         self.assertFalse(wallet0.watch_only)
         wallet0 = wallet0._bip84(children=wallet0.master.generate_children())
 
-        wallet1 = ColdWallet.from_extended_key(extended_key=M84h0h0h0)
+        wallet1 = PaperWallet.from_extended_key(extended_key=M84h0h0h0)
         self.assertTrue(wallet1.watch_only)
         wallet1 = wallet1._bip84(children=wallet1.master.generate_children())
 
@@ -105,11 +105,11 @@ class TestColdWallet(unittest.TestCase):
         csv_f = self.load_csv_file(
             _file="tests/data/bip44_vast_tell_razor_drip_stick_one_engine-testnet"
         )
-        wallet0 = ColdWallet.from_extended_key(extended_key=m44h1h0h0)
+        wallet0 = PaperWallet.from_extended_key(extended_key=m44h1h0h0)
         self.assertFalse(wallet0.watch_only)
         wallet0 = wallet0._bip44(children=wallet0.master.generate_children())
 
-        wallet1 = ColdWallet.from_extended_key(extended_key=M44h1h0h0)
+        wallet1 = PaperWallet.from_extended_key(extended_key=M44h1h0h0)
         self.assertTrue(wallet1.watch_only)
         wallet1 = wallet1._bip44(children=wallet1.master.generate_children())
 
@@ -130,11 +130,11 @@ class TestColdWallet(unittest.TestCase):
         csv_f = self.load_csv_file(
             _file="tests/data/bip49_vast_tell_razor_drip_stick_one_engine-testnet"
         )
-        wallet0 = ColdWallet.from_extended_key(extended_key=m49h1h0h0)
+        wallet0 = PaperWallet.from_extended_key(extended_key=m49h1h0h0)
         self.assertFalse(wallet0.watch_only)
         wallet0 = wallet0._bip49(children=wallet0.master.generate_children())
 
-        wallet1 = ColdWallet.from_extended_key(extended_key=M49h1h0h0)
+        wallet1 = PaperWallet.from_extended_key(extended_key=M49h1h0h0)
         self.assertTrue(wallet1.watch_only)
         wallet1 = wallet1._bip49(children=wallet1.master.generate_children())
 
@@ -153,11 +153,11 @@ class TestColdWallet(unittest.TestCase):
         csv_f = self.load_csv_file(
             _file="tests/data/bip84_vast_tell_razor_drip_stick_one_engine-testnet"
         )
-        wallet0 = ColdWallet.from_extended_key(extended_key=m84h1h0h0)
+        wallet0 = PaperWallet.from_extended_key(extended_key=m84h1h0h0)
         self.assertFalse(wallet0.watch_only)
         wallet0 = wallet0._bip84(children=wallet0.master.generate_children())
 
-        wallet1 = ColdWallet.from_extended_key(extended_key=M84h1h0h0)
+        wallet1 = PaperWallet.from_extended_key(extended_key=M84h1h0h0)
         self.assertTrue(wallet1.watch_only)
         wallet1 = wallet1._bip84(children=wallet1.master.generate_children())
 
