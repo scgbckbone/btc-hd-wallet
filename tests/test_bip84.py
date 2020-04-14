@@ -1,6 +1,5 @@
 import unittest
 from bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
-from helper import hash160, h160_to_p2wpkh_address
 
 
 class TestBip84(unittest.TestCase):
@@ -22,7 +21,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            child.public_key.address(addr_type="p2wpkh"),
             address
         )
 
@@ -34,7 +33,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            child.public_key.address(addr_type="p2wpkh"),
             address
         )
 
@@ -46,7 +45,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            child.public_key.address(addr_type="p2wpkh"),
             address
         )
 
@@ -69,7 +68,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            child.public_key.address(addr_type="p2wpkh"),
             address
         )
 
@@ -82,7 +81,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            child.public_key.address(addr_type="p2wpkh"),
             address
         )
 
@@ -95,7 +94,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec())),
+            child.public_key.address(addr_type="p2wpkh"),
             address
         )
 
@@ -119,7 +118,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(testnet=True), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            child.public_key.address(addr_type="p2wpkh", testnet=True),
             address
         )
 
@@ -132,7 +131,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(testnet=True), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            child.public_key.address(addr_type="p2wpkh", testnet=True),
             address
         )
 
@@ -145,7 +144,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(testnet=True), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            child.public_key.address(addr_type="p2wpkh", testnet=True),
             address
         )
 
@@ -169,7 +168,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(testnet=True), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            child.public_key.address(addr_type="p2wpkh", testnet=True),
             address
         )
 
@@ -182,7 +181,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(testnet=True), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            child.public_key.address(addr_type="p2wpkh", testnet=True),
             address
         )
 
@@ -195,7 +194,7 @@ class TestBip84(unittest.TestCase):
         self.assertEqual(child.private_key.wif(testnet=True), privkey)
         self.assertEqual(child.public_key.sec().hex(), pubkey)
         self.assertEqual(
-            h160_to_p2wpkh_address(hash160(child.public_key.sec()), testnet=True),
+            child.public_key.address(addr_type="p2wpkh", testnet=True),
             address
         )
 
