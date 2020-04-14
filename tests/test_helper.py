@@ -3,7 +3,7 @@ import unittest
 from helper import (
     little_endian_to_int, int_to_little_endian, encode_base58_checksum,
     b58decode_addr, h160_to_p2pkh_address, h160_to_p2sh_address, merkle_root,
-    merkle_parent, merkle_parent_level, bit_field_to_bytes, bytes_to_bit_field
+    merkle_parent, merkle_parent_level
 )
 
 
@@ -121,6 +121,14 @@ class HelperTest(unittest.TestCase):
         want_tx_hashes = [bytes.fromhex(x) for x in want_hex_hashes]
         self.assertEqual(merkle_parent_level(tx_hashes), want_tx_hashes)
 
+    def test_merkle_parent_level_failure(self):
+        hashes = [
+            '8b30c5ba100f6f2e5ad1e2a742e5020491240f8eb514fe97c713c31718ad7ecd'
+        ]
+        hashes = [bytes.fromhex(h) for h in hashes]
+        with self.assertRaises(ValueError):
+            merkle_parent_level(hashes=hashes)
+
     def test_merkle_root(self):
         hex_hashes = [
             'c117ea8ec828342f4dfb0ad6bd140e03a50720ece40169ee38bdc15d9eb64cf5',
@@ -140,12 +148,3 @@ class HelperTest(unittest.TestCase):
         want_hex_hash = 'acbcab8bcc1af95d8d563b77d24c3d19b18f1486383d75a5085c4e86c86beed6'
         want_hash = bytes.fromhex(want_hex_hash)
         self.assertEqual(merkle_root(tx_hashes), want_hash)
-
-    def test_bit_field_to_bytes(self):
-        bit_field = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                     0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-                     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0,
-                     0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
-        want = '4000600a080000010940'
-        self.assertEqual(bit_field_to_bytes(bit_field).hex(), want)
-        self.assertEqual(bytes_to_bit_field(bytes.fromhex(want)), bit_field)

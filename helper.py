@@ -83,6 +83,7 @@ def hash256(s: bytes) -> bytes:
 
 
 def sha256(s: bytes) -> bytes:
+    """one round of sha256"""
     return hashlib.sha256(s).digest()
 
 
@@ -102,52 +103,14 @@ def int_to_big_endian(n: int, length: int) -> bytes:
     return n.to_bytes(length, "big")
 
 
-def read_varint(s: BytesIO) -> int:
-    """read_varint reads a variable integer from a stream"""
-    i = s.read(1)[0]
-    if i == 0xfd:
-        # number is between 253 and 2^16 -1
-        # 0xfd means the next two bytes are the number
-        return little_endian_to_int(s.read(2))
-    elif i == 0xfe:
-        # number is between 2^16 and 2^32 – 1
-        # 0xfe means the next four bytes are the number
-        return little_endian_to_int(s.read(4))
-    elif i == 0xff:
-        # number is between 2^32 and 2^64 – 1
-        # 0xff means the next eight bytes are the number
-        return little_endian_to_int(s.read(8))
-    else:
-        # anything else is just the integer
-        return i
-
-
-def encode_varint(i: int) -> bytes:
-    """Encode integer as varint"""
-    if i < 0xfd:
-        return bytes([i])
-    elif i < 0x10000:
-        return b"\xfd" + int_to_little_endian(i, 2)
-    elif i < 0x100000000:
-        return b"\xfe" + int_to_little_endian(i, 4)
-    elif i < 0x10000000000000000:
-        return b"\xff" + int_to_little_endian(i, 8)
-    else:
-        raise ValueError("integer too large: {}".format(i))
-
-
 def h160_to_p2pkh_address(h160: bytes, testnet: bool = False) -> str:
     """Takes a byte sequence hash160 and returns a p2pkh address string"""
-    # p2pkh has a prefix of b'\x00' for mainnet, b'\x6f' for testnet
-    # use encode_base58_checksum to get the address
     prefix = b"\x6f" if testnet else b"\x00"
     return encode_base58_checksum(prefix + h160)
 
 
 def h160_to_p2sh_address(h160: bytes, testnet: bool = False) -> str:
     """Takes a byte sequence hash160 and returns a p2sh address string"""
-    # p2sh has a prefix of b'\x05' for mainnet, b'\xc4' for testnet
-    # use encode_base58_checksum to get the address
     prefix = b"\xc4" if testnet else b"\x05"
     return encode_base58_checksum(prefix + h160)
 
@@ -206,71 +169,6 @@ def merkle_root(hashes: List[bytes]) -> bytes:
         current_level = merkle_parent_level(current_level)
     # return the 1st item of the current level
     return current_level[0]
-
-
-def bit_field_to_bytes(bit_field):
-    if len(bit_field) % 8 != 0:
-        raise RuntimeError(
-            'bit_field does not have a length that is divisible by 8'
-        )
-    result = bytearray(len(bit_field) // 8)
-    for i, bit in enumerate(bit_field):
-        byte_index, bit_index = divmod(i, 8)
-        if bit:
-            result[byte_index] |= 1 << bit_index
-    return bytes(result)
-
-
-def bytes_to_bit_field(some_bytes):
-    flag_bits = []
-    for byte in some_bytes:
-        for _ in range(8):
-            flag_bits.append(byte & 1)
-            byte >>= 1
-    return flag_bits
-
-
-def murmur3(data: bytes, seed: int = 0) -> int:
-    '''from http://stackoverflow.com/questions/13305290/is-there-a-pure-python-implementation-of-murmurhash'''
-    c1 = 0xcc9e2d51
-    c2 = 0x1b873593
-    length = len(data)
-    h1 = seed
-    rounded_end = (length & 0xfffffffc)  # round down to 4 byte block
-    for i in range(0, rounded_end, 4):
-        # little endian load order
-        k1 = (data[i] & 0xff) | ((data[i + 1] & 0xff) << 8) | \
-            ((data[i + 2] & 0xff) << 16) | (data[i + 3] << 24)
-        k1 *= c1
-        k1 = (k1 << 15) | ((k1 & 0xffffffff) >> 17)  # ROTL32(k1,15)
-        k1 *= c2
-        h1 ^= k1
-        h1 = (h1 << 13) | ((h1 & 0xffffffff) >> 19)  # ROTL32(h1,13)
-        h1 = h1 * 5 + 0xe6546b64
-    # tail
-    k1 = 0
-    val = length & 0x03
-    if val == 3:
-        k1 = (data[rounded_end + 2] & 0xff) << 16
-    # fallthrough
-    if val in [2, 3]:
-        k1 |= (data[rounded_end + 1] & 0xff) << 8
-    # fallthrough
-    if val in [1, 2, 3]:
-        k1 |= data[rounded_end] & 0xff
-        k1 *= c1
-        k1 = (k1 << 15) | ((k1 & 0xffffffff) >> 17)  # ROTL32(k1,15)
-        k1 *= c2
-        h1 ^= k1
-    # finalization
-    h1 ^= length
-    # fmix(h1)
-    h1 ^= ((h1 & 0xffffffff) >> 16)
-    h1 *= 0x85ebca6b
-    h1 ^= ((h1 & 0xffffffff) >> 13)
-    h1 *= 0xc2b2ae35
-    h1 ^= ((h1 & 0xffffffff) >> 16)
-    return h1 & 0xffffffff
 
 
 def p2wpkh_script_raw_serialize(h160):
