@@ -19,6 +19,7 @@ random = random.SystemRandom()
 
 PBKDF2_ROUNDS = 2048
 CORRECT_ENTROPY_BITS = [128, 160, 192, 224, 256]
+Priv_or_PubKeyNode = Union["PrivKeyNode", "PubKeyNode"]
 
 SECP256k1 = ecdsa.curves.SECP256k1
 CURVE_GEN = ecdsa.ecdsa.generator_secp256k1
@@ -280,11 +281,10 @@ class PubKeyNode(object):
         return child
 
     def generate_children(self, interval: tuple = (0, 20)
-                          ) -> List[Union["PrivKeyNode", "PubKeyNode"]]:
+                          ) -> List[Priv_or_PubKeyNode]:
         return [self.ckd(index=i) for i in range(*interval)]
 
-    def derive_path(self, index_list: List[int]
-                    ) -> Union["PrivKeyNode", "PubKeyNode"]:
+    def derive_path(self, index_list: List[int]) -> Priv_or_PubKeyNode:
         node = self
         for i in index_list:
             node = node.ckd(index=i)
