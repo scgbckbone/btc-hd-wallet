@@ -1,4 +1,5 @@
 import enum
+from typing import Any, List, Union
 
 
 class Bip(enum.Enum):
@@ -14,7 +15,7 @@ class Key(enum.Enum):
     PUB = 1
 
 
-def list_get(lst: list, i: int):
+def list_get(lst: list, i: int) -> Any:
     try:
         return lst[i]
     except IndexError:
@@ -29,7 +30,7 @@ class Version(object):
         "testnet"
     )
 
-    main = {
+    main: dict = {
         Key.PUB.name: {
             Bip.BIP44.name: 0x0488B21E,
             Bip.BIP49.name: 0x049d7cb2,
@@ -41,7 +42,7 @@ class Version(object):
             Bip.BIP84.name: 0x04b2430c
         }
     }
-    test = {
+    test: dict = {
         Key.PUB.name: {
             Bip.BIP44.name: 0x043587CF,
             Bip.BIP49.name: 0x044a5262,
@@ -54,21 +55,21 @@ class Version(object):
         }
     }
 
-    def __init__(self, key_type, bip, testnet):
+    def __init__(self, key_type: int, bip: int, testnet: bool):
         self.key_type = Key(key_type)
         self.bip_type = Bip(bip)
         self.testnet = testnet
 
-    def __int__(self):
+    def __int__(self) -> int:
         if self.testnet:
             return self.test[self.key_type.name][self.bip_type.name]
         return self.main[self.key_type.name][self.bip_type.name]
 
-    def __hex__(self):
+    def __hex__(self) -> str:
         return hex(self.__int__())
 
     @classmethod
-    def parse(cls, s: int):
+    def parse(cls, s: int) -> "Version":
         if not isinstance(s, int):
             raise ValueError("has to be integer")
         if not cls.valid_version(version=s):
@@ -82,14 +83,14 @@ class Version(object):
         )
 
     @classmethod
-    def valid_version(cls, version):
+    def valid_version(cls, version: int) -> bool:
         _all = cls.testnet_versions() + cls.mainnet_versions()
         if version in _all:
             return True
         return False
 
     @classmethod
-    def bip(cls, version):
+    def bip(cls, version: int) -> int:
         if version in cls.bip44_data().values():
             return Bip.BIP44.value
         elif version in cls.bip49_data().values():
@@ -100,7 +101,7 @@ class Version(object):
             return Bip.BIP44.value
 
     @classmethod
-    def bip44_data(cls):
+    def bip44_data(cls) -> dict:
         return {
             "xprv": cls.main[Key.PRV.name][Bip.BIP44.name],
             "xpub": cls.main[Key.PUB.name][Bip.BIP44.name],
@@ -109,7 +110,7 @@ class Version(object):
         }
 
     @classmethod
-    def bip49_data(cls):
+    def bip49_data(cls) -> dict:
         return {
             "yprv": cls.main[Key.PRV.name][Bip.BIP49.name],
             "ypub": cls.main[Key.PUB.name][Bip.BIP49.name],
@@ -118,7 +119,7 @@ class Version(object):
         }
 
     @classmethod
-    def bip84_data(cls):
+    def bip84_data(cls) -> dict:
         return {
             "zprv": cls.main[Key.PRV.name][Bip.BIP84.name],
             "zpub": cls.main[Key.PUB.name][Bip.BIP84.name],
@@ -127,31 +128,31 @@ class Version(object):
         }
 
     @staticmethod
-    def get_versions(dct):
+    def get_versions(dct: dict) -> List[int]:
         res = []
         for k, v in dct.items():
             res += v.values()
         return res
 
     @classmethod
-    def key_versions(cls, key_type):
+    def key_versions(cls, key_type: str) -> List[int]:
         return list(cls.test[key_type].values()) + \
                list(cls.main[key_type].values())
 
     @classmethod
-    def mainnet_versions(cls):
+    def mainnet_versions(cls) -> List[int]:
         return cls.get_versions(cls.main)
 
     @classmethod
-    def testnet_versions(cls):
+    def testnet_versions(cls) -> List[int]:
         return cls.get_versions(cls.test)
 
     @classmethod
-    def priv_versions(cls):
+    def priv_versions(cls) -> List[int]:
         return cls.key_versions(key_type=Key.PRV.name)
 
     @classmethod
-    def pub_versions(cls):
+    def pub_versions(cls) -> List[int]:
         return cls.key_versions(key_type=Key.PUB.name)
 
 
@@ -177,7 +178,7 @@ class Bip32Path(object):
         self.private = private
         self.integrity_check()
 
-    def integrity_check(self):
+    def integrity_check(self) -> None:
         none_found = False
         for item in self._to_list():
             if item is None:
@@ -188,12 +189,12 @@ class Bip32Path(object):
                 if not isinstance(item, int):
                     raise ValueError("has to be int")
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         items = [self.repr_hardened(i) for i in self.to_list()]
         items = [self.m] + items
         return "/".join(items)
 
-    def __eq__(self, other):
+    def __eq__(self, other: "Bip32Path") -> bool:
         return self.m == other.m and \
             self.purpose == other.purpose and \
             self.coin_type == other.coin_type and \
@@ -202,34 +203,34 @@ class Bip32Path(object):
             self.addr_index == other.addr_index
 
     @property
-    def m(self):
+    def m(self) -> str:
         return "m" if self.private else "M"
 
     @property
-    def bitcoin_testnet(self):
+    def bitcoin_testnet(self) -> bool:
         return self.coin_type == 0x80000001
 
     @property
-    def bitcoin_mainnet(self):
+    def bitcoin_mainnet(self) -> bool:
         return self.coin_type == 0x80000000
 
     @property
-    def external_chain(self):
+    def external_chain(self) -> bool:
         return self.chain == 0
 
     @property
-    def bip44(self):
+    def bip44(self) -> bool:
         return self.purpose == 44 + (2 ** 31)
 
     @property
-    def bip49(self):
+    def bip49(self) -> bool:
         return self.purpose == 49 + (2 ** 31)
 
     @property
-    def bip84(self):
+    def bip84(self) -> bool:
         return self.purpose == 84 + (2 ** 31)
 
-    def bip(self):
+    def bip(self) -> int:
         if self.bip44:
             return Bip.BIP44.value
         elif self.bip49:
@@ -240,11 +241,11 @@ class Bip32Path(object):
             return Bip.BIP44.value
 
     @staticmethod
-    def is_hardened(num: int):
+    def is_hardened(num: int) -> bool:
         return num >= 2 ** 31
 
     @staticmethod
-    def is_private(sign):
+    def is_private(sign) -> bool:
         return True if sign == "m" else False
 
     @staticmethod
@@ -253,13 +254,13 @@ class Bip32Path(object):
             return int(str_int[:-1]) + (2 ** 31)
         return int(str_int)
 
-    def repr_hardened(self, num: int):
+    def repr_hardened(self, num: int) -> str:
         if self.is_hardened(num):
             return str(num - 2 ** 31) + "'"
         else:
             return str(num)
 
-    def _to_list(self):
+    def _to_list(self) -> List[Union[int, None]]:
         return [
             self.purpose,
             self.coin_type,
@@ -268,11 +269,11 @@ class Bip32Path(object):
             self.addr_index
         ]
 
-    def to_list(self):
+    def to_list(self) -> List[int]:
         return [x for x in self._to_list() if x is not None]
 
     @classmethod
-    def parse(cls, s: str):
+    def parse(cls, s: str) -> "Bip32Path":
         s_lst = s.split("/")
         if s_lst[0] not in ("m", "M"):
             raise ValueError("incorrect marker")
