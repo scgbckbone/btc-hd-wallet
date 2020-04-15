@@ -18,11 +18,23 @@ class TestColdWallet(unittest.TestCase):
             csv_f = list(csv.reader(f, delimiter=','))
         return csv_f
 
+    def test_from_entropy_hex(self):
+        w = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd")
+        self.assertEqual(w, self.cold_wallet)
+        w = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd", testnet=True)
+        self.assertEqual(w, self.cold_wallet_testnet)
+
     def test_from_mnemonic(self):
-        cw = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd")
-        self.assertEqual(cw, self.cold_wallet)
-        cw = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd", testnet=True)
-        self.assertEqual(cw, self.cold_wallet_testnet)
+        w = PaperWallet()
+        self.assertEqual(w, PaperWallet.from_mnemonic(mnemonic=w.mnemonic))
+        w = PaperWallet(entropy_bits=128)
+        self.assertEqual(w, PaperWallet.from_mnemonic(mnemonic=w.mnemonic))
+
+    def test_private_key_from_watch_only(self):
+        xpub = "xpub6CEGxdGrXswtcL6Hqo1L3wwzDBuRzQvQfUa5PZponbX7ibNWUKkhp1LaNHMg9oJYjjRmbxArwDUjpudAvmNDRG8LGwYb9YvnkEfMY3eGdTP"
+        w = PaperWallet.from_extended_key(extended_key=xpub)
+        with self.assertRaises(ValueError):
+            w.node_extended_private_key(node=w.master)
 
     def test_bip44(self):
         m44h0h0h0 = "xprvA1mabSEXaAzXuw9xhUB3J4p82KpeQoaYWWv7S2ZMiYc9oLUq3mSCe6pPxT1nhh1LAtx9Zb7vAk3Bx6ChXAwtZf32g7dWPGxLiSd3KyVGv4D"
@@ -192,4 +204,80 @@ class TestColdWallet(unittest.TestCase):
             self.assertEqual(wallet[i], csv_f[i])
             self.assertEqual(wallet0[i][1:], csv_f[i][1:])
             self.assertEqual(wallet1[i][1:-1], csv_f[i][1:-1])
+
+    def test_generate_mainnet(self):
+        pw = self.cold_wallet.generate(account=100)
+
+        xpub = "xpub6CEGxdGrXswxydDQYESp5urwA35vxByZzHqgU5GZ3kMjeD9QkH2xx8kemZXMbxaQdjwFjgFVAADLooXS96m3mJmF5hZKTY2DPcCYdyA8Z5y"
+        xprv = "xprv9yEvZ7jxhWPfm98wSCuoimvCc1FSYjFid4v5fgrwVQpkmQpGCjiiQLSAvJFgKxh3ak4Bcp9cjBE6PU1ub7f8UN9PKEEggRhipV7gXUWoVhf"
+        ypub = "ypub6WouwrxJ8bb7QdjxPGNnEFGiPZeH1MxkxKTKtPhNwnedRLqxNv4Cm9jZCkGpPuKjEGWFnt7iA9zZBvqVAQHkDrFSapLxhBLMGUJHtct5CRP"
+        yprv = "yprvAHpZYMRQJE2pC9fVHEqms7KyqXonbuEub6Xj61HmPT7eYYWoqNjxDMR5MU3VUWiV94Q6vt4YX85NfFx4X5ZNZPYaMLRcwRXrpt5Jn34icvs"
+        zpub = "zpub6rjjS2aQooWoAWUtXrdfiNxz38iL9SxgMVo2W4SRhVMTrYnqkJ8oeTF951rcKriKKFdEKDcFFMZMMBspF257wQmQhDR6yjufpqFXJKr4e1m"
+        zprv = "zprvAdkP2X3WyRxVx2QRRq6fMF2FV6sqjzEpzGsRhg2p99pUykThCkpZ6evfDi62aycv5soGZq25vd1puNSeju96NPzCtdrUAzX4xaGDTK7buQn"
+
+        self.assertEqual(pw["bip44"]["account_extended_keys"]["pub"], xpub)
+        self.assertEqual(pw["bip44"]["account_extended_keys"]["prv"], xprv)
+        self.assertEqual(pw["bip49"]["account_extended_keys"]["pub"], ypub)
+        self.assertEqual(pw["bip49"]["account_extended_keys"]["prv"], yprv)
+        self.assertEqual(pw["bip84"]["account_extended_keys"]["pub"], zpub)
+        self.assertEqual(pw["bip84"]["account_extended_keys"]["prv"], zprv)
+
+        address = "13UkPjRAmH1sDWuoX1zeL8yCFWXdwPvGAE"
+        pubkey = "03597d9a56c46c0e6e1827525bb517c5a8dfe21ace626f31a2e11c4e4e23cd353e"
+        wif = "L5nBbbswFNu8wWP9VZY66Up4X3yNX7mcfArDHRQ5onMZhGC3qBZH"
+        self.assertEqual(pw["bip44"]["triads"][19][1], address)
+        self.assertEqual(pw["bip44"]["triads"][19][2], pubkey)
+        self.assertEqual(pw["bip44"]["triads"][19][3], wif)
+
+        address = "3EGt757gbPFn1z5uvrUMhTcwKmxK78jsvC"
+        pubkey = "020a0aff849f9addb615ef67ada2dfddbc59c377ab5668f2713bb379cc9d0f287b"
+        wif = "L2PRabCy4qhKJTYkbcA6MEm2hC6DyPqSFj7jsCvNpHkU8DpmDWJR"
+        self.assertEqual(pw["bip49"]["triads"][19][1], address)
+        self.assertEqual(pw["bip49"]["triads"][19][2], pubkey)
+        self.assertEqual(pw["bip49"]["triads"][19][3], wif)
+
+        address = "bc1q9gxcsd5wmdrg5909628kx96384h0w5dyyj82gz"
+        pubkey = "03c66906128c24b82babeaea82205c10b0eeb09413da198ed8aa1337b82ac0d028"
+        wif = "KzyLyHiys138p2EY4fPCV9JZfz6wVE4x6DeMg9HGM9eaXQkRENtF"
+        self.assertEqual(pw["bip84"]["triads"][19][1], address)
+        self.assertEqual(pw["bip84"]["triads"][19][2], pubkey)
+        self.assertEqual(pw["bip84"]["triads"][19][3], wif)
+
+    def test_generate_testnet(self):
+        pw = self.cold_wallet_testnet.generate(account=66, interval=(0, 50))
+
+        tpub = "tpubDDppRte6omcnc4M1W9frHBgnet6YyZoLrkSZhFZVJNnBA8EfEhrcoq2UQgPupd8DbJFm7sgi7y18ZtfGfTPas6DBcSjk9Pi2P7GDeZfegFx"
+        tprv = "tprv8h8nHUbrfPw7ibKDcW1Fsn2g5racpEcSHSqnQjXBt6ynKdytcK32dLQcEYh328MGXeeSS2gGsQAioy84N1mfVN4K2rLgWATgWbGiAdcorBV"
+        upub = "upub5DTTQtic2R2NHjnjkn6ZeaaQdxFF3uqnQVXAJsFpnEAHziiTeTFWfXUfaYQzk8cA7pnhpNsUUpgXY4KZ1NWqvyKYf8aQvwDQj3k8qYipjSg"
+        uprv = "uprv8zU71PBiC3U55FiGekZZHSdg5vQkeT7w3GbZWUrDDtdK7vPK6uwG7jABjGVVqUBPjG3Z9JYzNGzW73Te5KtySwpvsWuUnA2TA5YpTUuZZ5u"
+        vpub = "vpub5ZF51BznVkRj1LC7XDbJDJT1vNwpbWhx4p3Y1m1UpMhho5SPg4v7PLNatXNQ1dggtSyJoRN9tKsoXcJZamEai1dmy1wurF1rJbZAFBxqht4"
+        vprv = "vprv9LFibgTtfNsRnr7eRC4HrAWHNM7LC3z6hb7wDNbsG2AivH7F8XbrqY473HJhZJ45d9waTjewHxRixpQsL7RceZwZ5dNkoJ4yNyEMNXowdoa"
+
+        self.assertEqual(pw["bip44"]["account_extended_keys"]["pub"], tpub)
+        self.assertEqual(pw["bip44"]["account_extended_keys"]["prv"], tprv)
+        self.assertEqual(pw["bip49"]["account_extended_keys"]["pub"], upub)
+        self.assertEqual(pw["bip49"]["account_extended_keys"]["prv"], uprv)
+        self.assertEqual(pw["bip84"]["account_extended_keys"]["pub"], vpub)
+        self.assertEqual(pw["bip84"]["account_extended_keys"]["prv"], vprv)
+
+        address = "mjXHL5oujxymKFdRUpLbAxFGU9ZaGvhPQ4"
+        pubkey = "03b0829cd964a0e1e716fae3bb83812087825d5aca3f102670d8449312ee5b6647"
+        wif = "cUbsTivUmb1dcpGwbRMsCznmwLZMuT85akmScPtwEhco4EQ9xDtD"
+        self.assertEqual(pw["bip44"]["triads"][49][1], address)
+        self.assertEqual(pw["bip44"]["triads"][49][2], pubkey)
+        self.assertEqual(pw["bip44"]["triads"][49][3], wif)
+
+        address = "2N6yVCdJu6Z3o3mUQfQizeVi1yNYEXwYEVe"
+        pubkey = "02e10c0eddc2456720e337359948204f5cdc0ca05da6a3b5ac48580316e7fc9278"
+        wif = "cSDgEWgZxSHJq36H6ou4jwnEG14Qdx7QwdMvvgLREdE932DFbwT2"
+        self.assertEqual(pw["bip49"]["triads"][49][1], address)
+        self.assertEqual(pw["bip49"]["triads"][49][2], pubkey)
+        self.assertEqual(pw["bip49"]["triads"][49][3], wif)
+
+        address = "tb1q8fa5tlqsvs38knnn79y8lzduy7lznvhv74mvfs"
+        pubkey = "03897e1a34923b60cf6ff25c60bc94fef9519c8e7f90fe7ce3db9faa9d9fd6cb22"
+        wif = "cUpJB4hmzFgQL4oo33td3FYmGy3CatxWyPkSGtdrS4kfRRgPsqK9"
+        self.assertEqual(pw["bip84"]["triads"][49][1], address)
+        self.assertEqual(pw["bip84"]["triads"][49][2], pubkey)
+        self.assertEqual(pw["bip84"]["triads"][49][3], wif)
 
