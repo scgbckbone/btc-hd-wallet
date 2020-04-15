@@ -146,7 +146,7 @@ class PaperWallet(object):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return self._bip44(
+        return acct_extended_keys, self._bip44(
             children=external_chain_node.generate_children(interval=interval)
         )
 
@@ -159,7 +159,7 @@ class PaperWallet(object):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return self._bip49(
+        return acct_extended_keys, self._bip49(
             children=external_chain_node.generate_children(interval=interval)
         )
 
@@ -172,15 +172,18 @@ class PaperWallet(object):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return self._bip84(
+        return acct_extended_keys, self._bip84(
             children=external_chain_node.generate_children(interval=interval)
         )
 
     def generate(self, account=0, interval=(0, 20)):
+        acct_ext44, triads44 = self.bip44(account=account, interval=interval)
+        acct_ext49, triads49 = self.bip49(account=account, interval=interval)
+        acct_ext84, triads84 = self.bip84(account=account, interval=interval)
         return {
-            "bip44": self.bip44(account=account, interval=interval),
-            "bip49": self.bip49(account=account, interval=interval),
-            "bip84": self.bip84(account=account, interval=interval),
+            "bip44": {"account_extended_keys": acct_ext44, "triads": triads44},
+            "bip49": {"account_extended_keys": acct_ext49, "triads": triads49},
+            "bip84": {"account_extended_keys": acct_ext84, "triads": triads84},
         }
 
     def by_path(self, path: str):
