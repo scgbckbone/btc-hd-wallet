@@ -75,8 +75,26 @@ class PaperWallet(object):
             node = PubKeyNode.parse(extended_key, testnet=version.testnet)
         return cls(testnet=version.testnet, master=node)
 
-    def _from_pub_key(self, children, addr_type):
-        # TODO this routine has to be renamed
+    def determine_node_version_int(self, node, key_type: Key) -> Version:
+        bip = Bip32Path.parse(str(node))
+        version = Version(
+            key_type=key_type.value,
+            testnet=self.testnet,
+            bip=bip.bip()
+        )
+        return version
+
+    def extended_public_key(self, node) -> str:
+        version = self.determine_node_version_int(node=node, key_type=Key.PUB)
+        return node.extended_public_key(version=int(version))
+
+    def extended_private_key(self, node) -> str:
+        if node.watch_only:
+            raise ValueError("wallet is watch only")
+        version = self.determine_node_version_int(node=node, key_type=Key.PRV)
+        return node.extended_public_key(version=int(version))
+
+    def triad_from_pub_key(self, children, addr_type):
         return [
             [
                 str(child),
@@ -93,22 +111,14 @@ class PaperWallet(object):
         ]
 
     def _bip44(self, children):
-        return self._from_pub_key(children=children, addr_type="p2pkh")
+        return self.triad_from_pub_key(children=children, addr_type="p2pkh")
 
     def bip44(self, interval=(0, 20)):
-        res = []
         index_list = BIP44_PATH
         if self.testnet:
             index_list[1] += 1
         node = self.master.derive_path(index_list=index_list)
-        for child in node.generate_children(interval=interval):
-            res.append([
-                str(child),
-                child.public_key.address(testnet=self.testnet),
-                child.public_key.sec().hex(),
-                child.private_key.wif(testnet=self.testnet)
-            ])
-        return res
+        return self._bip44(children=node.generate_children(interval=interval))
 
     def _bip49(self, children):
         return [
@@ -129,28 +139,14 @@ class PaperWallet(object):
         ]
 
     def bip49(self, interval=(0, 20)):
-        res = []
         index_list = BIP49_PATH
         if self.testnet:
             index_list[1] += 1
         node = self.master.derive_path(index_list=index_list)
-        for child in node.generate_children(interval=interval):
-            res.append([
-                str(child),
-                h160_to_p2sh_address(
-                    h160=hash160(
-                        p2wpkh_script_raw_serialize(child.public_key.h160())
-                    ),
-                    testnet=self.testnet
-                ),
-                child.public_key.sec().hex(),
-                child.private_key.wif(testnet=self.testnet),
-
-            ])
-        return res
+        return self._bip49(children=node.generate_children(interval=interval))
 
     def _bip84(self, children):
-        return self._from_pub_key(children=children, addr_type="p2wpkh")
+        return self.triad_from_pub_key(children=children, addr_type="p2wpkh")
 
     def bip84(self, interval=(0, 20)):
         index_list = BIP84_PATH
