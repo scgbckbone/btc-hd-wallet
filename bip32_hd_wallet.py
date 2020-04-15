@@ -402,6 +402,3 @@ class PrivKeyNode(PubKeyNode):
         )
         self.children.append(child)
         return child
-
-
-

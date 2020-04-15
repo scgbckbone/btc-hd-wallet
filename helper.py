@@ -1,5 +1,4 @@
 import hashlib
-from io import BytesIO
 from typing import List
 
 import bech32
