@@ -281,3 +281,18 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(pw["bip84"]["triads"][49][2], pubkey)
         self.assertEqual(pw["bip84"]["triads"][49][3], wif)
 
+    def test_watch_only_generate_failure(self):
+        # cannot do hardened ckd
+        xpub = "xpub6CEGxdGrXswwWNoqpBePNgiQhjBmcEZWoPfkGcLg7zEjBxrFBkSzcFGrkpPqvH7TJwkjyuGMShKuyU7VpjvKnUoTavL9xSaq3DvKCAgNhwM"
+        w = PaperWallet.from_extended_key(extended_key=xpub)
+        self.assertTrue(w.watch_only)
+        with self.assertRaises(RuntimeError):
+            w.generate()
+
+    def test_smthg(self):
+        xpub = "xpub6CEGxdGrXswwWNoqpBePNgiQhjBmcEZWoPfkGcLg7zEjBxrFBkSzcFGrkpPqvH7TJwkjyuGMShKuyU7VpjvKnUoTavL9xSaq3DvKCAgNhwM"
+        w = PaperWallet.from_extended_key(extended_key=xpub)
+        self.assertTrue(w.watch_only)
+        ext_keys = w.node_extended_keys(node=w.master)
+        self.assertIsNone(ext_keys["prv"])
+        self.assertEqual(ext_keys["pub"], xpub)

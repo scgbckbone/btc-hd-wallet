@@ -92,9 +92,12 @@ class PaperWallet(object):
         return node.extended_private_key(version=int(version))
 
     def node_extended_keys(self, node):
+        prv = None if self.watch_only else self.node_extended_private_key(
+            node=node
+        )
         return {
             "pub": self.node_extended_public_key(node=node),
-            "prv": self.node_extended_private_key(node=node)
+            "prv": prv
         }
 
     def triad_from_pub_key(self, children, addr_type):
