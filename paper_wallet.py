@@ -1,3 +1,5 @@
+from typing import List
+
 from bip32_hd_wallet import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
     bip32_seed_from_mnemonic, Priv_or_PubKeyNode
@@ -18,8 +20,9 @@ class PaperWallet(object):
         "master"
     )
 
-    def __init__(self, testnet=False, entropy=None, entropy_bits=256,
-                 mnemonic=None, password="", master=None):
+    def __init__(self, testnet: bool = False, entropy: str = None,
+                 entropy_bits: int = 256, mnemonic: str = None,
+                 password: str = "", master: Priv_or_PubKeyNode = None):
         self.testnet = testnet
         if master is None:
             if mnemonic is None:
@@ -43,15 +46,16 @@ class PaperWallet(object):
         else:
             self.master = master
 
-    def __eq__(self, other):
+    def __eq__(self, other: "PaperWallet") -> bool:
         return self.master == other.master
 
     @property
-    def watch_only(self):
-        return False if type(self.master) == PrivKeyNode else True
+    def watch_only(self) -> bool:
+        return type(self.master) == PubKeyNode
 
     @classmethod
-    def from_mnemonic(cls, mnemonic: str, password: str = "", testnet=False):
+    def from_mnemonic(cls, mnemonic: str, password: str = "",
+                      testnet: bool = False) -> "PaperWallet":
         return cls(
             mnemonic=mnemonic,
             password=password,
@@ -81,17 +85,17 @@ class PaperWallet(object):
         )
         return version
 
-    def node_extended_public_key(self, node) -> str:
+    def node_extended_public_key(self, node: Priv_or_PubKeyNode) -> str:
         version = self.determine_node_version_int(node=node, key_type=Key.PUB)
         return node.extended_public_key(version=int(version))
 
-    def node_extended_private_key(self, node) -> str:
+    def node_extended_private_key(self, node: Priv_or_PubKeyNode) -> str:
         if type(node) == PubKeyNode:
             raise ValueError("wallet is watch only")
         version = self.determine_node_version_int(node=node, key_type=Key.PRV)
         return node.extended_private_key(version=int(version))
 
-    def node_extended_keys(self, node):
+    def node_extended_keys(self, node: Priv_or_PubKeyNode) -> dict:
         prv = None if self.watch_only else self.node_extended_private_key(
             node=node
         )
@@ -100,7 +104,8 @@ class PaperWallet(object):
             "prv": prv
         }
 
-    def triad_from_pub_key(self, children, addr_type):
+    def triad_from_pub_key(self, children: List[Priv_or_PubKeyNode],
+                           addr_type: str) -> List[List[str]]:
         return [
             [
                 str(child),
@@ -116,10 +121,10 @@ class PaperWallet(object):
             for child in children
         ]
 
-    def _bip44(self, children):
+    def _bip44(self, children: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return self.triad_from_pub_key(children=children, addr_type="p2pkh")
 
-    def _bip49(self, children):
+    def _bip49(self, children: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return [
             [
                 str(child),
@@ -137,10 +142,10 @@ class PaperWallet(object):
             for child in children
         ]
 
-    def _bip84(self, children):
+    def _bip84(self, children: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return self.triad_from_pub_key(children=children, addr_type="p2wpkh")
 
-    def bip44(self, account=0, interval=(0, 20)):
+    def bip44(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
         path = Bip32Path(
             purpose=44 + HARDENED,
             coin_type=1 + HARDENED if self.testnet else HARDENED,
@@ -153,7 +158,7 @@ class PaperWallet(object):
             children=external_chain_node.generate_children(interval=interval)
         )
 
-    def bip49(self, account=0, interval=(0, 20)):
+    def bip49(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
         path = Bip32Path(
             purpose=49 + HARDENED,
             coin_type=1 + HARDENED if self.testnet else HARDENED,
@@ -166,7 +171,7 @@ class PaperWallet(object):
             children=external_chain_node.generate_children(interval=interval)
         )
 
-    def bip84(self, account=0, interval=(0, 20)):
+    def bip84(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
         path = Bip32Path(
             purpose=84 + HARDENED,
             coin_type=1 + HARDENED if self.testnet else HARDENED,
@@ -179,7 +184,7 @@ class PaperWallet(object):
             children=external_chain_node.generate_children(interval=interval)
         )
 
-    def generate(self, account=0, interval=(0, 20)):
+    def generate(self, account: int = 0, interval: tuple = (0, 20)) -> dict:
         acct_ext44, triads44 = self.bip44(account=account, interval=interval)
         acct_ext49, triads49 = self.bip49(account=account, interval=interval)
         acct_ext84, triads84 = self.bip84(account=account, interval=interval)
@@ -189,6 +194,6 @@ class PaperWallet(object):
             "bip84": {"account_extended_keys": acct_ext84, "triads": triads84},
         }
 
-    def by_path(self, path: str):
+    def by_path(self, path: str) -> Priv_or_PubKeyNode:
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())
