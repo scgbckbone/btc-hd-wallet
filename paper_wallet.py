@@ -176,11 +176,11 @@ class PaperWallet(object):
             children=external_chain_node.generate_children(interval=interval)
         )
 
-    def generate(self):
+    def generate(self, account=0, interval=(0, 20)):
         return {
-            "bip44": self.bip44(),
-            "bip49": self.bip49(),
-            "bip84": self.bip84(),
+            "bip44": self.bip44(account=account, interval=interval),
+            "bip49": self.bip49(account=account, interval=interval),
+            "bip84": self.bip84(account=account, interval=interval),
         }
 
     def by_path(self, path: str):
