@@ -1,44 +1,46 @@
+from io import BytesIO
+
 from helper import (
     encode_varint, read_varint, little_endian_to_int, int_to_little_endian
 )
 from op import OP_CODE_NAMES
 
 
-def p2wsh_script(h256):
+def p2wsh_script(h256: bytes) -> "Script":
     """Takes sha256 and returns p2wsh script"""
     # [OP_0, 32-byte element]
     return Script([0x00, h256])
 
 
-def p2wpkh_script(h160):
+def p2wpkh_script(h160: bytes) -> "Script":
     """Takes hash160 and returns p2wpkh script"""
     # [OP_0, 20-byte element]
     return Script([0x00, h160])
 
 
-def p2sh_script(h160):
+def p2sh_script(h160: bytes) -> "Script":
     """Takes a hash160 and returns the p2sh ScriptPubKey"""
     # [OP_HASH160, 20-byte element, OP_EQUAL]
     return Script([0xa9, h160, 0x87])
 
 
-def p2pkh_script(h160):
+def p2pkh_script(h160: bytes) -> "Script":
     """Takes a hash160and returns the p2pkh ScriptPubKey"""
     # [OP_DUP, OP_HASH160, 20-byte element, OP_EQUALVERIFY, OP_CHECKSIG]
     return Script([0x76, 0xa9, h160, 0x88, 0xac])
 
 
 class Script:
-    def __init__(self, cmds=None):
+    def __init__(self, cmds: list = None):
         if cmds is None:
             self.cmds = []
         else:
             self.cmds = cmds
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.cmds == other.cmds
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         result = []
         for cmd in self.cmds:
             if type(cmd) == int:
@@ -51,11 +53,11 @@ class Script:
                 result.append(cmd.hex())
         return ' '.join(result)
 
-    def __add__(self, other):
+    def __add__(self, other) -> "Script":
         return Script(self.cmds + other.cmds)
 
     @classmethod
-    def parse(cls, s):
+    def parse(cls, s: BytesIO) -> "Script":
         # Script serialization starts with the length of the entire script.
         length = read_varint(s)
         cmds = []
@@ -89,7 +91,7 @@ class Script:
             raise SyntaxError("parsing script failed")
         return cls(cmds)
 
-    def raw_serialize(self):
+    def raw_serialize(self) -> bytes:
         result = b""
         for cmd in self.cmds:
             # If the command is an integer, we know that’s an opcode.
@@ -120,7 +122,7 @@ class Script:
                 result += cmd
         return result
 
-    def serialize(self):
+    def serialize(self) -> bytes:
         result = self.raw_serialize()
         # Script serialization starts with the length of the entire script.
         return encode_varint(len(result)) + result
