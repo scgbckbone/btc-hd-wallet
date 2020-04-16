@@ -35,6 +35,9 @@ class Script:
         else:
             self.cmds = cmds
 
+    def __eq__(self, other):
+        return self.cmds == other.cmds
+
     def __repr__(self):
         result = []
         for cmd in self.cmds:
@@ -104,7 +107,7 @@ class Script:
                     # as a single byte, followed by the element.
                     result += int_to_little_endian(76, 1)
                     result += int_to_little_endian(length, 1)
-                elif 0x100 <= length <= 520:
+                elif 256 <= length <= 520:
                     # For an element with a length from 256 to 520,
                     # we put OP_PUSHDATA2 first, then encode the length
                     # as two bytes in little endian, followed by the element.
