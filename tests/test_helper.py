@@ -1,9 +1,11 @@
 import unittest
+from io import BytesIO
 
 from helper import (
     little_endian_to_int, int_to_little_endian, encode_base58_checksum,
     b58decode_addr, h160_to_p2pkh_address, h160_to_p2sh_address, merkle_root,
-    merkle_parent, merkle_parent_level
+    merkle_parent, merkle_parent_level, big_endian_to_int, int_to_big_endian,
+    encode_varint, read_varint
 )
 
 
@@ -24,6 +26,44 @@ class HelperTest(unittest.TestCase):
         n = 10011545
         want = b'\x99\xc3\x98\x00\x00\x00\x00\x00'
         self.assertEqual(int_to_little_endian(n, 8), want)
+
+    def test_big_endian_to_int(self):
+        h = bytes.fromhex('99c3980000000000')
+        want = 11079866634028974080
+        self.assertEqual(big_endian_to_int(h), want)
+        h = bytes.fromhex('a135ef0100000000')
+        want = 11616453601446068224
+        self.assertEqual(big_endian_to_int(h), want)
+
+    def test_int_to_big_endian(self):
+        n = 1
+        want = b'\x00\x00\x00\x01'
+        self.assertEqual(int_to_big_endian(n, 4), want)
+        n = 10011545
+        want = b'\x00\x00\x00\x00\x00\x98\xc3\x99'
+        self.assertEqual(int_to_big_endian(n, 8), want)
+
+    def test_encode_varint(self):
+        with self.assertRaises(ValueError):
+            encode_varint(18446744073709551616)
+        self.assertEqual(
+            encode_varint(1152921504606846976),
+            b'\xff\x00\x00\x00\x00\x00\x00\x00\x10'
+        )
+        self.assertEqual(encode_varint(268435456), b'\xfe\x00\x00\x00\x10')
+        self.assertEqual(encode_varint(4096), b'\xfd\x00\x10')
+        self.assertEqual(encode_varint(252), b'\xfc')
+        self.assertEqual(encode_varint(1), b'\x01')
+
+    def test_read_varint(self):
+        self.assertEqual(
+            read_varint(BytesIO(b'\xff\x00\x00\x00\x00\x00\x00\x00\x10')),
+            1152921504606846976
+        )
+        self.assertEqual(read_varint(BytesIO(b'\xfe\x00\x00\x00\x10')), 268435456)
+        self.assertEqual(read_varint(BytesIO(b'\xfd\x00\x10')), 4096)
+        self.assertEqual(read_varint(BytesIO(b'\xfc')), 252)
+        self.assertEqual(read_varint(BytesIO(b'\x01')), 1)
 
     def test_base58_invalid_checksum(self):
         with self.assertRaises(ValueError):

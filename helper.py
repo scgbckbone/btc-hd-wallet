@@ -90,7 +90,7 @@ def read_varint(s: BytesIO) -> int:
 def encode_varint(i: int) -> bytes:
     """Encode integer as varint"""
     if i < 0xfd:
-        return bytes([i])
+        return int_to_little_endian(i, 1)
     elif i < 0x10000:
         return b"\xfd" + int_to_little_endian(i, 2)
     elif i < 0x100000000:

@@ -9,8 +9,8 @@ class TestColdWallet(unittest.TestCase):
         "width sport else try scare phone blouse view "
         "program ketchup pole rapid use length student raven"
     )
-    cold_wallet = PaperWallet(mnemonic=mnemonic)
-    cold_wallet_testnet = PaperWallet(mnemonic=mnemonic, testnet=True)
+    wallet = PaperWallet(mnemonic=mnemonic)
+    wallet_testnet = PaperWallet(mnemonic=mnemonic, testnet=True)
 
     @staticmethod
     def load_csv_file(_file):
@@ -20,9 +20,9 @@ class TestColdWallet(unittest.TestCase):
 
     def test_from_entropy_hex(self):
         w = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd")
-        self.assertEqual(w, self.cold_wallet)
+        self.assertEqual(w, self.wallet)
         w = PaperWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd", testnet=True)
-        self.assertEqual(w, self.cold_wallet_testnet)
+        self.assertEqual(w, self.wallet_testnet)
 
     def test_from_mnemonic(self):
         w = PaperWallet()
@@ -39,7 +39,7 @@ class TestColdWallet(unittest.TestCase):
     def test_bip44(self):
         m44h0h0h0 = "xprvA1mabSEXaAzXuw9xhUB3J4p82KpeQoaYWWv7S2ZMiYc9oLUq3mSCe6pPxT1nhh1LAtx9Zb7vAk3Bx6ChXAwtZf32g7dWPGxLiSd3KyVGv4D"
         M44h0h0h0 = "xpub6EkvzwmRQYYq8RERoVi3fCkraMf8pGJPsjqiEQxyGt98g8oybJkTBu8soiUJM76gtQtGx1ZKU7y6CwbVFeCER3q95MVbNRquYCfyPLzbdpF"
-        acct_ext_keys, wallet = self.cold_wallet.bip44()
+        acct_ext_keys, wallet = self.wallet.bip44()
         acct_ext_prv = "xprv9yEvZ7jxhWPbPr1pjmUKgp1FfA4waxCZJFeUbBRCEFz8qo3MvnSTGD26X2Xm12ABiGLaHgUkNt1M4MoqXHqvE9mMa8jUJx5QtNwsz7bLSBu"
         acct_ext_pub = "xpub6CEGxdGrXswtcL6Hqo1L3wwzDBuRzQvQfUa5PZponbX7ibNWUKkhp1LaNHMg9oJYjjRmbxArwDUjpudAvmNDRG8LGwYb9YvnkEfMY3eGdTP"
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
@@ -68,7 +68,7 @@ class TestColdWallet(unittest.TestCase):
     def test_bip49(self):
         m49h0h0h0 = "yprvAKVruDeCuwumJdxruoUR3f8jQhqumzuQiF7oZknYNEZbFSzYweJFJ2oSfKLj2MNvhr5xzK2iiyQyLjtrLXUVRvVAKQbW197f48rFtHTQi29"
         M49h0h0h0 = "ypub6YVDJjB6kKU4X83L1q1RQo5TxjgQBTdG5U3QN9C9va6a8FKhVBcVqq7vWayS3iDNdKj9siFtDuhjJ9KJatTFjtiZ9HLEbhYBeRz7TsKmmz1"
-        acct_ext_keys, wallet = self.cold_wallet.bip49()
+        acct_ext_keys, wallet = self.wallet.bip49()
         acct_ext_prv = "yprvAHpZYMRQJE2joxtkfFFNH2ur4VAmEpdst8odf8UoYmAd1Fisi51fWpKcYwH5SXYzfpTmHks9vQg3JmmhcJw9qBze8BSwvFLPF8HG2oKxWi3"
         acct_ext_pub = "ypub6WouwrxJ8bb32SyDmGnNeAracX1FeHMjFMjETWtR76hbt442FcKv4ce6QEDWjQHEr5kr9fGziGETGgvLYayVGSWKLJGNuQahEoMBVDaEYsZ"
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
@@ -95,7 +95,7 @@ class TestColdWallet(unittest.TestCase):
     def test_bip84(self):
         m84h0h0h0 = "zprvAeUnGUuaxCMJRxeYeKBtSABd2VcK7QNVxzETexpoAr9htSeXgGDcd6ooD7umSXuvSCuFSp3NM82x26da1Sh72tBi3FiEc4HMmpkoJd423DF"
         M84h0h0h0 = "zpub6sU8fzSUnZubeSj1kLitoJ8MaXSoWs6MLDA4TMEQjBggmEygDoXsAu8H4Qk5mvh4qL6QCi97z7EmAytC7CZe1q2Z6HnMje2ibgEctsit7zV"
-        acct_ext_keys, wallet = self.cold_wallet.bip84()
+        acct_ext_keys, wallet = self.wallet.bip84()
         acct_ext_prv = "zprvAdkP2X3WyRxRZhUQDCuGfhBboKqnJ34yRKZY7YYmQUMRnfmDeLLnJNATupocnLZiUKuDJmjKtb8iZNSvixfXurRRgsqv53YtSivXN3soPeQ"
         acct_ext_pub = "zpub6rjjS2aQooWinBYsKESH2q8LMMgGhVnpnYV8uvxNxotQfU6NBsf2rAUwm7AtMfBkVywW7baLLKcQ5CZ2vfGCCSpQ8gb2F9rkNUuEnFKmobk"
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
@@ -122,10 +122,10 @@ class TestColdWallet(unittest.TestCase):
     def test_bip44_testnet(self):
         m44h1h0h0 = "tprv8htjzxdtooRZnSeSzKZX1s1Ln4VxCpawvMXhiHsHy7knBtRvty8YLkzuUqoRKQa8kngdtyUNYhEdE5wtywK45XDn1QXcWJ4sZRviQTVbgJP"
         M44h1h0h0 = "tpubDEan9Ng8xB7EfugEsyE7RGfTM61tN9mrVf8UzoubPPZB2NghXMx8XFcmexNZRUCQ5iZXMbYGtJAbgKW8rpcrSvscgFv1cJxqixRrkdjufFV"
-        node_m44h1h0h0 = self.cold_wallet_testnet.by_path(path="m/44'/1'/0'/0")
+        node_m44h1h0h0 = self.wallet_testnet.by_path(path="m/44'/1'/0'/0")
         self.assertEqual(node_m44h1h0h0.extended_private_key(), m44h1h0h0)
         self.assertEqual(node_m44h1h0h0.extended_public_key(), M44h1h0h0)
-        acct_ext_keys, wallet = self.cold_wallet_testnet.bip44()
+        acct_ext_keys, wallet = self.wallet_testnet.bip44()
         acct_ext_prv = "tprv8h8nHUbrfPw4o9Kz9vxAvT5xbjCXP97huSD84TWFNfFBcUY5HnTEmPYNXAtCSidHEAhnpCVuyN9R1oURGX6aVHKHdgQcKxrQ3tJVfgeGbSZ"
         acct_ext_pub = "tpubDDppRte6omcjgcMn3acmKrk5AkiTYUJcUjouLyYYnw3aSxnqvBGpwtAEhJHm14fyqYMdm9pRuoxCRHzwaSaUWRXdi6QKQhoQ4HKZ2uNgRnJ"
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
@@ -154,7 +154,7 @@ class TestColdWallet(unittest.TestCase):
     def test_bip49_testnet(self):
         m49h1h0h0 = "uprv92pZMtfPEtUTs1XYUGr3HATLzbz5GT6Ta9ikE7PcsUKaRaGEVDJLXSRjfVwwh2TooCEYsFFtXEan9reH7hwXFokaLLir5fEp1Ju6e1zW5mg"
         M49h1h0h0 = "upub5FoumQCH5G2m5Vc1aJP3eJQ5YdpZfupJwNeM2VoERorZJNbP2kcb5EkDWor7CCFSnmYhXGu47xRfhxZ1dBc9H3ssrCMaJpdNzSkk2X8Kz6m"
-        acct_ext_keys, wallet = self.cold_wallet_testnet.bip49()
+        acct_ext_keys, wallet = self.wallet_testnet.bip49()
         acct_ext_prv = "uprv8zU71PBiC3U2AiafSLZJc9EujTA3kwiHU9XeTdhru8GxHmuayCgRYG9xEGMuFfjVC1vZ2jk4LbhvU94AYv8S2J8JUNJzWqye9Z742ep8hKv"
         acct_ext_pub = "upub5DTTQtic2R2KPCf8YN6JyHBeHUzYAQS8qNTFG27UTTowAaEjWjzg64US5Zrsip5sUtncanNNU4iYFy9Ten2rKhCi6QXNF7HZn5yrg21LRz7"
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
@@ -181,7 +181,7 @@ class TestColdWallet(unittest.TestCase):
     def test_bip84_testnet(self):
         m84h1h0h0 = "vprv9N1iPx69wSwyn7tHjf3E5e7fGyXGBst9ZHe96k8UnPJtVLyNyaFkNptLAYf8UST9nWT8T42p3ogH7YBGD69PvggXib3wnLCpS6h1eFZMFDD"
         M84h1h0h0 = "vpub5b14oTd3mpWGzbxkqgaESn4Pq1MkbLbzvWZju8Y6LiqsN9JXX7ZzvdCp1qDDxLqeHGr6BUssz2yFmUDm5Fp9jTdz4madyxK6mwgsCvYdK5S"
-        acct_ext_keys, wallet = self.cold_wallet_testnet.bip84()
+        acct_ext_keys, wallet = self.wallet_testnet.bip84()
         acct_ext_prv = "vprv9LFibgTtfNsNtNY47JxpcD2m1WqVwiJqaFms8t14LjNtuqP1inE6yy4h7pBLGKDa33qURi2oxHMvrekZPzfrLDFNukmE3gQ2n7ryyyzdsXz"
         acct_ext_pub = "vpub5ZF51BznVkRg6rcXDLVpyLyVZYfzMB2gwUhTwGQfu4usndiAGKYMXmPAy7vKUJx2g6BNaeehHn93Z4fNH63sNUWQyKjb8Cx7GD3QJPsaEz7"
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
@@ -206,7 +206,7 @@ class TestColdWallet(unittest.TestCase):
             self.assertEqual(wallet1[i][1:-1], csv_f[i][1:-1])
 
     def test_generate_mainnet(self):
-        pw = self.cold_wallet.generate(account=100)
+        pw = self.wallet.generate(account=100)
 
         xpub = "xpub6CEGxdGrXswxydDQYESp5urwA35vxByZzHqgU5GZ3kMjeD9QkH2xx8kemZXMbxaQdjwFjgFVAADLooXS96m3mJmF5hZKTY2DPcCYdyA8Z5y"
         xprv = "xprv9yEvZ7jxhWPfm98wSCuoimvCc1FSYjFid4v5fgrwVQpkmQpGCjiiQLSAvJFgKxh3ak4Bcp9cjBE6PU1ub7f8UN9PKEEggRhipV7gXUWoVhf"
@@ -244,7 +244,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(pw["bip84"]["triads"][19][3], wif)
 
     def test_generate_testnet(self):
-        pw = self.cold_wallet_testnet.generate(account=66, interval=(0, 50))
+        pw = self.wallet_testnet.generate(account=66, interval=(0, 50))
 
         tpub = "tpubDDppRte6omcnc4M1W9frHBgnet6YyZoLrkSZhFZVJNnBA8EfEhrcoq2UQgPupd8DbJFm7sgi7y18ZtfGfTPas6DBcSjk9Pi2P7GDeZfegFx"
         tprv = "tprv8h8nHUbrfPw7ibKDcW1Fsn2g5racpEcSHSqnQjXBt6ynKdytcK32dLQcEYh328MGXeeSS2gGsQAioy84N1mfVN4K2rLgWATgWbGiAdcorBV"
@@ -289,10 +289,64 @@ class TestColdWallet(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             w.generate()
 
-    def test_smthg(self):
+    def test_no_private_key_for_watch_only(self):
         xpub = "xpub6CEGxdGrXswwWNoqpBePNgiQhjBmcEZWoPfkGcLg7zEjBxrFBkSzcFGrkpPqvH7TJwkjyuGMShKuyU7VpjvKnUoTavL9xSaq3DvKCAgNhwM"
         w = PaperWallet.from_extended_key(extended_key=xpub)
         self.assertTrue(w.watch_only)
         ext_keys = w.node_extended_keys(node=w.master)
         self.assertIsNone(ext_keys["prv"])
         self.assertEqual(ext_keys["pub"], xpub)
+
+    def test_p2wsh_address(self):
+        target = [
+            "bc1qnhamzwfwytllz9jmzztl29x9lp7zfgg2ap2zyw7w59jhfufc79uqm4cxdc",
+            "bc1qtuqhjrwmyz8pm7d58mnznne0h4dkf9g7xpw2azuz2qant3959sus932ukh",
+            "bc1q6q2ycfza9ud6492xyysmlpnnszzz0nkqjy7mztrk5mkcc2x6d0rqerfuqs",
+            "bc1qv2mkla5smc5zfqxdvpfxcjnmdhwd6xp25j52cftwvn8fnl93rf6qfau0yf",
+            "bc1qjlewzdxs5zvgvg8stu7wax56zarzanwvkn6yc9dtxehtp88v08qqfews4g",
+            "bc1qg0ld7v0u77c9ppe06qmf366ld9v3zgnnp92fkqlxen6kdkuydgessufekx",
+            "bc1qygyhepadhmae739knnacmpyvt5u0860v6ut6mvt558wl3qx4s3lq28s8ud",
+            "bc1q6kqvrrt08vculgwfnpzml8wn7r7ka2jh5nch9g2wdg4n2sysrgusch86mk",
+            "bc1qrd4ge3eq6amprtqefqq20rhvqdx83p4f54d0mycll6xs8clugxdsw57wwe",
+            "bc1qj7x090ar4z9gkj40p5a9xfgkpl74exn3l7rv9djcwhnca9y0qfeqf8dc4h",
+            "bc1qty3wu2gvl7g5qcfw45z5h89q7fvcnx4g9n9jujaatgampqcvc8xqtxdphz",
+            "bc1qcr92g5ug2fz2vwwfhcech53wu4wquw8nfm070kk586qtc3s3rvgqx5j4wl",
+            "bc1q4quu7asxxnzwd24a9gy8qs9gc0h65z03d4ggswaj6gecc4jca3hqe0tzy5",
+            "bc1q8mqawelvxsdz2hkd8nnt4rlx89m8kky5qc7382wty237ymdneh8q2uh03l",
+            "bc1qrha82s8ha73xlnskv5p29mypc5zz7pj4d3qkd3znrke56q2ncrxs885m6h",
+            "bc1q0gvxdj23c34clmhkmx95dfhcujyll0fftm29uf7ptnz3svxmejfqj2ea5m",
+            "bc1qwvrxmm9n5pdy7tllqdtwqq2swcm0dzdwg9dff667fsfl6ces2v4sqwfqve",
+            "bc1qjad5gkcapq9nhpshtq0m5gr7lsy0ge3v64krcp2t2zvs3jp23h4qcxd2gu",
+            "bc1qknxg650jffl6je8c0275nfw348gl9evxl9vnwfr5sp2vjn75usnqplaw50",
+            "bc1qxse6lnmgc42349qgzf3909w7y3kdefc5a93tj3vm6xx7xlnxm98s9969fj",
+        ]
+        children = self.wallet.master.generate_children()
+        addresses = [self.wallet.p2wsh_address(child) for child in children]
+        self.assertEqual(addresses, target)
+
+    def test_p2sh_p2wsh_address(self):
+        target = [
+            "39TkB2k8DXLEMtnF742kqs2NZGPY6TokmD",
+            "39jE2B8wvBixa8ks3CgW1ibhUmCzLDZyi6",
+            "3B9sfmxGgiqkAmsPRYHRLbiBoa3C9LxMdK",
+            "31kMjsQZzCj6aXPdS1P9sCpaGCbcR4upcY",
+            "3Ee7FB2XV6ZccqZTwG3FGNgJAFXREqBhRJ",
+            "3BH4Zq6RgZ4A9rMciY9Ujb2AREd5VZHo9U",
+            "3EMrcVpkAK8e2QnWi1D9JfEV54DsrK723p",
+            "3J7VEkVDBEypn2Muia4a2NvGwxFxvrWvrd",
+            "3MW9M26CVbEinoozYHKSMp5bjfzwz6Ke2M",
+            "3GgCxKS4VVagoCA7s6Aqe1dV5bvWDs9Wqv",
+            "3LKhqJis3LheiqFc8pKS6bp73Eodu7ye8H",
+            "3ALX3CFat3woW2YCfLiyMYpr5P7W4VqKJv",
+            "3MxASx83vYtAnYynY5YLZPu226yuQBGfe3",
+            "3BBDk6x8VGrARB2rV2XyvDUJV2465RDoFX",
+            "36397CrMhfKDwWEcfq9mkJeZDs7wA1UgGD",
+            "3BhKvPtH8Yc9XkTbV79iePgZUcBRSh5ftA",
+            "3Nh2cDEFDo6wS5TSm5Zg9dJ1x5F1zcHFxs",
+            "32Sn1LHEU5kBZNo3P7fpN1o9WmSqy9khbN",
+            "33dAZx5nZfiD5wx9zvMBNK1cFGqxirPiVz",
+            "3Jvys66uDjTB9AYc6BtXUJBg29EdggJYyM",
+        ]
+        children = self.wallet.master.generate_children()
+        addresses = [self.wallet.p2sh_p2wsh_address(child) for child in children]
+        self.assertEqual(addresses, target)
