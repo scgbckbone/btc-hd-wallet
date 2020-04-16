@@ -193,3 +193,13 @@ class PaperWallet(object):
     def by_path(self, path: str) -> Priv_or_PubKeyNode:
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())
+
+    def pretty_print(self):
+        for bip_name, bip_dct in self.generate().items():
+            print(bip_name.upper(), 182 * "=")
+            print("\taccount extended keys:")
+            print("\t\t" + bip_dct["account_extended_keys"]["prv"])
+            print("\t\t" + bip_dct["account_extended_keys"]["pub"])
+            print()
+            for triad in bip_dct["triads"]:
+                print("\t\t", "%16s %s %s %s" % tuple(triad))
