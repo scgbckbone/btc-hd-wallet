@@ -170,8 +170,15 @@ def merkle_root(hashes: List[bytes]) -> bytes:
     return current_level[0]
 
 
-def p2wpkh_script_raw_serialize(h160):
+def p2wpkh_script_raw_serialize(h160: bytes) -> bytes:
     result = int_to_little_endian(0x00, 1)
     result += int_to_little_endian(len(h160), 1)
     result += h160
+    return result
+
+
+def p2wsh_script_raw_serialize(h256: bytes) -> bytes:
+    result = int_to_little_endian(0x00, 1)
+    result += int_to_little_endian(len(h256), 1)
+    result += h256
     return result
