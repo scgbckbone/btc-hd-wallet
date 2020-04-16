@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Callable
 
 from bip32_hd_wallet import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
@@ -104,46 +104,42 @@ class PaperWallet(object):
             "prv": prv
         }
 
-    def triad_from_pub_key(self, children: List[Priv_or_PubKeyNode],
-                           addr_type: str) -> List[List[str]]:
+    def p2pkh_address(self, node: Priv_or_PubKeyNode) -> str:
+        return node.public_key.address(testnet=self.testnet, addr_type="p2pkh")
+
+    def p2wpkh_address(self, node: Priv_or_PubKeyNode) -> str:
+        return node.public_key.address(testnet=self.testnet, addr_type="p2wpkh")
+
+    def p2sh_p2wpkh_address(self, node: Priv_or_PubKeyNode) -> str:
+        return h160_to_p2sh_address(
+            h160=hash160(
+                p2wpkh_script_raw_serialize(node.public_key.h160())
+            ),
+            testnet=self.testnet
+        )
+
+    def _bip44(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+        return self.triad(nodes=nodes, addr_fnc=self.p2pkh_address)
+
+    def _bip49(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+        return self.triad(nodes=nodes, addr_fnc=self.p2sh_p2wpkh_address)
+
+    def _bip84(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+        return self.triad(nodes=nodes, addr_fnc=self.p2wpkh_address)
+
+    def triad(self, nodes: List[Priv_or_PubKeyNode],
+              addr_fnc: Callable[[Priv_or_PubKeyNode], str]) -> List[List[str]]:
         return [
             [
-                str(child),
-                child.public_key.address(
-                    testnet=self.testnet,
-                    addr_type=addr_type
-                ),
-                child.public_key.sec().hex(),
-                None if self.watch_only else child.private_key.wif(
+                str(node),
+                addr_fnc(node),
+                node.public_key.sec().hex(),
+                None if self.watch_only else node.private_key.wif(
                     testnet=self.testnet
                 )
             ]
-            for child in children
+            for node in nodes
         ]
-
-    def _bip44(self, children: List[Priv_or_PubKeyNode]) -> List[List[str]]:
-        return self.triad_from_pub_key(children=children, addr_type="p2pkh")
-
-    def _bip49(self, children: List[Priv_or_PubKeyNode]) -> List[List[str]]:
-        return [
-            [
-                str(child),
-                h160_to_p2sh_address(
-                    h160=hash160(
-                        p2wpkh_script_raw_serialize(child.public_key.h160())
-                    ),
-                    testnet=self.testnet
-                ),
-                child.public_key.sec().hex(),
-                None if self.watch_only else child.private_key.wif(
-                    testnet=self.testnet
-                )
-            ]
-            for child in children
-        ]
-
-    def _bip84(self, children: List[Priv_or_PubKeyNode]) -> List[List[str]]:
-        return self.triad_from_pub_key(children=children, addr_type="p2wpkh")
 
     def bip44(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
         path = Bip32Path(
@@ -155,7 +151,7 @@ class PaperWallet(object):
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
         return acct_extended_keys, self._bip44(
-            children=external_chain_node.generate_children(interval=interval)
+            nodes=external_chain_node.generate_children(interval=interval)
         )
 
     def bip49(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
@@ -168,7 +164,7 @@ class PaperWallet(object):
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
         return acct_extended_keys, self._bip49(
-            children=external_chain_node.generate_children(interval=interval)
+            nodes=external_chain_node.generate_children(interval=interval)
         )
 
     def bip84(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
@@ -181,7 +177,7 @@ class PaperWallet(object):
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
         return acct_extended_keys, self._bip84(
-            children=external_chain_node.generate_children(interval=interval)
+            nodes=external_chain_node.generate_children(interval=interval)
         )
 
     def generate(self, account: int = 0, interval: tuple = (0, 20)) -> dict:
