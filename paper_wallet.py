@@ -4,8 +4,9 @@ from bip32_hd_wallet import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
     bip32_seed_from_mnemonic, Priv_or_PubKeyNode
 )
-from helper import hash160, h160_to_p2sh_address, p2wpkh_script_raw_serialize
+from helper import hash160, sha256, h160_to_p2sh_address, h256_to_p2wsh_address
 from wallet_utils import Bip32Path, Version, Key
+from script import Script, p2wpkh_script, p2wsh_script
 
 
 HARDENED = 2 ** 31
@@ -113,8 +114,31 @@ class PaperWallet(object):
     def p2sh_p2wpkh_address(self, node: Priv_or_PubKeyNode) -> str:
         return h160_to_p2sh_address(
             h160=hash160(
-                p2wpkh_script_raw_serialize(node.public_key.h160())
+                p2wpkh_script(h160=node.public_key.h160()).raw_serialize()
             ),
+            testnet=self.testnet
+        )
+
+    def p2wsh_address(self, node: Priv_or_PubKeyNode) -> str:
+        # TODO remove one of 1of1 multisig and provide rather simple
+        # TODO singlesig script
+        # TODO [sec, OP_CHECKSIG]
+        # TODO witness_script = Script([node.public_key.sec(), 0xac])
+        # [OP_1, sec, OP_1, OP_CHECKMULTISIG]
+        witness_script = Script([0x51, node.public_key.sec(), 0x51, 0xae])
+        sha256_witness_script = sha256(witness_script.raw_serialize())
+        return h256_to_p2wsh_address(
+            h256=sha256_witness_script,
+            testnet=self.testnet
+        )
+
+    def p2sh_p2wsh_address(self, node: Priv_or_PubKeyNode) -> str:
+        # [OP_1, sec, OP_1, OP_CHECKMULTISIG]
+        witness_script = Script([0x51, node.public_key.sec(), 0x51, 0xae])
+        sha256_witness_script = sha256(witness_script.raw_serialize())
+        redeem_script = p2wsh_script(h256=sha256_witness_script).raw_serialize()
+        return h160_to_p2sh_address(
+            h160=hash160(redeem_script),
             testnet=self.testnet
         )
 

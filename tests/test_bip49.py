@@ -1,5 +1,6 @@
 import unittest
-from helper import p2wpkh_script_raw_serialize, hash160, h160_to_p2sh_address
+from script import p2wpkh_script
+from helper import hash160, h160_to_p2sh_address
 from bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
 
 
@@ -32,7 +33,7 @@ class TestBip49(unittest.TestCase):
         addr = "2Mww8dCYPUpKHofjgcXcBCEGmniw9CoaiD2"
 
         pub_key_hash = m49h1h0h00.public_key.h160()
-        script_sig = p2wpkh_script_raw_serialize(h160=pub_key_hash)
+        script_sig = p2wpkh_script(h160=pub_key_hash).raw_serialize()
         h160_script_sig = hash160(script_sig)
         address = h160_to_p2sh_address(h160=h160_script_sig, testnet=True)
 
@@ -66,9 +67,7 @@ class TestBip49(unittest.TestCase):
         addr = "3HFgoEnSu3CQsZ7G9x8gxQW9Kw7vSJL1mr"
         address = h160_to_p2sh_address(
             h160=hash160(
-                p2wpkh_script_raw_serialize(
-                    h160=m49h0h0h00.public_key.h160()
-                )
+                p2wpkh_script(h160=m49h0h0h00.public_key.h160()).raw_serialize()
             )
         )
         self.assertEqual(address, addr)
@@ -98,9 +97,7 @@ class TestBip49(unittest.TestCase):
         addr = "3FQCg6Rh8d2L28UG3i23NjTzhXhHmRvmZy"
         address = h160_to_p2sh_address(
             h160=hash160(
-                p2wpkh_script_raw_serialize(
-                    h160=m49h0h0h00.public_key.h160()
-                )
+                p2wpkh_script(h160=m49h0h0h00.public_key.h160()).raw_serialize()
             )
         )
         self.assertEqual(address, addr)
@@ -131,9 +128,7 @@ class TestBip49(unittest.TestCase):
         addr = "2NBCPWjwJ5gKhBr1BpTsv8QVWq9vVqAvMB5"
         address = h160_to_p2sh_address(
             h160=hash160(
-                p2wpkh_script_raw_serialize(
-                    h160=m49h1h0h00.public_key.h160()
-                )
+                p2wpkh_script(h160=m49h1h0h00.public_key.h160()).raw_serialize()
             ),
             testnet=True
         )
