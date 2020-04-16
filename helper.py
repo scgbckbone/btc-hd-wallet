@@ -1,4 +1,5 @@
 import hashlib
+from io import BytesIO
 from typing import List
 
 import bech32
@@ -64,6 +65,40 @@ def decode_base58_checksum(s: str) -> bytes:
             )
         )
     return num_bytes[:-4]
+
+
+def read_varint(s: BytesIO) -> int:
+    """read_varint reads a variable integer from a stream"""
+    i = s.read(1)[0]
+    if i == 0xfd:
+        # number is between 253 and 2^16 -1
+        # 0xfd means the next two bytes are the number
+        return little_endian_to_int(s.read(2))
+    elif i == 0xfe:
+        # number is between 2^16 and 2^32 – 1
+        # 0xfe means the next four bytes are the number
+        return little_endian_to_int(s.read(4))
+    elif i == 0xff:
+        # number is between 2^32 and 2^64 – 1
+        # 0xff means the next eight bytes are the number
+        return little_endian_to_int(s.read(8))
+    else:
+        # anything else is just the integer
+        return i
+
+
+def encode_varint(i: int) -> bytes:
+    """Encode integer as varint"""
+    if i < 0xfd:
+        return bytes([i])
+    elif i < 0x10000:
+        return b"\xfd" + int_to_little_endian(i, 2)
+    elif i < 0x100000000:
+        return b"\xfe" + int_to_little_endian(i, 4)
+    elif i < 0x10000000000000000:
+        return b"\xff" + int_to_little_endian(i, 8)
+    else:
+        raise ValueError("integer too large: {}".format(i))
 
 
 def b58decode_addr(s: str) -> bytes:
