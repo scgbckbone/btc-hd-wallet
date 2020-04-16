@@ -118,13 +118,13 @@ class PaperWallet(object):
             testnet=self.testnet
         )
 
-    def _bip44(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+    def bip44_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return self.triad(nodes=nodes, addr_fnc=self.p2pkh_address)
 
-    def _bip49(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+    def bip49_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return self.triad(nodes=nodes, addr_fnc=self.p2sh_p2wpkh_address)
 
-    def _bip84(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+    def bip84_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return self.triad(nodes=nodes, addr_fnc=self.p2wpkh_address)
 
     def triad(self, nodes: List[Priv_or_PubKeyNode],
@@ -150,7 +150,7 @@ class PaperWallet(object):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_extended_keys, self._bip44(
+        return acct_extended_keys, self.bip44_triad(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
@@ -163,7 +163,7 @@ class PaperWallet(object):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_extended_keys, self._bip49(
+        return acct_extended_keys, self.bip49_triad(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
@@ -176,7 +176,7 @@ class PaperWallet(object):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_extended_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_extended_keys, self._bip84(
+        return acct_extended_keys, self.bip84_triad(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 

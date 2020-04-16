@@ -49,11 +49,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m44h0h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0._bip44(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip44_triad(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M44h0h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1._bip44(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip44_triad(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -78,11 +78,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m49h0h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0._bip49(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip49_triad(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M49h0h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1._bip49(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip49_triad(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -105,11 +105,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m84h0h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0._bip84(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip84_triad(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M84h0h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1._bip84(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip84_triad(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -135,11 +135,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m44h1h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0._bip44(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip44_triad(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M44h1h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1._bip44(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip44_triad(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -164,11 +164,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m49h1h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0._bip49(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip49_triad(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M49h1h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1._bip49(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip49_triad(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -191,11 +191,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m84h1h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0._bip84(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip84_triad(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M84h1h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1._bip84(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip84_triad(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
