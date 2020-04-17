@@ -1,3 +1,4 @@
+import os
 import csv
 import unittest
 from paper_wallet import PaperWallet
@@ -215,12 +216,12 @@ class TestColdWallet(unittest.TestCase):
         zpub = "zpub6rjjS2aQooWoAWUtXrdfiNxz38iL9SxgMVo2W4SRhVMTrYnqkJ8oeTF951rcKriKKFdEKDcFFMZMMBspF257wQmQhDR6yjufpqFXJKr4e1m"
         zprv = "zprvAdkP2X3WyRxVx2QRRq6fMF2FV6sqjzEpzGsRhg2p99pUykThCkpZ6evfDi62aycv5soGZq25vd1puNSeju96NPzCtdrUAzX4xaGDTK7buQn"
 
-        self.assertEqual(pw["bip44"]["account_extended_keys"]["pub"], xpub)
-        self.assertEqual(pw["bip44"]["account_extended_keys"]["prv"], xprv)
-        self.assertEqual(pw["bip49"]["account_extended_keys"]["pub"], ypub)
-        self.assertEqual(pw["bip49"]["account_extended_keys"]["prv"], yprv)
-        self.assertEqual(pw["bip84"]["account_extended_keys"]["pub"], zpub)
-        self.assertEqual(pw["bip84"]["account_extended_keys"]["prv"], zprv)
+        self.assertEqual(pw["bip44"]["acct_ext_keys"]["pub"], xpub)
+        self.assertEqual(pw["bip44"]["acct_ext_keys"]["prv"], xprv)
+        self.assertEqual(pw["bip49"]["acct_ext_keys"]["pub"], ypub)
+        self.assertEqual(pw["bip49"]["acct_ext_keys"]["prv"], yprv)
+        self.assertEqual(pw["bip84"]["acct_ext_keys"]["pub"], zpub)
+        self.assertEqual(pw["bip84"]["acct_ext_keys"]["prv"], zprv)
 
         address = "13UkPjRAmH1sDWuoX1zeL8yCFWXdwPvGAE"
         pubkey = "03597d9a56c46c0e6e1827525bb517c5a8dfe21ace626f31a2e11c4e4e23cd353e"
@@ -253,12 +254,12 @@ class TestColdWallet(unittest.TestCase):
         vpub = "vpub5ZF51BznVkRj1LC7XDbJDJT1vNwpbWhx4p3Y1m1UpMhho5SPg4v7PLNatXNQ1dggtSyJoRN9tKsoXcJZamEai1dmy1wurF1rJbZAFBxqht4"
         vprv = "vprv9LFibgTtfNsRnr7eRC4HrAWHNM7LC3z6hb7wDNbsG2AivH7F8XbrqY473HJhZJ45d9waTjewHxRixpQsL7RceZwZ5dNkoJ4yNyEMNXowdoa"
 
-        self.assertEqual(pw["bip44"]["account_extended_keys"]["pub"], tpub)
-        self.assertEqual(pw["bip44"]["account_extended_keys"]["prv"], tprv)
-        self.assertEqual(pw["bip49"]["account_extended_keys"]["pub"], upub)
-        self.assertEqual(pw["bip49"]["account_extended_keys"]["prv"], uprv)
-        self.assertEqual(pw["bip84"]["account_extended_keys"]["pub"], vpub)
-        self.assertEqual(pw["bip84"]["account_extended_keys"]["prv"], vprv)
+        self.assertEqual(pw["bip44"]["acct_ext_keys"]["pub"], tpub)
+        self.assertEqual(pw["bip44"]["acct_ext_keys"]["prv"], tprv)
+        self.assertEqual(pw["bip49"]["acct_ext_keys"]["pub"], upub)
+        self.assertEqual(pw["bip49"]["acct_ext_keys"]["prv"], uprv)
+        self.assertEqual(pw["bip84"]["acct_ext_keys"]["pub"], vpub)
+        self.assertEqual(pw["bip84"]["acct_ext_keys"]["prv"], vprv)
 
         address = "mjXHL5oujxymKFdRUpLbAxFGU9ZaGvhPQ4"
         pubkey = "03b0829cd964a0e1e716fae3bb83812087825d5aca3f102670d8449312ee5b6647"
@@ -350,3 +351,13 @@ class TestColdWallet(unittest.TestCase):
         children = self.wallet.master.generate_children()
         addresses = [self.wallet.p2sh_p2wsh_address(child) for child in children]
         self.assertEqual(addresses, target)
+
+    def test_csv_export(self):
+        self.wallet.export_to_csv(
+            file_path="test.csv",
+            wallet_dict=self.wallet.generate()
+        )
+        self.assertTrue(os.path.isfile("test.csv"))
+        self.assertTrue(os.path.getsize("test.csv"))
+        os.remove("test.csv")
+

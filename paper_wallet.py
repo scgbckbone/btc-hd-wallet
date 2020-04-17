@@ -1,3 +1,4 @@
+import csv
 from typing import List, Callable
 
 from bip32_hd_wallet import (
@@ -101,6 +102,7 @@ class PaperWallet(object):
             node=node
         )
         return {
+            "path": str(node),
             "pub": self.node_extended_public_key(node=node),
             "prv": prv
         }
@@ -172,9 +174,9 @@ class PaperWallet(object):
             account=account + HARDENED
         )
         acct_node = self.master.derive_path(index_list=path.to_list())
-        acct_extended_keys = self.node_extended_keys(node=acct_node)
+        acct_ext_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_extended_keys, self.bip44_triad(
+        return acct_ext_keys, self.bip44_triad(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
@@ -185,9 +187,9 @@ class PaperWallet(object):
             account=account + HARDENED
         )
         acct_node = self.master.derive_path(index_list=path.to_list())
-        acct_extended_keys = self.node_extended_keys(node=acct_node)
+        acct_ext_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_extended_keys, self.bip49_triad(
+        return acct_ext_keys, self.bip49_triad(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
@@ -198,9 +200,9 @@ class PaperWallet(object):
             account=account + HARDENED
         )
         acct_node = self.master.derive_path(index_list=path.to_list())
-        acct_extended_keys = self.node_extended_keys(node=acct_node)
+        acct_ext_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_extended_keys, self.bip84_triad(
+        return acct_ext_keys, self.bip84_triad(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
@@ -209,21 +211,34 @@ class PaperWallet(object):
         acct_ext49, triads49 = self.bip49(account=account, interval=interval)
         acct_ext84, triads84 = self.bip84(account=account, interval=interval)
         return {
-            "bip44": {"account_extended_keys": acct_ext44, "triads": triads44},
-            "bip49": {"account_extended_keys": acct_ext49, "triads": triads49},
-            "bip84": {"account_extended_keys": acct_ext84, "triads": triads84},
+            "bip44": {"acct_ext_keys": acct_ext44, "triads": triads44},
+            "bip49": {"acct_ext_keys": acct_ext49, "triads": triads49},
+            "bip84": {"acct_ext_keys": acct_ext84, "triads": triads84},
         }
 
     def by_path(self, path: str) -> Priv_or_PubKeyNode:
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())
 
+    @staticmethod
+    def extended_keys_to_csv_format(ext_keys: dict) -> List[str]:
+        return [ext_keys["path"], ext_keys["prv"], ext_keys["pub"]]
+
+    def export_to_csv(self, file_path: str, wallet_dict: dict) -> None:
+        with open(file_path, "w", newline='') as f:
+            writer = csv.writer(f)
+            for bip_name, bip_obj in wallet_dict.items():
+                ext = self.extended_keys_to_csv_format(bip_obj["acct_ext_keys"])
+                res = [ext] + bip_obj["triads"]
+                writer.writerows(res)
+                writer.writerow([])
+
     def pretty_print(self):
         for bip_name, bip_dct in self.generate().items():
             print(bip_name.upper(), 182 * "=")
             print("\taccount extended keys:")
-            print("\t\t" + bip_dct["account_extended_keys"]["prv"])
-            print("\t\t" + bip_dct["account_extended_keys"]["pub"])
+            print("\t\t" + bip_dct["acct_ext_keys"]["prv"])
+            print("\t\t" + bip_dct["acct_ext_keys"]["pub"])
             print()
             for triad in bip_dct["triads"]:
                 print("\t\t", "%16s %s %s %s" % tuple(triad))
