@@ -1,7 +1,7 @@
 import os
 import csv
 import unittest
-from paper_wallet import PaperWallet
+from btc_hd_wallet.paper_wallet import PaperWallet
 
 
 class TestColdWallet(unittest.TestCase):

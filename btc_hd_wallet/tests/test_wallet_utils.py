@@ -1,5 +1,5 @@
 import unittest
-from wallet_utils import Bip, Version, Key, Bip32Path
+from btc_hd_wallet.wallet_utils import Bip, Version, Key, Bip32Path
 
 
 class TestVersion(unittest.TestCase):

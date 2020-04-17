@@ -1,7 +1,7 @@
 import unittest
 from io import BytesIO
 
-from helper import (
+from btc_hd_wallet.helper import (
     little_endian_to_int, int_to_little_endian, encode_base58_checksum,
     b58decode_addr, h160_to_p2pkh_address, h160_to_p2sh_address, merkle_root,
     merkle_parent, merkle_parent_level, big_endian_to_int, int_to_big_endian,

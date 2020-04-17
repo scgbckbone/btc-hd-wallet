@@ -25,11 +25,13 @@
 
 import binascii
 import unittest
-import bech32
+import btc_hd_wallet.bech32 as bech32
+
 
 def segwit_scriptpubkey(witver, witprog):
     """Construct a Segwit scriptPubKey for a given witness program."""
     return bytes([witver + 0x50 if witver else 0, len(witprog)] + witprog)
+
 
 VALID_CHECKSUM = [
     "A12UEL5L",
@@ -83,6 +85,7 @@ INVALID_ADDRESS_ENC = [
     ("bc", 1, 1),
     ("bc", 16, 41),
 ]
+
 
 class TestSegwitAddress(unittest.TestCase):
     """Unit test class for segwit addressess."""

@@ -1,9 +1,9 @@
 from io import BytesIO
 
-from helper import (
+from btc_hd_wallet.helper import (
     encode_varint, read_varint, little_endian_to_int, int_to_little_endian
 )
-from op import OP_CODE_NAMES
+from btc_hd_wallet.op import OP_CODE_NAMES
 
 
 def p2wsh_script(h256: bytes) -> "Script":

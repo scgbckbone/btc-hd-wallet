@@ -1,8 +1,10 @@
 import unittest
 from io import BytesIO
 
-from helper import hash160, sha256
-from script import Script, p2sh_script, p2pkh_script, p2wpkh_script, p2wsh_script
+from btc_hd_wallet.helper import hash160, sha256
+from btc_hd_wallet.script import (
+    Script, p2sh_script, p2pkh_script, p2wpkh_script, p2wsh_script
+)
 
 
 class TestScript(unittest.TestCase):

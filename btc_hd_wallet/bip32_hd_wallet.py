@@ -7,12 +7,12 @@ import unicodedata
 from io import BytesIO
 from typing import List, Union
 
-from keys import PrivateKey, PublicKey
-from helper import (
+from btc_hd_wallet.keys import PrivateKey, PublicKey
+from btc_hd_wallet.helper import (
     sha256, encode_base58_checksum, big_endian_to_int, int_to_big_endian,
     decode_base58_checksum, hash160
 )
-from bip39_wordlist import word_list
+from btc_hd_wallet.bip39_wordlist import word_list
 
 
 random = random.SystemRandom()

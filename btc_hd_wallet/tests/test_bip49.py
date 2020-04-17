@@ -1,7 +1,7 @@
 import unittest
-from script import p2wpkh_script
-from helper import hash160, h160_to_p2sh_address
-from bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
+from btc_hd_wallet.script import p2wpkh_script
+from btc_hd_wallet.helper import hash160, h160_to_p2sh_address
+from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
 
 
 class TestBip49(unittest.TestCase):

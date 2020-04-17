@@ -1,5 +1,5 @@
 import unittest
-from bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
+from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
 
 
 class TestBip84(unittest.TestCase):

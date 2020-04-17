@@ -1,12 +1,12 @@
 import unittest
 from io import BytesIO
 
-from bip32_hd_wallet import (
+from btc_hd_wallet.bip32_hd_wallet import (
     PrivKeyNode, PubKeyNode, correct_entropy_bits_value, checksum_length,
     mnemonic_sentence_length, mnemonic_from_entropy_bits, mnemonic_from_entropy
 
 )
-from helper import decode_base58_checksum
+from btc_hd_wallet.helper import decode_base58_checksum
 
 
 class TestMnemonic(unittest.TestCase):

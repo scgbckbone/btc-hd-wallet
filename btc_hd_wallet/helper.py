@@ -2,7 +2,7 @@ import hashlib
 from io import BytesIO
 from typing import List
 
-import bech32
+import btc_hd_wallet.bech32 as bech32
 
 
 BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'

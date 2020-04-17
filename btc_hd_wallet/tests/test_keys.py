@@ -1,5 +1,5 @@
 import unittest
-from keys import PrivateKey, PublicKey
+from btc_hd_wallet.keys import PrivateKey, PublicKey
 
 
 class TestPrivateKey(unittest.TestCase):
