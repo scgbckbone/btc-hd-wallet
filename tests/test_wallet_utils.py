@@ -5,25 +5,37 @@ from wallet_utils import Bip, Version, Key, Bip32Path
 class TestVersion(unittest.TestCase):
     def test_parse(self):
         with self.assertRaises(ValueError):
+            Version.parse(s="152110212")
+
+        with self.assertRaises(ValueError):
             Version.parse(s=152110212)
 
         v = Version.parse(s=0x043587CF)
         self.assertEqual(int(v), 0x043587CF)
+        self.assertEqual(hex(v), "0x43587cf")
         self.assertEqual(v.testnet, True)
         self.assertEqual(v.key_type, Key.PUB)
         self.assertEqual(v.bip_type, Bip.BIP44)
 
         v = Version.parse(s=0x04b2430c)
         self.assertEqual(int(v), 0x04b2430c)
+        self.assertEqual(hex(v), "0x4b2430c")
         self.assertEqual(v.testnet, False)
         self.assertEqual(v.key_type, Key.PRV)
         self.assertEqual(v.bip_type, Bip.BIP84)
 
         v = Version.parse(s=0x049d7cb2)
         self.assertEqual(int(v), 0x049d7cb2)
+        self.assertEqual(hex(v), "0x49d7cb2")
         self.assertEqual(v.testnet, False)
         self.assertEqual(v.key_type, Key.PUB)
         self.assertEqual(v.bip_type, Bip.BIP49)
+
+    def test_bip(self):
+        self.assertEqual(Version.bip(version=0x043587CF), 0)
+        self.assertEqual(Version.bip(version=0x04b2430c), 2)
+        self.assertEqual(Version.bip(version=0x049d7cb2), 1)
+        self.assertEqual(Version.bip(version=0x024289ef), 0)
 
 
 class TestBip32Path(unittest.TestCase):

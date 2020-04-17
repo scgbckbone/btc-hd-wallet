@@ -65,15 +65,15 @@ class Version(object):
             return self.test[self.key_type.name][self.bip_type.name]
         return self.main[self.key_type.name][self.bip_type.name]
 
-    def __hex__(self) -> str:
-        return hex(self.__int__())
+    def __index__(self) -> int:
+        return self.__int__()
 
     @classmethod
     def parse(cls, s: int) -> "Version":
         if not isinstance(s, int):
             raise ValueError("has to be integer")
         if not cls.valid_version(version=s):
-            raise ValueError("invalid version")
+            raise ValueError("unsupported version")
         testnet = s in cls.testnet_versions()
         private = s in cls.priv_versions()
         return cls(
