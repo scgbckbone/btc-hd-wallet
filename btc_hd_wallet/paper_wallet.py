@@ -246,4 +246,4 @@ class PaperWallet(object):
             print("\t\t" + bip_dct["acct_ext_keys"]["pub"])
             print()
             for triad in bip_dct["triads"]:
-                print("\t\t", "%16s %s %s %s" % tuple(triad))
+                print("\t\t", "%16s %34s %s %s" % tuple(triad))
