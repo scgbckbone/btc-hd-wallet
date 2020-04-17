@@ -223,15 +223,18 @@ class PaperWallet(object):
         return self.master.derive_path(index_list=path.to_list())
 
     @staticmethod
-    def extended_keys_to_csv_format(ext_keys: dict) -> List[str]:
-        return [ext_keys["path"], ext_keys["prv"], ext_keys["pub"]]
+    def extended_keys_to_csv_format(ext_keys: dict) -> List[List[str]]:
+        return [
+            [ext_keys["path"], ext_keys["prv"]],
+            [ext_keys["path"].replace("m", "M"), ext_keys["pub"]]
+        ]
 
     def export_to_csv(self, file_path: str, wallet_dict: dict) -> None:
         with open(file_path, "w", newline='') as f:
             writer = csv.writer(f)
             for bip_name, bip_obj in wallet_dict.items():
                 ext = self.extended_keys_to_csv_format(bip_obj["acct_ext_keys"])
-                res = [ext] + bip_obj["triads"]
+                res = ext + bip_obj["triads"]
                 writer.writerows(res)
                 writer.writerow([])
 
