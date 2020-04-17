@@ -3,7 +3,7 @@ import requests
 from typing import List
 
 
-WORD_LIST_FILE_PATH = "bip39_wordlist/english.txt"
+WORD_LIST_FILE_PATH = "btc_hd_wallet/bip39_wordlist/english.txt"
 URL = "https://raw.githubusercontent.com/bitcoin/bips/master/bip-0039/english.txt"
 
 
