@@ -15,20 +15,20 @@ requires = [
 ]
 
 
-setup(name='btc-hd-wallet',
-      version=__version__,
-      description='Bitcoin HD paper wallet implementation based on BIP32',
-      long_description=README,
-      long_description_content_type='text/markdown',
-      classifiers=[
-          "Development Status :: 3 - Alpha"
-          "Programming Language :: Python :: 3.6",
-      ],
-      url='https://github.com/scgbckbone/btc-hd-wallet',
-      keywords='bitcoin',
-      packages=find_packages(),
-      zip_safe=False,
-      install_requires=requires,
-      test_suite="btc_hd_wallet/tests"
+setup(
+    name='btc-hd-wallet',
+    version=__version__,
+    description='Bitcoin HD paper wallet implementation based on BIP32',
+    long_description=README,
+    long_description_content_type='text/markdown',
+    classifiers=[
+      "Development Status :: 3 - Alpha"
+      "Programming Language :: Python :: 3.6",
+    ],
+    url='https://github.com/scgbckbone/btc-hd-wallet',
+    keywords='bitcoin',
+    packages=["btc_hd_wallet"],
+    zip_safe=False,
+    install_requires=requires,
+    test_suite="btc_hd_wallet/tests"
 )
-
