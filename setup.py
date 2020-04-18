@@ -30,5 +30,5 @@ setup(
     packages=["btc_hd_wallet"],
     zip_safe=False,
     install_requires=requires,
-    test_suite="btc_hd_wallet/tests"
+    test_suite="btc_hd_wallet.tests"
 )
