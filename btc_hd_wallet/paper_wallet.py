@@ -229,7 +229,8 @@ class PaperWallet(object):
             [ext_keys["path"].replace("m", "M"), ext_keys["pub"]]
         ]
 
-    def export_to_csv(self, file_path: str, wallet_dict: dict) -> None:
+    def export_to_csv(self, file_path: str, wallet_dict: dict = None) -> None:
+        wallet_dict = wallet_dict or self.generate()
         with open(file_path, "w", newline='') as f:
             writer = csv.writer(f)
             for bip_name, bip_obj in wallet_dict.items():
@@ -238,8 +239,9 @@ class PaperWallet(object):
                 writer.writerows(res)
                 writer.writerow([])
 
-    def pretty_print(self):
-        for bip_name, bip_dct in self.generate().items():
+    def pretty_print(self, wallet_dict: dict = None) -> None:
+        wallet_dict = wallet_dict or self.generate()
+        for bip_name, bip_dct in wallet_dict.items():
             print(bip_name.upper(), 182 * "=")
             print("\taccount extended keys:")
             print("\t\t" + bip_dct["acct_ext_keys"]["prv"])
