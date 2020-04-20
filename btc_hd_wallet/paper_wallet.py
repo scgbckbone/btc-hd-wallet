@@ -12,7 +12,7 @@ from btc_hd_wallet.wallet_utils import Bip32Path, Version, Key
 from btc_hd_wallet.script import Script, p2wpkh_script, p2wsh_script
 
 
-class PaperWallet(object):
+class BaseWallet(object):
 
     __slots__ = (
         "mnemonic",
@@ -56,7 +56,7 @@ class PaperWallet(object):
 
     @classmethod
     def from_mnemonic(cls, mnemonic: str, password: str = "",
-                      testnet: bool = False) -> "PaperWallet":
+                      testnet: bool = False) -> "BaseWallet":
         return cls(
             mnemonic=mnemonic,
             password=password,
@@ -64,7 +64,7 @@ class PaperWallet(object):
         )
 
     @classmethod
-    def from_extended_key(cls, extended_key: str) -> "PaperWallet":
+    def from_extended_key(cls, extended_key: str) -> "BaseWallet":
         # just need version, key type does not matter in here
         version_int = PrivKeyNode.parse(s=extended_key).parsed_version
         version = Version.parse(s=version_int)
@@ -151,6 +151,9 @@ class PaperWallet(object):
             child = node.ckd(index=index)
             yield str(child), addr_fnc(child)
             index += 1
+
+
+class PaperWallet(BaseWallet):
 
     def bip44_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return self.triad(nodes=nodes, addr_fnc=self.p2pkh_address)
