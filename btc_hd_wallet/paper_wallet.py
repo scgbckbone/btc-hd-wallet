@@ -149,8 +149,8 @@ class BaseWallet(object):
         addr_fnc = addr_fnc or self.p2wpkh_address
         while True:
             child = node.ckd(index=index)
-            yield str(child), addr_fnc(child)
-            index += 1
+            adder = yield str(child), addr_fnc(child)
+            index += adder or 1
 
 
 class PaperWallet(BaseWallet):

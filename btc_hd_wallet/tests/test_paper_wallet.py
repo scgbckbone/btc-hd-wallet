@@ -361,3 +361,49 @@ class TestColdWallet(unittest.TestCase):
         self.assertTrue(os.path.getsize("test.csv"))
         os.remove("test.csv")
 
+    def test_next_address(self):
+        acct10_external_chain = self.wallet.master.derive_path(
+            index_list=[84 + 2**31, 2**31, 10 + 2**31, 0]
+        )
+        gen = self.wallet.next_address(node=acct10_external_chain)
+        self.assertEqual(
+            next(gen),
+            ("m/84'/0'/10'/0/0", 'bc1qy57hege5tn2q95372e90jgnd6d8v6j7k4k67dm')
+        )
+        self.assertEqual(
+            gen.send(5),
+            ("m/84'/0'/10'/0/5", "bc1quu2q4g4cz52vgjx2d9t5t09tzn5k7sxgtxngnp")
+        )
+        self.assertEqual(
+            gen.send(10),
+            ("m/84'/0'/10'/0/15", "bc1qu20h7yqpn4fp2rnzmdye8knm35wa33wes4r4rz")
+        )
+        self.assertEqual(
+            next(gen),
+            ("m/84'/0'/10'/0/16", "bc1qlpaqw9shedqtf57wz4g696ra4msk9rq6f5yadg")
+        )
+
+        acct100_external_chain = self.wallet.master.derive_path(
+            index_list=[49 + 2 ** 31, 2 ** 31, 99 + 2 ** 31, 0]
+        )
+        gen = self.wallet.next_address(
+            node=acct100_external_chain,
+            addr_fnc=self.wallet.p2sh_p2wpkh_address
+        )
+        self.assertEqual(
+            next(gen),
+            ("m/49'/0'/99'/0/0", '3MvGtrmTNaw5iNCpLksD7Dw1e8hL6YFspe')
+        )
+        self.assertEqual(
+            gen.send(100),
+            ("m/49'/0'/99'/0/100", "3MH37PPpk8cA131Xtq3JHC8b4fXQfh3bZV")
+        )
+        self.assertEqual(
+            gen.send(400),
+            ("m/49'/0'/99'/0/500", "34VDMVeQX8Vek7TsA9hLZxAugkYsEp2QNs")
+        )
+        self.assertEqual(
+            next(gen),
+            ("m/49'/0'/99'/0/501", "3KcHPAEtC4N7AQrMh5smmFw9hdSD68Wkt7")
+        )
+
