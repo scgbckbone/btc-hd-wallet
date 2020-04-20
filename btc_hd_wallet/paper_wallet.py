@@ -143,6 +143,15 @@ class PaperWallet(object):
             testnet=self.testnet
         )
 
+    def next_address(self, node: Priv_or_PubKeyNode = None,
+                     addr_fnc: Callable[[Priv_or_PubKeyNode], str] = None):
+        index = 0
+        addr_fnc = addr_fnc or self.p2wpkh_address
+        while True:
+            child = node.ckd(index=index)
+            yield str(child), addr_fnc(child)
+            index += 1
+
     def bip44_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
         return self.triad(nodes=nodes, addr_fnc=self.p2pkh_address)
 
