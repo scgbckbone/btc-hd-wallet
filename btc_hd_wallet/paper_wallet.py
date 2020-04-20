@@ -237,12 +237,17 @@ class PaperWallet(object):
                 writer.writerow([])
 
     def pretty_print(self, wallet_dict: dict = None) -> None:
+        fmt = "%19s %34s %68s %54s"
         wallet_dict = wallet_dict or self.generate()
         for bip_name, bip_dct in wallet_dict.items():
-            print(bip_name.upper(), 182 * "=")
+            ext_keys = self.extended_keys_to_csv_format(bip_dct["acct_ext_keys"])
+            print(bip_name.upper())
             print("\taccount extended keys:")
-            print("\t\t" + bip_dct["acct_ext_keys"]["prv"])
-            print("\t\t" + bip_dct["acct_ext_keys"]["pub"])
+            print("\t\t{},{}".format(ext_keys[0][0], ext_keys[0][1]))
+            print("\t\t{},{}".format(ext_keys[1][0], ext_keys[1][1]))
             print()
+            print(fmt % ("bip32_path", "address",
+                         "public_key(sec)", "private_key(wif)"))
             for triad in bip_dct["triads"]:
-                print("\t\t", "%16s %34s %s %s" % tuple(triad))
+                print(fmt % tuple(triad))
+            print()
