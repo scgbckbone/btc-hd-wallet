@@ -3,16 +3,13 @@ from typing import List, Callable
 
 from btc_hd_wallet.bip32_hd_wallet import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
-    bip32_seed_from_mnemonic, Priv_or_PubKeyNode
+    bip32_seed_from_mnemonic, Priv_or_PubKeyNode, HARDENED
 )
 from btc_hd_wallet.helper import (
     hash160, sha256, h160_to_p2sh_address, h256_to_p2wsh_address
 )
 from btc_hd_wallet.wallet_utils import Bip32Path, Version, Key
 from btc_hd_wallet.script import Script, p2wpkh_script, p2wsh_script
-
-
-HARDENED = 2 ** 31
 
 
 class PaperWallet(object):

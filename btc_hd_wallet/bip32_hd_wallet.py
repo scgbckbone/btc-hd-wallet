@@ -17,8 +17,10 @@ from btc_hd_wallet.bip39_wordlist import word_list
 
 random = random.SystemRandom()
 
+HARDENED = 2 ** 31
 PBKDF2_ROUNDS = 2048
 CORRECT_ENTROPY_BITS = [128, 160, 192, 224, 256]
+
 Priv_or_PubKeyNode = Union["PrivKeyNode", "PubKeyNode"]
 
 SECP256k1 = ecdsa.curves.SECP256k1
@@ -250,7 +252,7 @@ class PubKeyNode(object):
             the resulting key is invalid, and one should proceed with the next
              value for i.
         """
-        if index >= 2 ** 31:
+        if index >= HARDENED:
             # (hardened child): return failure
             raise RuntimeError("failure: hardened child for public ckd")
         I = hmac.new(
@@ -371,7 +373,7 @@ class PrivKeyNode(PubKeyNode):
             and one should proceed with the next value for i.
             (Note: this has probability lower than 1 in 2127.)
         """
-        if index >= 2**31:
+        if index >= HARDENED:
             # hardened
             data = b"\x00"+bytes(self.private_key) + int_to_big_endian(index, 4)
         else:
