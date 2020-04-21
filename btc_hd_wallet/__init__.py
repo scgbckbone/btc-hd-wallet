@@ -1,0 +1,2 @@
+from btc_hd_wallet.paper_wallet import PaperWallet
+from btc_hd_wallet.base_wallet import BaseWallet
