@@ -46,7 +46,7 @@ class BaseWallet(object):
         else:
             self.master = master
 
-    def __eq__(self, other: "PaperWallet") -> bool:
+    def __eq__(self, other: "BaseWallet") -> bool:
         return self.master == other.master
 
     @property
