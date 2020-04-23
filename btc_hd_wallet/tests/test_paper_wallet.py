@@ -10,8 +10,8 @@ class TestColdWallet(unittest.TestCase):
         "width sport else try scare phone blouse view "
         "program ketchup pole rapid use length student raven"
     )
-    wallet = PaperWallet(mnemonic=mnemonic)
-    wallet_testnet = PaperWallet(mnemonic=mnemonic, testnet=True)
+    wallet = PaperWallet.from_mnemonic(mnemonic=mnemonic)
+    wallet_testnet = PaperWallet.from_mnemonic(mnemonic=mnemonic, testnet=True)
 
     @staticmethod
     def load_csv_file(_file):

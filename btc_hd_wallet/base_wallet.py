@@ -20,31 +20,11 @@ class BaseWallet(object):
         "master"
     )
 
-    def __init__(self, testnet: bool = False, entropy: str = None,
-                 entropy_bits: int = 256, mnemonic: str = None,
-                 password: str = "", master: Priv_or_PubKeyNode = None):
+    def __init__(self, master: Priv_or_PubKeyNode, testnet: bool = False):
+        self.master = master
         self.testnet = testnet
-        if master is None:
-            if mnemonic is None:
-                if entropy is None:
-                    self.mnemonic = mnemonic_from_entropy_bits(
-                        entropy_bits=entropy_bits
-                    )
-                else:
-                    self.mnemonic = mnemonic_from_entropy(entropy=entropy)
-            else:
-                self.mnemonic = mnemonic
-
-            self.password = password
-            self.master = PrivKeyNode.master_key(
-                bip32_seed=bip32_seed_from_mnemonic(
-                    mnemonic=self.mnemonic,
-                    password=self.password,
-                ),
-                testnet=testnet
-            )
-        else:
-            self.master = master
+        self.mnemonic = None
+        self.password = None
 
     def __eq__(self, other: "BaseWallet") -> bool:
         return self.master == other.master
@@ -54,13 +34,57 @@ class BaseWallet(object):
         return type(self.master) == PubKeyNode
 
     @classmethod
-    def from_mnemonic(cls, mnemonic: str, password: str = "",
-                      testnet: bool = False) -> "BaseWallet":
-        return cls(
+    def new_wallet(cls, entropy_bits: int = 256, password: str = "",
+                   testnet: bool = False):
+        mnemonic = mnemonic_from_entropy_bits(entropy_bits=entropy_bits)
+        return cls.from_mnemonic(
             mnemonic=mnemonic,
             password=password,
             testnet=testnet
         )
+
+    @classmethod
+    def from_entropy_hex(cls, entropy_hex: str, password: str = "",
+                         testnet: bool = False):
+        mnemonic = mnemonic_from_entropy(entropy=entropy_hex)
+        return cls.from_mnemonic(
+            mnemonic=mnemonic,
+            password=password,
+            testnet=testnet
+        )
+
+    @classmethod
+    def from_bip32_seed_hex(cls, bip32_seed: str, testnet: bool = False):
+        seed_bytes = bytes.fromhex(bip32_seed)
+        return cls.from_bip32_seed_bytes(
+            bip32_seed=seed_bytes,
+            testnet=testnet
+        )
+
+    @classmethod
+    def from_bip32_seed_bytes(cls, bip32_seed: bytes, testnet: bool = False):
+        return cls(
+            master=PrivKeyNode.master_key(
+                bip32_seed=bip32_seed,
+                testnet=testnet
+            ),
+            testnet=testnet
+        )
+
+    @classmethod
+    def from_mnemonic(cls, mnemonic: str, password: str = "",
+                      testnet: bool = False) -> "BaseWallet":
+        bip32_seed = bip32_seed_from_mnemonic(
+            mnemonic=mnemonic,
+            password=password
+        )
+        wallet = cls.from_bip32_seed_bytes(
+            bip32_seed=bip32_seed,
+            testnet=testnet
+        )
+        wallet.mnemonic = mnemonic
+        wallet.password = password
+        return wallet
 
     @classmethod
     def from_extended_key(cls, extended_key: str) -> "BaseWallet":
@@ -154,3 +178,4 @@ class BaseWallet(object):
     def by_path(self, path: str) -> Priv_or_PubKeyNode:
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())
+

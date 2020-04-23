@@ -8,19 +8,19 @@ class TestBaseWallet(unittest.TestCase):
         "width sport else try scare phone blouse view "
         "program ketchup pole rapid use length student raven"
     )
-    wallet = BaseWallet(mnemonic=mnemonic)
-    wallet_testnet = BaseWallet(mnemonic=mnemonic, testnet=True)
+    wallet = BaseWallet.from_mnemonic(mnemonic=mnemonic)
+    wallet_testnet = BaseWallet.from_mnemonic(mnemonic=mnemonic, testnet=True)
 
     def test_from_entropy_hex(self):
-        w = BaseWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd")
+        w = BaseWallet.from_entropy_hex(entropy_hex="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd")
         self.assertEqual(w, self.wallet)
-        w = BaseWallet(entropy="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd", testnet=True)
+        w = BaseWallet.from_entropy_hex(entropy_hex="f1bbdacaa19d5b35529814fada5520f4fc0547060f9fabef3e9e58fefb0035dd", testnet=True)
         self.assertEqual(w, self.wallet_testnet)
 
     def test_from_mnemonic(self):
-        w = BaseWallet()
+        w = BaseWallet.new_wallet()
         self.assertEqual(w, BaseWallet.from_mnemonic(mnemonic=w.mnemonic))
-        w = BaseWallet(entropy_bits=128)
+        w = BaseWallet.new_wallet(entropy_bits=128)
         self.assertEqual(w, BaseWallet.from_mnemonic(mnemonic=w.mnemonic))
 
     def test_private_key_from_watch_only(self):
