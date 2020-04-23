@@ -33,11 +33,11 @@ class PubKeyNode(object):
 
     __slots__ = (
         "parent",
-        "_key",
+        "key",
         "chain_code",
         "depth",
         "index",
-        "_parent_fingerprint",
+        "parsed_parent_fingerprint",
         "parsed_version",
         "testnet",
         "children"
@@ -48,11 +48,11 @@ class PubKeyNode(object):
                  parent: Union["PubKeyNode", "PrivKeyNode"] = None,
                  parent_fingerprint: bytes = None):
         self.parent = parent
-        self._key = key
+        self.key = key
         self.chain_code = chain_code
         self.depth = depth
         self.index = index
-        self._parent_fingerprint = parent_fingerprint
+        self.parsed_parent_fingerprint = parent_fingerprint
         self.parsed_version = None
         self.testnet = testnet
         self.children = []
@@ -60,8 +60,8 @@ class PubKeyNode(object):
     def __eq__(self, other) -> bool:
         if type(self) != type(other):
             return False
-        self_key = big_endian_to_int(self._key)
-        other_key = big_endian_to_int(other._key)
+        self_key = big_endian_to_int(self.key)
+        other_key = big_endian_to_int(other.key)
         return self_key == other_key and \
             self.chain_code == other.chain_code and \
             self.depth == other.depth and \
@@ -71,14 +71,14 @@ class PubKeyNode(object):
 
     @property
     def public_key(self) -> PublicKey:
-        return PublicKey.parse(key_bytes=self._key)
+        return PublicKey.parse(key_bytes=self.key)
 
     @property
     def parent_fingerprint(self) -> bytes:
         if self.parent:
             fingerprint = self.parent.fingerprint()
         else:
-            fingerprint = self._parent_fingerprint
+            fingerprint = self.parsed_parent_fingerprint
         # in case there is still None here - it is master
         return fingerprint or b"\x00\x00\x00\x00"
 
@@ -89,8 +89,8 @@ class PubKeyNode(object):
         return PubKeyNode.mainnet_version
 
     def check_fingerprint(self) -> Union[None, bool]:
-        if self.parent and self._parent_fingerprint:
-            return self.parent.fingerprint() == self._parent_fingerprint
+        if self.parent and self.parsed_parent_fingerprint:
+            return self.parent.fingerprint() == self.parsed_parent_fingerprint
 
     def __repr__(self) -> str:
         if self.is_master() or self.is_root():
@@ -197,7 +197,7 @@ class PubKeyNode(object):
             raise RuntimeError("failure: hardened child for public ckd")
         I = hmac.new(
             key=self.chain_code,
-            msg=self._key + int_to_big_endian(index, 4),
+            msg=self.key + int_to_big_endian(index, 4),
             digestmod=hashlib.sha512
         ).digest()
         IL, IR = I[:32], I[32:]
@@ -240,7 +240,7 @@ class PrivKeyNode(PubKeyNode):
 
     @property
     def private_key(self) -> PrivateKey:
-        return PrivateKey(sec_exp=big_endian_to_int(self._key))
+        return PrivateKey(sec_exp=big_endian_to_int(self.key))
 
     @property
     def public_key(self) -> PublicKey:

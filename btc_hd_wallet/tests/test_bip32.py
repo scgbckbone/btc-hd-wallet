@@ -26,7 +26,7 @@ class TestNode(unittest.TestCase):
         m = PrivKeyNode.parse(xpriv)
         self.assertIsNone(m.check_fingerprint())
         m0 = m.ckd(index=0)
-        m0._parent_fingerprint = m.fingerprint()
+        m0.parsed_parent_fingerprint = m.fingerprint()
         self.assertTrue(m0.check_fingerprint())
 
     def test_equality(self):
