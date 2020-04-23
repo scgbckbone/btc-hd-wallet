@@ -2,7 +2,7 @@ from typing import Callable
 
 from btc_hd_wallet.bip32_hd_wallet import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
-    bip32_seed_from_mnemonic, Priv_or_PubKeyNode
+    bip39_seed_from_mnemonic, Priv_or_PubKeyNode
 )
 from btc_hd_wallet.helper import (
     hash160, sha256, h160_to_p2sh_address, h256_to_p2wsh_address
@@ -54,18 +54,18 @@ class BaseWallet(object):
         )
 
     @classmethod
-    def from_bip32_seed_hex(cls, bip32_seed: str, testnet: bool = False):
-        seed_bytes = bytes.fromhex(bip32_seed)
-        return cls.from_bip32_seed_bytes(
-            bip32_seed=seed_bytes,
+    def from_bip39_seed_hex(cls, bip39_seed: str, testnet: bool = False):
+        seed_bytes = bytes.fromhex(bip39_seed)
+        return cls.from_bip39_seed_bytes(
+            bip39_seed=seed_bytes,
             testnet=testnet
         )
 
     @classmethod
-    def from_bip32_seed_bytes(cls, bip32_seed: bytes, testnet: bool = False):
+    def from_bip39_seed_bytes(cls, bip39_seed: bytes, testnet: bool = False):
         return cls(
             master=PrivKeyNode.master_key(
-                bip32_seed=bip32_seed,
+                bip39_seed=bip39_seed,
                 testnet=testnet
             ),
             testnet=testnet
@@ -74,12 +74,12 @@ class BaseWallet(object):
     @classmethod
     def from_mnemonic(cls, mnemonic: str, password: str = "",
                       testnet: bool = False) -> "BaseWallet":
-        bip32_seed = bip32_seed_from_mnemonic(
+        bip39_seed = bip39_seed_from_mnemonic(
             mnemonic=mnemonic,
             password=password
         )
-        wallet = cls.from_bip32_seed_bytes(
-            bip32_seed=bip32_seed,
+        wallet = cls.from_bip39_seed_bytes(
+            bip39_seed=bip39_seed,
             testnet=testnet
         )
         wallet.mnemonic = mnemonic

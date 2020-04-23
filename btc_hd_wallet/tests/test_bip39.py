@@ -1,6 +1,6 @@
 import unittest
 from btc_hd_wallet.bip32_hd_wallet import (
-    mnemonic_from_entropy, bip32_seed_from_mnemonic, PrivKeyNode
+    mnemonic_from_entropy, bip39_seed_from_mnemonic, PrivKeyNode
 )
 
 
@@ -156,14 +156,14 @@ class TestData(object):
     __slots__ = (
         "entropy",
         "mnemonic",
-        "bip32_seed",
+        "bip39_seed",
         "xpriv"
     )
 
     def __init__(self, data: list):
         self.entropy = data[0]
         self.mnemonic = data[1]
-        self.bip32_seed = data[2]
+        self.bip39_seed = data[2]
         self.xpriv = data[3]
 
 
@@ -174,7 +174,7 @@ class TestMnemonic(unittest.TestCase):
             data = TestData(data)
             mnemonic_sentence = mnemonic_from_entropy(data.entropy)
             self.assertEqual(data.mnemonic, mnemonic_sentence)
-            seed = bip32_seed_from_mnemonic(mnemonic_sentence, password="TREZOR")
-            self.assertEqual(data.bip32_seed, seed.hex())
-            master_k = PrivKeyNode.master_key(bip32_seed=seed)
+            seed = bip39_seed_from_mnemonic(mnemonic_sentence, password="TREZOR")
+            self.assertEqual(data.bip39_seed, seed.hex())
+            master_k = PrivKeyNode.master_key(bip39_seed=seed)
             self.assertEqual(master_k.extended_private_key(), data.xpriv)

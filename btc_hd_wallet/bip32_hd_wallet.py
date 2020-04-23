@@ -69,7 +69,7 @@ def mnemonic_from_entropy(entropy: str) -> str:
     return mnemonic_sentence
 
 
-def bip32_seed_from_mnemonic(mnemonic: str, password: str = "") -> bytes:
+def bip39_seed_from_mnemonic(mnemonic: str, password: str = "") -> bytes:
     mnemonic = unicodedata.normalize("NFKD", mnemonic)
     password = unicodedata.normalize("NFKD", password)
     passphrase = unicodedata.normalize("NFKD", "mnemonic") + password
@@ -313,7 +313,7 @@ class PrivKeyNode(PubKeyNode):
         return PrivKeyNode.mainnet_version
 
     @classmethod
-    def master_key(cls, bip32_seed: bytes, testnet=False) -> "PrivKeyNode":
+    def master_key(cls, bip39_seed: bytes, testnet=False) -> "PrivKeyNode":
         """
         * Generate a seed byte sequence S of a chosen length
           (between 128 and 512 bits; 256 bits is advised) from a (P)RNG.
@@ -323,7 +323,7 @@ class PrivKeyNode(PubKeyNode):
         """
         I = hmac.new(
             key=b"Bitcoin seed",
-            msg=bip32_seed,
+            msg=bip39_seed,
             digestmod=hashlib.sha512
         ).digest()
         # private key

@@ -1,5 +1,5 @@
 import unittest
-from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode, bip32_seed_from_mnemonic
+from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode, bip39_seed_from_mnemonic
 
 
 class TestBip84(unittest.TestCase):
@@ -8,7 +8,7 @@ class TestBip84(unittest.TestCase):
         root_prv = "zprvAWgYBBk7JR8Gjrh4UJQ2uJdG1r3WNRRfURiABBE3RvMXYSrRJL62XuezvGdPvG6GFBZduosCc1YP5wixPox7zhZLfiUm8aunE96BBa4Kei5"
         root_pub = "zpub6jftahH18ngZxLmXaKw3GSZzZsszmt9WqedkyZdezFtWRFBZqsQH5hyUmb4pCEeZGmVfQuP5bedXTB8is6fTv19U1GQRyQUKQGUTzyHACMF"
         node = PrivKeyNode.master_key(
-            bip32_seed=bip32_seed_from_mnemonic(mnemonic=mnemonic)
+            bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic)
         )
         self.assertEqual(node.extended_public_key(version=0x04b24746), root_pub)
         self.assertEqual(node.extended_private_key(version=0x04b2430c), root_prv)
@@ -54,7 +54,7 @@ class TestBip84(unittest.TestCase):
         root_prv = "zprvAWgYBBk7JR8GkcWB8q5mgDpogpFeNqyVjpci1VHK6JYJnnihE2a6wqAJJevA6HXD58vzF74DHBrpAZPEQNrugy6y1ZocLGuR4fMbkVtQBYJ"
         root_pub = "zpub6jftahH18ngZy6aeErcn3MmYEr68nJhM73YJosgvee5Hfb3qmZtMVdUn9vmFPn81ZLTMwbC6b2zLcw17wGfg97jjZMYftosaCFee3wNg4ih"
         node = PrivKeyNode.master_key(
-            bip32_seed=bip32_seed_from_mnemonic(mnemonic=mnemonic)
+            bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic)
         )
         self.assertEqual(node.extended_public_key(version=0x04b24746), root_pub)
         self.assertEqual(node.extended_private_key(version=0x04b2430c), root_prv)
@@ -103,7 +103,7 @@ class TestBip84(unittest.TestCase):
         root_prv = "vprv9DMUxX4ShgxMMf69wwuvPuDoLNQec5t9WDkURn5kzoDMia4gd8ZuJEmVvSnJZSWtYeKtFto2SPDBWQg6ShkRBdza5DpbrrNtjVdnHnscZaa"
         root_pub = "vpub5SLqN2bLY4Wea9Ad3ySvm3AXtQF91YbzsSg5EAVNZ8kLbNPqAft9r35ymifdRaDHzhqi3bQ3fWtbDLV6aUVVHzCmErvLYkA6uc8MxA88EDm"
         node = PrivKeyNode.master_key(
-            bip32_seed=bip32_seed_from_mnemonic(mnemonic=mnemonic),
+            bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic),
             testnet=True
         )
         self.assertEqual(node.extended_public_key(version=0x045f1cf6), root_pub)
@@ -153,7 +153,7 @@ class TestBip84(unittest.TestCase):
         root_prv = "vprv9DMUxX4ShgxMKyN621zFC9uyEyEPAngB2HEGpgzkhk99Bc313S6xi8ZdKf3nvk62wRFcCftLZnSovSNMMAmXra2vCmK52uikediy1Pspu3D"
         root_pub = "vpub5SLqN2bLY4WeYTSZ83XFZHrho14saFQ2PW9sd5QNG5g84QN9ayRDFvt7AvVCq9JDXJnsXhhn6Zh92fy3dExzMp2JTLpcD5P4mjPNHjHLNCa"
         node = PrivKeyNode.master_key(
-            bip32_seed=bip32_seed_from_mnemonic(mnemonic=mnemonic),
+            bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic),
             testnet=True
         )
         self.assertEqual(node.extended_public_key(version=0x045f1cf6), root_pub)
