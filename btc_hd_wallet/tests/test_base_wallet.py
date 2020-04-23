@@ -23,6 +23,13 @@ class TestBaseWallet(unittest.TestCase):
         w = BaseWallet.new_wallet(entropy_bits=128)
         self.assertEqual(w, BaseWallet.from_mnemonic(mnemonic=w.mnemonic))
 
+    def test_from_bip32_seed_hex(self):
+        w_main = BaseWallet.from_bip32_seed_hex(bip32_seed="3312a36ef723c00b9fe6cdebbf15d227de281bc9679a799014b772f465b93ea4b2914dbcd46e531a1cb2d222183b49f0334fb4a557d8fecdf7908c451e67c1a0")
+        self.assertEqual(w_main, self.wallet)
+
+        w_test = BaseWallet.from_bip32_seed_hex(bip32_seed="3312a36ef723c00b9fe6cdebbf15d227de281bc9679a799014b772f465b93ea4b2914dbcd46e531a1cb2d222183b49f0334fb4a557d8fecdf7908c451e67c1a0", testnet=True)
+        self.assertEqual(w_test, self.wallet_testnet)
+
     def test_private_key_from_watch_only(self):
         xpub = "xpub6CEGxdGrXswtcL6Hqo1L3wwzDBuRzQvQfUa5PZponbX7ibNWUKkhp1LaNHMg9oJYjjRmbxArwDUjpudAvmNDRG8LGwYb9YvnkEfMY3eGdTP"
         w = BaseWallet.from_extended_key(extended_key=xpub)

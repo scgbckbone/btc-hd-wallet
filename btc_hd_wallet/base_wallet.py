@@ -27,7 +27,7 @@ class BaseWallet(object):
         self.password = None
 
     def __eq__(self, other: "BaseWallet") -> bool:
-        return self.master == other.master
+        return self.master == other.master and self.testnet == other.testnet
 
     @property
     def watch_only(self) -> bool:
