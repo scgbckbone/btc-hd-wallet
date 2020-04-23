@@ -1,8 +1,10 @@
 from typing import Callable
 
 from btc_hd_wallet.bip32_hd_wallet import (
-    mnemonic_from_entropy, mnemonic_from_entropy_bits, PrivKeyNode, PubKeyNode,
-    bip39_seed_from_mnemonic, Priv_or_PubKeyNode
+    PrivKeyNode, PubKeyNode, Priv_or_PubKeyNode
+)
+from btc_hd_wallet.bip39 import (
+    mnemonic_from_entropy, mnemonic_from_entropy_bits, bip39_seed_from_mnemonic
 )
 from btc_hd_wallet.helper import (
     hash160, sha256, h160_to_p2sh_address, h256_to_p2wsh_address

@@ -1,5 +1,6 @@
 import unittest
-from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode, bip39_seed_from_mnemonic
+from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode
+from btc_hd_wallet.bip39 import bip39_seed_from_mnemonic
 
 
 class TestBip44(unittest.TestCase):
