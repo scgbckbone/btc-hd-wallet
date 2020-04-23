@@ -1,6 +1,6 @@
 import unittest
 
-from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode
+from btc_hd_wallet.bip32 import PrivKeyNode
 from btc_hd_wallet.bip39 import (
     mnemonic_from_entropy, bip39_seed_from_mnemonic, correct_entropy_bits_value,
     mnemonic_sentence_length, mnemonic_from_entropy_bits, checksum_length

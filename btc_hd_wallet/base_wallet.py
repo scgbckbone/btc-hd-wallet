@@ -1,6 +1,6 @@
 from typing import Callable
 
-from btc_hd_wallet.bip32_hd_wallet import (
+from btc_hd_wallet.bip32 import (
     PrivKeyNode, PubKeyNode, Priv_or_PubKeyNode
 )
 from btc_hd_wallet.bip39 import (

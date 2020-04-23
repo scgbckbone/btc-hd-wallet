@@ -1,7 +1,7 @@
 import unittest
 from io import BytesIO
 
-from btc_hd_wallet.bip32_hd_wallet import PrivKeyNode, PubKeyNode
+from btc_hd_wallet.bip32 import PrivKeyNode, PubKeyNode
 from btc_hd_wallet.helper import decode_base58_checksum
 
 

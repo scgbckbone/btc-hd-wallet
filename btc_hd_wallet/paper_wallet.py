@@ -1,7 +1,7 @@
 import csv
 from typing import List, Callable
 
-from btc_hd_wallet.bip32_hd_wallet import Priv_or_PubKeyNode, HARDENED
+from btc_hd_wallet.bip32 import Priv_or_PubKeyNode, HARDENED
 from btc_hd_wallet.wallet_utils import Bip32Path
 from btc_hd_wallet.base_wallet import BaseWallet
 
