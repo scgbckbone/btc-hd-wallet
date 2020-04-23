@@ -19,7 +19,9 @@ def local_get_word_list() -> List[str]:
 
 
 def net_get_word_list() -> List[str]:
-    word_lst = requests.get(URL).text
+    resp = requests.get(URL)
+    resp.raise_for_status()
+    word_lst = resp.text
     save_word_list(word_lst=word_lst)
     return word_lst.split()
 
