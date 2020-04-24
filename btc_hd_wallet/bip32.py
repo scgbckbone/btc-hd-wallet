@@ -47,6 +47,24 @@ class PubKeyNode(object):
                  depth: int = 0, testnet: bool = False,
                  parent: Union["PubKeyNode", "PrivKeyNode"] = None,
                  parent_fingerprint: bytes = None):
+        """
+        Initializes Pub/PrivKeyNode.
+
+        :param key: public or private key
+        :type key:bytes
+        :param chain_code: chain code
+        :type chain_code: bytes
+        :param index: current node derivation index
+        :type index: int
+        :param depth: current node depth
+        :type depth: int
+        :param testnet: whether this node is testnet node
+        :type testnet: bool
+        :param parent: parent node of the current node
+        :type parent: Union[PubKeyNode, PrivKeyNode]
+        :param parent_fingerprint: fingerprint of parent node
+        :type parent_fingerprint: bytes
+        """
         self.parent = parent
         self.key = key
         self.chain_code = chain_code
@@ -58,6 +76,13 @@ class PubKeyNode(object):
         self.children = []
 
     def __eq__(self, other) -> bool:
+        """
+        Checks whether two private/public key nodes are equal.
+
+        :param other: other private/public key node
+        :type other: Union[PubKeyNode, PrivKeyNode]
+        :rtype: bool
+        """
         if type(self) != type(other):
             return False
         self_key = big_endian_to_int(self.key)
@@ -71,10 +96,26 @@ class PubKeyNode(object):
 
     @property
     def public_key(self) -> PublicKey:
+        """
+        Public key node's public key.
+
+        :return: public key of public key node
+        :rtype: PublicKey
+        """
         return PublicKey.parse(key_bytes=self.key)
 
     @property
     def parent_fingerprint(self) -> bytes:
+        """
+        Gets parent fingerprint.
+
+        If node is parsed from extended key, only parsed parent fingerprint
+        is available. If node is derived, parent fingerprint is calculated
+        from parent node.
+
+        :return: parent fingerprint
+        :rtype: bytes
+        """
         if self.parent:
             fingerprint = self.parent.fingerprint()
         else:
@@ -84,6 +125,13 @@ class PubKeyNode(object):
 
     @property
     def pub_version(self) -> int:
+        """
+        Decides which extended public key version integer to use
+        based on testnet parameter.
+
+        :return: extended public key version
+        :rtype: int
+        """
         if self.testnet:
             return PubKeyNode.testnet_version
         return PubKeyNode.mainnet_version
@@ -103,19 +151,52 @@ class PubKeyNode(object):
         return parent + "/" + index
 
     def is_hardened(self) -> bool:
+        """
+        Check whether current key node is hardened.
+
+        :rtype: bool
+        """
         return self.index >= 2**31
 
     def is_master(self) -> bool:
+        """
+        Check whether current key node is master node.
+
+        :rtype: bool
+        """
         return self.depth == 0 and self.index == 0 and self.parent is None
 
     def is_root(self) -> bool:
+        """
+        Check whether current key node is root (has no parent).
+
+        :rtype: bool
+        """
         return self.parent is None
 
     def fingerprint(self) -> bytes:
+        """
+        Gets current node fingerprint.
+
+        :return: first four bytes of RIPEMD160(public key)
+        :rtype: bytes
+        """
         return hash160(self.public_key.sec())[:4]
 
     @classmethod
-    def parse(cls, s: Union[str, bytes, BytesIO], testnet: bool = False):
+    def parse(cls, s: Union[str, bytes, BytesIO],
+              testnet: bool = False) -> Priv_or_PubKeyNode:
+        """
+        Initializes private/public key node from serialized node or
+        extended key.
+
+        :param s: serialized node or extended key
+        :type s: Union[str, bytes, BytesIO]
+        :param testnet: whether this node is testnet node
+        :type testnet: bool
+        :return: public/private key node
+        :rtype: Union[PrivKeyNode, PubKeyNode]
+        """
         if isinstance(s, str):
             s = BytesIO(decode_base58_checksum(s=s))
         elif isinstance(s, bytes):
@@ -127,7 +208,17 @@ class PubKeyNode(object):
         return cls._parse(s, testnet=testnet)
 
     @classmethod
-    def _parse(cls, s: BytesIO, testnet: bool = False):
+    def _parse(cls, s: BytesIO, testnet: bool = False) -> Priv_or_PubKeyNode:
+        """
+        Initializes private/public key node from serialized node buffer.
+
+        :param s: serialized node buffer
+        :type s: BytesIO
+        :param testnet: whether this node is testnet node
+        :type testnet: bool
+        :return: public/private key node
+        :rtype: Union[PrivKeyNode, PubKeyNode]
+        """
         version = big_endian_to_int(s.read(4))
         depth = big_endian_to_int(s.read(1))
         parent_fingerprint = s.read(4)
@@ -146,6 +237,14 @@ class PubKeyNode(object):
         return key
 
     def _serialize(self, key: bytes, version: int = None) -> bytes:
+        """
+        Serializes public/private key node to extended key format.
+
+        :param version: extended public/private key version
+        :type version: int
+        :return: serialized extended public/private key node
+        :rtype: bytes
+        """
         # 4 byte: version bytes
         result = int_to_big_endian(version, 4)
         # 1 byte: depth: 0x00 for master nodes, 0x01 for level-1 derived keys
@@ -166,12 +265,28 @@ class PubKeyNode(object):
         return result
 
     def serialize_public(self, version: int = None) -> bytes:
+        """
+        Serializes public key node to extended key format.
+
+        :param version: extended public key version
+        :type version: int
+        :return: serialized extended public key node
+        :rtype: bytes
+        """
         return self._serialize(
             version=self.pub_version if version is None else version,
             key=self.public_key.sec()
         )
 
     def extended_public_key(self, version: int = None) -> str:
+        """
+        Base58 encodes serialized public key node.
+
+        :param version: extended public key version
+        :type version: int
+        :return: extended public key
+        :rtype: str
+        """
         return encode_base58_checksum(self.serialize_public(version=version))
 
     def ckd(self, index: int) -> "PubKeyNode":
@@ -191,9 +306,13 @@ class PubKeyNode(object):
         * In case parse256(IL) ≥ n or Ki is the point at infinity,
             the resulting key is invalid, and one should proceed with the next
              value for i.
+
+        :param index: derivation index
+        :type index: int
+        :return: derived child
+        :rtype: PubKeyNode
         """
         if index >= HARDENED:
-            # (hardened child): return failure
             raise RuntimeError("failure: hardened child for public ckd")
         I = hmac.new(
             key=self.chain_code,
@@ -224,9 +343,26 @@ class PubKeyNode(object):
 
     def generate_children(self, interval: tuple = (0, 20)
                           ) -> List[Priv_or_PubKeyNode]:
+        """
+        Generates children of current node.
+
+        :param interval: specific interval of integers
+                        from which to generate children
+        :type interval: tuple
+        :return: list of generated children
+        :rtype: List[Union[PubKeyNode, PrivKeyNode]]
+        """
         return [self.ckd(index=i) for i in range(*interval)]
 
     def derive_path(self, index_list: List[int]) -> Priv_or_PubKeyNode:
+        """
+        Derives node from current node.
+
+        :param index_list: specific index list (or index path) for derivation
+        :type index_list: List[int]
+        :return: derived node
+        :rtype: Union[PubKeyNode, PrivKeyNode]
+        """
         node = self
         for i in index_list:
             node = node.ckd(index=i)
@@ -240,14 +376,33 @@ class PrivKeyNode(PubKeyNode):
 
     @property
     def private_key(self) -> PrivateKey:
+        """
+        Private key node's private key.
+
+        :return: public key of private key node
+        :rtype: PrivateKey
+        """
         return PrivateKey(sec_exp=big_endian_to_int(self.key))
 
     @property
     def public_key(self) -> PublicKey:
+        """
+        Private key node's public key.
+
+        :return: public key of public key node
+        :rtype: PublicKey
+        """
         return self.private_key.K
 
     @property
     def priv_version(self) -> int:
+        """
+        Decides which extended private key version integer to use
+        based on testnet parameter.
+
+        :return: extended private key version
+        :rtype: int
+        """
         if self.testnet:
             return PrivKeyNode.testnet_version
         return PrivKeyNode.mainnet_version
@@ -255,11 +410,20 @@ class PrivKeyNode(PubKeyNode):
     @classmethod
     def master_key(cls, bip39_seed: bytes, testnet=False) -> "PrivKeyNode":
         """
+        Generates master private key node from bip39 seed.
+
         * Generate a seed byte sequence S (bip39_seed arg) of a chosen length
           (between 128 and 512 bits; 256 bits is advised) from a (P)RNG.
         * Calculate I = HMAC-SHA512(Key = "Bitcoin seed", Data = S)
         * Split I into two 32-byte sequences, IL and IR.
         * Use parse256(IL) as master secret key, and IR as master chain code.
+
+        :param bip39_seed: bip39_seed
+        :type bip39_seed: bytes
+        :param testnet: whether this node is testnet node
+        :type testnet: bool
+        :return: master private key node
+        :rtype: PrivKeyNode
         """
         I = hmac.new(
             key=b"Bitcoin seed",
@@ -287,12 +451,28 @@ class PrivKeyNode(PubKeyNode):
         )
 
     def serialize_private(self, version: int = None) -> bytes:
+        """
+        Serializes private key node to extended key format.
+
+        :param version: extended private key version
+        :type version: int
+        :return: serialized extended private key node
+        :rtype: bytes
+        """
         return self._serialize(
             version=self.priv_version if version is None else version,
             key=b"\x00" + bytes(self.private_key)
         )
 
     def extended_private_key(self, version: int = None) -> str:
+        """
+        Base58 encodes serialized private key node.
+
+        :param version: extended private key version
+        :type version: int
+        :return: extended private key
+        :rtype: str
+        """
         return encode_base58_checksum(self.serialize_private(version=version))
 
     def ckd(self, index: int) -> "PrivKeyNode":
@@ -311,7 +491,12 @@ class PrivKeyNode(PubKeyNode):
         * The returned chain code ci is IR.
         * In case parse256(IL) ≥ n or ki = 0, the resulting key is invalid,
             and one should proceed with the next value for i.
-            (Note: this has probability lower than 1 in 2127.)
+            (Note: this has probability lower than 1 in 2**127.)
+
+        :param index: derivation index
+        :type index: int
+        :return: derived child
+        :rtype: PrivKeyNode
         """
         if index >= HARDENED:
             # hardened
