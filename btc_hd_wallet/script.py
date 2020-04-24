@@ -23,7 +23,7 @@ def p2wpkh_script(h160: bytes) -> "Script":
     """
     Creates p2wpkh script.
 
-    :param h160: RIPEMD160 hash
+    :param h160: SHA256 followed by RIPEMD160 hash
     :type h160: bytes
     :return: p2wpkh script
     :rtype: Script
@@ -36,7 +36,7 @@ def p2sh_script(h160: bytes) -> "Script":
     """
     Creates p2sh script.
 
-    :param h160: RIPEMD160 hash
+    :param h160: SHA256 followed by RIPEMD160 hash
     :type h160: bytes
     :return: p2sh script
     :rtype: Script
@@ -49,7 +49,7 @@ def p2pkh_script(h160: bytes) -> "Script":
     """
     Creates p2pkh script.
 
-    :param h160: RIPEMD160 hash
+    :param h160: SHA256 followed by RIPEMD160 hash
     :type h160: bytes
     :return: p2pkh script
     :rtype: Script

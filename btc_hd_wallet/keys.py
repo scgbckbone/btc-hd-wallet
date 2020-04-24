@@ -167,11 +167,11 @@ class PublicKey(object):
 
     def h160(self, compressed: bool = True) -> bytes:
         """
-        RIPEMD160 of public key.
+        SHA256 followed by RIPEMD160 of public key.
 
         :param compressed: whether to use compressed format (default=True)
         :type compressed: bool
-        :return: RIPEMD160 of public key
+        :return: SHA256(RIPEMD160(public key))
         :rtype: bytes
         """
         return hash160(self.sec(compressed=compressed))

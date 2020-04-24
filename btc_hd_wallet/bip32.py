@@ -174,7 +174,7 @@ class PubKeyNode(object):
         """
         Gets current node fingerprint.
 
-        :return: first four bytes of RIPEMD160(public key)
+        :return: first four bytes of SHA256(RIPEMD160(public key))
         :rtype: bytes
         """
         return hash160(self.public_key.sec())[:4]
