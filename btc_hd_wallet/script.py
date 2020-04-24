@@ -7,25 +7,53 @@ from btc_hd_wallet.op import OP_CODE_NAMES
 
 
 def p2wsh_script(h256: bytes) -> "Script":
-    """Takes sha256 and returns p2wsh script"""
+    """
+    Creates p2wsh script.
+
+    :param h256: sha256 hash
+    :type h256: bytes
+    :return: p2wsh script
+    :rtype: Script
+    """
     # [OP_0, 32-byte element]
     return Script([0x00, h256])
 
 
 def p2wpkh_script(h160: bytes) -> "Script":
-    """Takes hash160 and returns p2wpkh script"""
+    """
+    Creates p2wpkh script.
+
+    :param h160: RIPEMD160 hash
+    :type h160: bytes
+    :return: p2wpkh script
+    :rtype: Script
+    """
     # [OP_0, 20-byte element]
     return Script([0x00, h160])
 
 
 def p2sh_script(h160: bytes) -> "Script":
-    """Takes a hash160 and returns the p2sh ScriptPubKey"""
+    """
+    Creates p2sh script.
+
+    :param h160: RIPEMD160 hash
+    :type h160: bytes
+    :return: p2sh script
+    :rtype: Script
+    """
     # [OP_HASH160, 20-byte element, OP_EQUAL]
     return Script([0xa9, h160, 0x87])
 
 
 def p2pkh_script(h160: bytes) -> "Script":
-    """Takes a hash160and returns the p2pkh ScriptPubKey"""
+    """
+    Creates p2pkh script.
+
+    :param h160: RIPEMD160 hash
+    :type h160: bytes
+    :return: p2pkh script
+    :rtype: Script
+    """
     # [OP_DUP, OP_HASH160, 20-byte element, OP_EQUALVERIFY, OP_CHECKSIG]
     return Script([0x76, 0xa9, h160, 0x88, 0xac])
 
