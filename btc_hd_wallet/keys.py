@@ -47,7 +47,7 @@ class PrivateKey(object):
 
     def __eq__(self, other: "PrivateKey") -> bool:
         """
-        Checks whether two private keys equal.
+        Checks whether two private keys are equal.
 
         :param other: other private key
         :type other: PrivateKey

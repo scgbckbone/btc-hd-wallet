@@ -32,12 +32,25 @@ def p2pkh_script(h160: bytes) -> "Script":
 
 class Script:
     def __init__(self, cmds: list = None):
+        """
+        Initializes script from command list.
+
+        :param cmds: command list
+        :type cmds: list
+        """
         if cmds is None:
             self.cmds = []
         else:
             self.cmds = cmds
 
     def __eq__(self, other) -> bool:
+        """
+        Checks whether two scripts are equal.
+
+        :param other: other script
+        :type other: Script
+        :rtype: bool
+        """
         return self.cmds == other.cmds
 
     def __repr__(self) -> str:
@@ -54,10 +67,26 @@ class Script:
         return ' '.join(result)
 
     def __add__(self, other) -> "Script":
+        """
+        Combines two scripts.
+
+        :param other: other script
+        :type other: Script
+        :return: combined script
+        :rtype: Script
+        """
         return Script(self.cmds + other.cmds)
 
     @classmethod
     def parse(cls, s: BytesIO) -> "Script":
+        """
+        Initializes script from buffer.
+
+        :param s: buffer
+        :type s: BytesIO
+        :return: script
+        :rtype: Script
+        """
         # Script serialization starts with the length of the entire script.
         length = read_varint(s)
         cmds = []
@@ -92,6 +121,12 @@ class Script:
         return cls(cmds)
 
     def raw_serialize(self) -> bytes:
+        """
+        Serializes script.
+
+        :return: serialized script
+        :rtype: bytes
+        """
         result = b""
         for cmd in self.cmds:
             # If the command is an integer, we know that’s an opcode.
@@ -123,6 +158,12 @@ class Script:
         return result
 
     def serialize(self) -> bytes:
+        """
+        Serializes script. Prepended with the length of script.
+
+        :return: serialized script
+        :rtype: bytes
+        """
         result = self.raw_serialize()
         # Script serialization starts with the length of the entire script.
         return encode_varint(len(result)) + result
