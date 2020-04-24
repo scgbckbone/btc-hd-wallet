@@ -21,14 +21,6 @@ class TestNode(unittest.TestCase):
         self.assertEqual(PrivKeyNode.parse(BytesIO(decode_base58_checksum(xpriv))).extended_private_key(), xpriv)
         self.assertRaises(ValueError, PrivKeyNode.parse, 1584784554)
 
-    def test_check_fingerprint(self):
-        xpriv = "xprv9s21ZrQH143K4EK4Fdy4ddWeDMy1x4tg2s292J5ynk23sn3hxSZ9MqqLZCTj2dHPP16CsTdAFeznbnNhSN3v66TtSKzJf4hPZSqDjjp9t42"
-        m = PrivKeyNode.parse(xpriv)
-        self.assertIsNone(m.check_fingerprint())
-        m0 = m.ckd(index=0)
-        m0.parsed_parent_fingerprint = m.fingerprint()
-        self.assertTrue(m0.check_fingerprint())
-
     def test_equality(self):
         xpriv = "xprv9s21ZrQH143K4EK4Fdy4ddWeDMy1x4tg2s292J5ynk23sn3hxSZ9MqqLZCTj2dHPP16CsTdAFeznbnNhSN3v66TtSKzJf4hPZSqDjjp9t42"
         m0 = PrivKeyNode.parse(s=xpriv)

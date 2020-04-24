@@ -136,10 +136,6 @@ class PubKeyNode(object):
             return PubKeyNode.testnet_version
         return PubKeyNode.mainnet_version
 
-    def check_fingerprint(self) -> Union[None, bool]:
-        if self.parent and self.parsed_parent_fingerprint:
-            return self.parent.fingerprint() == self.parsed_parent_fingerprint
-
     def __repr__(self) -> str:
         if self.is_master() or self.is_root():
             return self.mark
