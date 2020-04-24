@@ -109,6 +109,7 @@ class PublicKey(object):
     def __init__(self, key: ecdsa.VerifyingKey):
         """
         Initializes PublicKey object from ecdsa verifying key
+
         :param key: ecdsa verifying key
         :type key: ecdsa.VerifyingKey
         """
