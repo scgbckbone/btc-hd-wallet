@@ -134,11 +134,11 @@ class TestBaseWallet(unittest.TestCase):
         addresses = [self.wallet.p2sh_p2wsh_address(child) for child in children]
         self.assertEqual(addresses, target)
 
-    def test_next_address(self):
+    def test_address_generator(self):
         acct10_external_chain = self.wallet.master.derive_path(
             index_list=[84 + 2**31, 2**31, 10 + 2**31, 0]
         )
-        gen = self.wallet.next_address(node=acct10_external_chain)
+        gen = self.wallet.address_generator(node=acct10_external_chain)
         self.assertEqual(
             next(gen),
             ("m/84'/0'/10'/0/0", 'bc1qy57hege5tn2q95372e90jgnd6d8v6j7k4k67dm')
@@ -159,7 +159,7 @@ class TestBaseWallet(unittest.TestCase):
         acct100_external_chain = self.wallet.master.derive_path(
             index_list=[49 + 2 ** 31, 2 ** 31, 99 + 2 ** 31, 0]
         )
-        gen = self.wallet.next_address(
+        gen = self.wallet.address_generator(
             node=acct100_external_chain,
             addr_fnc=self.wallet.p2sh_p2wpkh_address
         )

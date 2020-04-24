@@ -168,8 +168,8 @@ class BaseWallet(object):
             testnet=self.testnet
         )
 
-    def next_address(self, node: Priv_or_PubKeyNode = None,
-                     addr_fnc: Callable[[Priv_or_PubKeyNode], str] = None):
+    def address_generator(self, node: Priv_or_PubKeyNode = None,
+                          addr_fnc: Callable[[Priv_or_PubKeyNode], str] = None):
         index = 0
         addr_fnc = addr_fnc or self.p2wpkh_address
         while True:

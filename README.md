@@ -23,7 +23,7 @@ w = BaseWallet()
 external_chain_node = w.by_path(path="m/84'/0'/100'/0")
 
 # create generator
-bip84_gen = w.next_address(node=external_chain_node)
+bip84_gen = w.address_generator(node=external_chain_node)
 
 # generate addresses
 next(bip84_gen)
