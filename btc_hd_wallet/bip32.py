@@ -255,7 +255,7 @@ class PrivKeyNode(PubKeyNode):
     @classmethod
     def master_key(cls, bip39_seed: bytes, testnet=False) -> "PrivKeyNode":
         """
-        * Generate a seed byte sequence S of a chosen length
+        * Generate a seed byte sequence S (bip39_seed arg) of a chosen length
           (between 128 and 512 bits; 256 bits is advised) from a (P)RNG.
         * Calculate I = HMAC-SHA512(Key = "Bitcoin seed", Data = S)
         * Split I into two 32-byte sequences, IL and IR.

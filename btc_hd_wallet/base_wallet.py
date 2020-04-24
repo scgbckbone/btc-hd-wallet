@@ -180,4 +180,3 @@ class BaseWallet(object):
     def by_path(self, path: str) -> Priv_or_PubKeyNode:
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())
-

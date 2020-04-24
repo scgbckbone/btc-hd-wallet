@@ -26,7 +26,7 @@ class TestPrivateKey(unittest.TestCase):
         self.assertEqual(pk.wif(compressed=True, testnet=True), expected)
 
         key = "0C28FCA386C7A227600B2FE50B7CAE11EC86D3BF1FBE471BE89827E19D72AA1D"
-        pk = PrivateKey.parse(byte_str=bytes.fromhex(key))
+        pk = PrivateKey.parse(key_bytes=bytes.fromhex(key))
         expected = "5HueCGU8rMjxEXxiPuD5BDku4MkFqeZyd4dZ1jvhTVqvbTLvyTJ"
         self.assertEqual(PrivateKey.from_wif(expected), pk)
         self.assertEqual(pk.wif(compressed=False, testnet=False), expected)
@@ -175,11 +175,11 @@ class TestPublicKey(unittest.TestCase):
                 "p2pkh": {
                     "main": {
                         "addr": '148dY81A9BmdpMhvYEVznrM45kWN32vSCN',
-                        "data": {"compressed": True, "testnet": False}
+                        "data": {"addr_type": "p2pkh", "compressed": True, "testnet": False}
                     },
                     "test": {
                         "addr": 'mieaqB68xDCtbUBYFoUNcmZNwk74xcBfTP',
-                        "data": {"compressed": True, "testnet": True}
+                        "data": {"addr_type": "p2pkh", "compressed": True, "testnet": True}
                     }
                 },
                 "p2wpkh": {
@@ -198,11 +198,11 @@ class TestPublicKey(unittest.TestCase):
                 "p2pkh": {
                     "main": {
                         "addr": '1S6g2xBJSED7Qr9CYZib5f4PYVhHZiVfj',
-                        "data": {"compressed": False, "testnet": False}
+                        "data": {"addr_type": "p2pkh", "compressed": False, "testnet": False}
                     },
                     "test": {
                         "addr": 'mfx3y63A7TfTtXKkv7Y6QzsPFY6QCBCXiP',
-                        "data": {"compressed": False, "testnet": True}
+                        "data": {"addr_type": "p2pkh", "compressed": False, "testnet": True}
                     }
                 },
                 "p2wpkh": {
@@ -221,11 +221,11 @@ class TestPublicKey(unittest.TestCase):
                 "p2pkh": {
                     "main": {
                         "addr": '1226JSptcStqn4Yq9aAmNXdwdc2ixuH9nb',
-                        "data": {"compressed": False, "testnet": False}
+                        "data": {"addr_type": "p2pkh", "compressed": False, "testnet": False}
                     },
                     "test": {
                         "addr": 'mgY3bVusRUL6ZB2Ss999CSrGVbdRwVpM8s',
-                        "data": {"compressed": False, "testnet": True}
+                        "data": {"addr_type": "p2pkh", "compressed": False, "testnet": True}
                     }
                 },
                 "p2wpkh": {
