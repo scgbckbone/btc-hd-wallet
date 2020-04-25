@@ -9,16 +9,50 @@ from btc_hd_wallet.base_wallet import BaseWallet
 class PaperWallet(BaseWallet):
 
     def bip44_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+        """
+        Generates bip44 triads from nodes.
+
+        :param nodes: nodes for triad generation
+        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :return: generated triads
+        :rtype: List[List[str]]
+        """
         return self.triad(nodes=nodes, addr_fnc=self.p2pkh_address)
 
     def bip49_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+        """
+        Generates bip49 triads from nodes.
+
+        :param nodes: nodes for triad generation
+        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :return: generated triads
+        :rtype: List[List[str]]
+        """
         return self.triad(nodes=nodes, addr_fnc=self.p2sh_p2wpkh_address)
 
     def bip84_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+        """
+        Generates bip84 triads from nodes.
+
+        :param nodes: nodes for triad generation
+        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :return: generated triads
+        :rtype: List[List[str]]
+        """
         return self.triad(nodes=nodes, addr_fnc=self.p2wpkh_address)
 
     def triad(self, nodes: List[Priv_or_PubKeyNode],
               addr_fnc: Callable[[Priv_or_PubKeyNode], str]) -> List[List[str]]:
+        """
+        Generates triads from nodes.
+
+        :param nodes: nodes for triad generation
+        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :param addr_fnc: function to use for address generation
+        :type addr_fnc: Callable[Union[PrivKeyNode, PubKeyNode], str]
+        :return: generated triads
+        :rtype: List[List[str]]
+        """
         return [
             [
                 str(node),
@@ -32,6 +66,17 @@ class PaperWallet(BaseWallet):
         ]
 
     def bip44(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
+        """
+        Generates bip44 account keys and triads (address, sec, wif)
+
+        :param account: bip44 account number
+        :type account: int
+        :param interval: specific interval of integers
+                        from which to generate children
+        :type interval: tuple
+        :return: account keys and triads
+        :rtype: tuple
+        """
         path = Bip32Path(
             purpose=44 + HARDENED,
             coin_type=1 + HARDENED if self.testnet else HARDENED,
@@ -45,6 +90,17 @@ class PaperWallet(BaseWallet):
         )
 
     def bip49(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
+        """
+        Generates bip49 account keys and triads (address, sec, wif)
+
+        :param account: bip44 account number
+        :type account: int
+        :param interval: specific interval of integers
+                        from which to generate children
+        :type interval: tuple
+        :return: account keys and triads
+        :rtype: tuple
+        """
         path = Bip32Path(
             purpose=49 + HARDENED,
             coin_type=1 + HARDENED if self.testnet else HARDENED,
@@ -58,6 +114,17 @@ class PaperWallet(BaseWallet):
         )
 
     def bip84(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
+        """
+        Generates bip84 account keys and triads (address, sec, wif)
+
+        :param account: bip44 account number
+        :type account: int
+        :param interval: specific interval of integers
+                        from which to generate children
+        :type interval: tuple
+        :return: account keys and triads
+        :rtype: tuple
+        """
         path = Bip32Path(
             purpose=84 + HARDENED,
             coin_type=1 + HARDENED if self.testnet else HARDENED,
@@ -71,6 +138,17 @@ class PaperWallet(BaseWallet):
         )
 
     def generate(self, account: int = 0, interval: tuple = (0, 20)) -> dict:
+        """
+        Generates wallet mapping.
+
+        :param account: bip44 account number
+        :type account: int
+        :param interval: specific interval of integers
+                        from which to generate children
+        :type interval: tuple
+        :return: wallet mapping
+        :rtype: dict
+        """
         acct_ext44, triads44 = self.bip44(account=account, interval=interval)
         acct_ext49, triads49 = self.bip49(account=account, interval=interval)
         acct_ext84, triads84 = self.bip84(account=account, interval=interval)
@@ -82,12 +160,30 @@ class PaperWallet(BaseWallet):
 
     @staticmethod
     def extended_keys_to_csv_format(ext_keys: dict) -> List[List[str]]:
+        """
+        Convert extended keys mapping to csv exportable format.
+
+        :param ext_keys: extended keys mapping
+        :type ext_keys: dict
+        :return: extended keys in csv exportable format
+        :rtype: List[List[str]]
+        """
         return [
             [ext_keys["path"], ext_keys["prv"]],
             [ext_keys["path"].replace("m", "M"), ext_keys["pub"]]
         ]
 
     def export_to_csv(self, file_path: str, wallet_dict: dict = None) -> None:
+        """
+        Exports wallet to file in csv format.
+
+        :param file_path: path to file that will be created
+        :type file_path: str
+        :param wallet_dict: wallet mapping as generated from self.generate.
+        :type wallet_dict: dict
+        :return: nothing
+        :rtype: None
+        """
         wallet_dict = wallet_dict or self.generate()
         with open(file_path, "w", newline='') as f:
             writer = csv.writer(f)
@@ -98,6 +194,14 @@ class PaperWallet(BaseWallet):
                 writer.writerow([])
 
     def pretty_print(self, wallet_dict: dict = None) -> None:
+        """
+        Prints wallet to the console.
+
+        :param wallet_dict: wallet mapping as generated from self.generate.
+        :type wallet_dict: dict
+        :return: nothing
+        :rtype: None
+        """
         fmt = "%19s %34s %68s %54s"
         wallet_dict = wallet_dict or self.generate()
         for bip_name, bip_dct in wallet_dict.items():
