@@ -115,6 +115,16 @@ class PublicKey(object):
         """
         self.K = key
 
+    def __eq__(self, other: "PublicKey") -> bool:
+        """
+        Checks whether two public keys are equal.
+
+        :param other: other public key
+        :type other: PublicKey
+        :rtype: bool
+        """
+        return self.sec() == other.sec()
+
     @property
     def point(self) -> ecdsa.ellipticcurve.Point:
         """

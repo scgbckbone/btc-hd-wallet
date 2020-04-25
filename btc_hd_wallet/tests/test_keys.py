@@ -260,3 +260,19 @@ class TestPublicKey(unittest.TestCase):
                 pubkey.address(**obj["p2wpkh"]["test"]["data"]),
                 obj["p2wpkh"]["test"]["addr"]
             )
+
+    def test_equality(self):
+        sk = PrivateKey(sec_exp=1256615165161)
+        sk1 = PrivateKey(sec_exp=1256615165161)
+
+        pk = PublicKey.parse(key_bytes=bytes.fromhex(
+            "0311f16bf6194093aea6bde62a44ffe7ca054daa4e779e6f427e100eff578bc4fd"))
+        pk1 = PublicKey.parse(key_bytes=bytes.fromhex(
+            "0311f16bf6194093aea6bde62a44ffe7ca054daa4e779e6f427e100eff578bc4fd"))
+        self.assertEqual(pk, pk1)
+
+        pk = PublicKey.from_point(point=pk.point)
+        pk1 = PublicKey.from_point(point=pk1.point)
+
+        self.assertEqual(pk, pk1)
+        self.assertEqual(sk.K, sk1.K)
