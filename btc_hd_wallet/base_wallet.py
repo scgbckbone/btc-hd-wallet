@@ -92,7 +92,7 @@ class BaseWallet(object):
     def from_extended_key(cls, extended_key: str) -> "BaseWallet":
         # just need version, key type does not matter in here
         version_int = PrivKeyNode.parse(s=extended_key).parsed_version
-        version = Version.parse(s=version_int)
+        version = Version.parse(version_int=version_int)
         if version.key_type == Key.PRV:
             node = PrivKeyNode.parse(extended_key, testnet=version.testnet)
         else:

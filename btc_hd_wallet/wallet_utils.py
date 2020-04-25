@@ -69,16 +69,24 @@ class Version(object):
         return self.__int__()
 
     @classmethod
-    def parse(cls, s: int) -> "Version":
-        if not isinstance(s, int):
+    def parse(cls, version_int: int) -> "Version":
+        """
+        Initializes version object from extended key version.
+
+        :param version_int: extended key version
+        :type version_int: int
+        :return: version object
+        :rtype: Version
+        """
+        if not isinstance(version_int, int):
             raise ValueError("has to be integer")
-        if not cls.valid_version(version=s):
+        if not cls.valid_version(version=version_int):
             raise ValueError("unsupported version")
-        testnet = s in cls.testnet_versions()
-        private = s in cls.priv_versions()
+        testnet = version_int in cls.testnet_versions()
+        private = version_int in cls.priv_versions()
         return cls(
             key_type=Key.PRV.value if private else Key.PUB.value,
-            bip=cls.bip(version=s),
+            bip=cls.bip(version=version_int),
             testnet=testnet
         )
 
