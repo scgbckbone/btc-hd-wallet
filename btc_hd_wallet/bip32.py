@@ -13,7 +13,7 @@ from btc_hd_wallet.helper import (
 
 HARDENED = 2 ** 31
 
-Priv_or_PubKeyNode = Union["PrivKeyNode", "PubKeyNode"]
+Prv_or_PubKeyNode = Union["PrvKeyNode", "PubKeyNode"]
 
 SECP256k1 = ecdsa.curves.SECP256k1
 CURVE_GEN = ecdsa.ecdsa.generator_secp256k1
@@ -45,10 +45,10 @@ class PubKeyNode(object):
 
     def __init__(self, key: bytes, chain_code: bytes, index: int = 0,
                  depth: int = 0, testnet: bool = False,
-                 parent: Union["PubKeyNode", "PrivKeyNode"] = None,
+                 parent: Union["PubKeyNode", "PrvKeyNode"] = None,
                  parent_fingerprint: bytes = None):
         """
-        Initializes Pub/PrivKeyNode.
+        Initializes Pub/PrvKeyNode.
 
         :param key: public or private key
         :type key:bytes
@@ -61,7 +61,7 @@ class PubKeyNode(object):
         :param testnet: whether this node is testnet node
         :type testnet: bool
         :param parent: parent node of the current node
-        :type parent: Union[PubKeyNode, PrivKeyNode]
+        :type parent: Union[PubKeyNode, PrvKeyNode]
         :param parent_fingerprint: fingerprint of parent node
         :type parent_fingerprint: bytes
         """
@@ -80,7 +80,7 @@ class PubKeyNode(object):
         Checks whether two private/public key nodes are equal.
 
         :param other: other private/public key node
-        :type other: Union[PubKeyNode, PrivKeyNode]
+        :type other: Union[PubKeyNode, PrvKeyNode]
         :rtype: bool
         """
         if type(self) != type(other):
@@ -181,7 +181,7 @@ class PubKeyNode(object):
 
     @classmethod
     def parse(cls, s: Union[str, bytes, BytesIO],
-              testnet: bool = False) -> Priv_or_PubKeyNode:
+              testnet: bool = False) -> Prv_or_PubKeyNode:
         """
         Initializes private/public key node from serialized node or
         extended key.
@@ -191,7 +191,7 @@ class PubKeyNode(object):
         :param testnet: whether this node is testnet node
         :type testnet: bool
         :return: public/private key node
-        :rtype: Union[PrivKeyNode, PubKeyNode]
+        :rtype: Union[PrvKeyNode, PubKeyNode]
         """
         if isinstance(s, str):
             s = BytesIO(decode_base58_checksum(s=s))
@@ -204,7 +204,7 @@ class PubKeyNode(object):
         return cls._parse(s, testnet=testnet)
 
     @classmethod
-    def _parse(cls, s: BytesIO, testnet: bool = False) -> Priv_or_PubKeyNode:
+    def _parse(cls, s: BytesIO, testnet: bool = False) -> Prv_or_PubKeyNode:
         """
         Initializes private/public key node from serialized node buffer.
 
@@ -213,7 +213,7 @@ class PubKeyNode(object):
         :param testnet: whether this node is testnet node
         :type testnet: bool
         :return: public/private key node
-        :rtype: Union[PrivKeyNode, PubKeyNode]
+        :rtype: Union[PrvKeyNode, PubKeyNode]
         """
         version = big_endian_to_int(s.read(4))
         depth = big_endian_to_int(s.read(1))
@@ -338,7 +338,7 @@ class PubKeyNode(object):
         return child
 
     def generate_children(self, interval: tuple = (0, 20)
-                          ) -> List[Priv_or_PubKeyNode]:
+                          ) -> List[Prv_or_PubKeyNode]:
         """
         Generates children of current node.
 
@@ -346,18 +346,18 @@ class PubKeyNode(object):
                         from which to generate children
         :type interval: tuple
         :return: list of generated children
-        :rtype: List[Union[PubKeyNode, PrivKeyNode]]
+        :rtype: List[Union[PubKeyNode, PrvKeyNode]]
         """
         return [self.ckd(index=i) for i in range(*interval)]
 
-    def derive_path(self, index_list: List[int]) -> Priv_or_PubKeyNode:
+    def derive_path(self, index_list: List[int]) -> Prv_or_PubKeyNode:
         """
         Derives node from current node.
 
         :param index_list: specific index list (or index path) for derivation
         :type index_list: List[int]
         :return: derived node
-        :rtype: Union[PubKeyNode, PrivKeyNode]
+        :rtype: Union[PubKeyNode, PrvKeyNode]
         """
         node = self
         for i in index_list:
@@ -365,7 +365,7 @@ class PubKeyNode(object):
         return node
 
 
-class PrivKeyNode(PubKeyNode):
+class PrvKeyNode(PubKeyNode):
     mark: str = "m"
     testnet_version: int = 0x04358394
     mainnet_version: int = 0x0488ADE4
@@ -391,7 +391,7 @@ class PrivKeyNode(PubKeyNode):
         return self.private_key.K
 
     @property
-    def priv_version(self) -> int:
+    def prv_version(self) -> int:
         """
         Decides which extended private key version integer to use
         based on testnet parameter.
@@ -400,11 +400,11 @@ class PrivKeyNode(PubKeyNode):
         :rtype: int
         """
         if self.testnet:
-            return PrivKeyNode.testnet_version
-        return PrivKeyNode.mainnet_version
+            return PrvKeyNode.testnet_version
+        return PrvKeyNode.mainnet_version
 
     @classmethod
-    def master_key(cls, bip39_seed: bytes, testnet=False) -> "PrivKeyNode":
+    def master_key(cls, bip39_seed: bytes, testnet=False) -> "PrvKeyNode":
         """
         Generates master private key node from bip39 seed.
 
@@ -419,7 +419,7 @@ class PrivKeyNode(PubKeyNode):
         :param testnet: whether this node is testnet node
         :type testnet: bool
         :return: master private key node
-        :rtype: PrivKeyNode
+        :rtype: PrvKeyNode
         """
         I = hmac.new(
             key=b"Bitcoin seed",
@@ -456,7 +456,7 @@ class PrivKeyNode(PubKeyNode):
         :rtype: bytes
         """
         return self._serialize(
-            version=self.priv_version if version is None else version,
+            version=self.prv_version if version is None else version,
             key=b"\x00" + bytes(self.private_key)
         )
 
@@ -471,7 +471,7 @@ class PrivKeyNode(PubKeyNode):
         """
         return encode_base58_checksum(self.serialize_private(version=version))
 
-    def ckd(self, index: int) -> "PrivKeyNode":
+    def ckd(self, index: int) -> "PrvKeyNode":
         """
         The function CKDpriv((kpar, cpar), i) → (ki, ci) computes
         a child extended private key from the parent extended private key:
@@ -492,7 +492,7 @@ class PrivKeyNode(PubKeyNode):
         :param index: derivation index
         :type index: int
         :return: derived child
-        :rtype: PrivKeyNode
+        :rtype: PrvKeyNode
         """
         if index >= HARDENED:
             # hardened

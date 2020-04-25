@@ -1,55 +1,55 @@
 import csv
 from typing import List, Callable
 
-from btc_hd_wallet.bip32 import Priv_or_PubKeyNode, HARDENED
+from btc_hd_wallet.bip32 import Prv_or_PubKeyNode, HARDENED
 from btc_hd_wallet.wallet_utils import Bip32Path
 from btc_hd_wallet.base_wallet import BaseWallet
 
 
 class PaperWallet(BaseWallet):
 
-    def bip44_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+    def bip44_triad(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
         """
         Generates bip44 triads from nodes.
 
         :param nodes: nodes for triad generation
-        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :return: generated triads
         :rtype: List[List[str]]
         """
         return self.triad(nodes=nodes, addr_fnc=self.p2pkh_address)
 
-    def bip49_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+    def bip49_triad(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
         """
         Generates bip49 triads from nodes.
 
         :param nodes: nodes for triad generation
-        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :return: generated triads
         :rtype: List[List[str]]
         """
         return self.triad(nodes=nodes, addr_fnc=self.p2sh_p2wpkh_address)
 
-    def bip84_triad(self, nodes: List[Priv_or_PubKeyNode]) -> List[List[str]]:
+    def bip84_triad(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
         """
         Generates bip84 triads from nodes.
 
         :param nodes: nodes for triad generation
-        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :return: generated triads
         :rtype: List[List[str]]
         """
         return self.triad(nodes=nodes, addr_fnc=self.p2wpkh_address)
 
-    def triad(self, nodes: List[Priv_or_PubKeyNode],
-              addr_fnc: Callable[[Priv_or_PubKeyNode], str]) -> List[List[str]]:
+    def triad(self, nodes: List[Prv_or_PubKeyNode],
+              addr_fnc: Callable[[Prv_or_PubKeyNode], str]) -> List[List[str]]:
         """
         Generates triads from nodes.
 
         :param nodes: nodes for triad generation
-        :type nodes: List[Union[PrivKeyNode, PubKeyNode]]
+        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :param addr_fnc: function to use for address generation
-        :type addr_fnc: Callable[Union[PrivKeyNode, PubKeyNode], str]
+        :type addr_fnc: Callable[Union[PrvKeyNode, PubKeyNode], str]
         :return: generated triads
         :rtype: List[List[str]]
         """

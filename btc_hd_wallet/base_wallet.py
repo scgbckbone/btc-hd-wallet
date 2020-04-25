@@ -1,7 +1,7 @@
 from typing import Callable, Generator
 
 from btc_hd_wallet.bip32 import (
-    PrivKeyNode, PubKeyNode, Priv_or_PubKeyNode
+    PrvKeyNode, PubKeyNode, Prv_or_PubKeyNode
 )
 from btc_hd_wallet.bip39 import (
     mnemonic_from_entropy, mnemonic_from_entropy_bits, bip39_seed_from_mnemonic
@@ -22,12 +22,12 @@ class BaseWallet(object):
         "master"
     )
 
-    def __init__(self, master: Priv_or_PubKeyNode, testnet: bool = False):
+    def __init__(self, master: Prv_or_PubKeyNode, testnet: bool = False):
         """
         Initializes wallet object.
 
         :param master: master node
-        :type master: Union[PrivKeyNode, PubKeyNode]
+        :type master: Union[PrvKeyNode, PubKeyNode]
         :param testnet: whether this node is testnet node
         :type testnet: bool
         """
@@ -131,7 +131,7 @@ class BaseWallet(object):
         :rtype: BaseWallet
         """
         return cls(
-            master=PrivKeyNode.master_key(
+            master=PrvKeyNode.master_key(
                 bip39_seed=bip39_seed,
                 testnet=testnet
             ),
@@ -176,23 +176,23 @@ class BaseWallet(object):
         :rtype: BaseWallet
         """
         # just need version, key type does not matter in here
-        version_int = PrivKeyNode.parse(s=extended_key).parsed_version
+        version_int = PrvKeyNode.parse(s=extended_key).parsed_version
         version = Version.parse(version_int=version_int)
         if version.key_type == Key.PRV:
-            node = PrivKeyNode.parse(extended_key, testnet=version.testnet)
+            node = PrvKeyNode.parse(extended_key, testnet=version.testnet)
         else:
             # is this just assuming? or really pub if not priv
             node = PubKeyNode.parse(extended_key, testnet=version.testnet)
         return cls(testnet=version.testnet, master=node)
 
     def determine_node_version_int(self,
-                                   node: Priv_or_PubKeyNode,
+                                   node: Prv_or_PubKeyNode,
                                    key_type: Key) -> Version:
         """
         Determines node version.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :param key_type: type of key private/public
         :type key_type: Key
         :return: version object
@@ -206,24 +206,24 @@ class BaseWallet(object):
         )
         return version
 
-    def node_extended_public_key(self, node: Priv_or_PubKeyNode) -> str:
+    def node_extended_public_key(self, node: Prv_or_PubKeyNode) -> str:
         """
         Gets node's extended public key.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: extended public key
         :rtype: str
         """
         version = self.determine_node_version_int(node=node, key_type=Key.PUB)
         return node.extended_public_key(version=int(version))
 
-    def node_extended_private_key(self, node: Priv_or_PubKeyNode) -> str:
+    def node_extended_private_key(self, node: Prv_or_PubKeyNode) -> str:
         """
         Gets node's extended private key.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: extended private key
         :rtype: str
         """
@@ -232,12 +232,12 @@ class BaseWallet(object):
         version = self.determine_node_version_int(node=node, key_type=Key.PRV)
         return node.extended_private_key(version=int(version))
 
-    def node_extended_keys(self, node: Priv_or_PubKeyNode) -> dict:
+    def node_extended_keys(self, node: Prv_or_PubKeyNode) -> dict:
         """
         Gets node's extended keys.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: extended keys mapping
         :rtype: dict
         """
@@ -250,34 +250,34 @@ class BaseWallet(object):
             "prv": prv
         }
 
-    def p2pkh_address(self, node: Priv_or_PubKeyNode) -> str:
+    def p2pkh_address(self, node: Prv_or_PubKeyNode) -> str:
         """
         Generates p2pkh address from node.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2pkh address
         :rtype: str
         """
         return node.public_key.address(testnet=self.testnet, addr_type="p2pkh")
 
-    def p2wpkh_address(self, node: Priv_or_PubKeyNode) -> str:
+    def p2wpkh_address(self, node: Prv_or_PubKeyNode) -> str:
         """
         Generates p2wpkh address from node.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2wpkh address
         :rtype: str
         """
         return node.public_key.address(testnet=self.testnet, addr_type="p2wpkh")
 
-    def p2sh_p2wpkh_address(self, node: Priv_or_PubKeyNode) -> str:
+    def p2sh_p2wpkh_address(self, node: Prv_or_PubKeyNode) -> str:
         """
         Generates p2wpkh wrapped in p2sh address from node.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2sh-p2wpkh address
         :rtype: str
         """
@@ -288,12 +288,12 @@ class BaseWallet(object):
             testnet=self.testnet
         )
 
-    def p2wsh_address(self, node: Priv_or_PubKeyNode) -> str:
+    def p2wsh_address(self, node: Prv_or_PubKeyNode) -> str:
         """
         Generates p2wsh address from node.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2wsh address
         :rtype: str
         """
@@ -309,12 +309,12 @@ class BaseWallet(object):
             testnet=self.testnet
         )
 
-    def p2sh_p2wsh_address(self, node: Priv_or_PubKeyNode) -> str:
+    def p2sh_p2wsh_address(self, node: Prv_or_PubKeyNode) -> str:
         """
         Generates p2wsh wrapped in p2sh address from node.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2sh-p2wsh address
         :rtype: str
         """
@@ -327,16 +327,16 @@ class BaseWallet(object):
             testnet=self.testnet
         )
 
-    def address_generator(self, node: Priv_or_PubKeyNode = None,
-                          addr_fnc: Callable[[Priv_or_PubKeyNode], str] = None
-                          ) -> Generator[str]:
+    def address_generator(self, node: Prv_or_PubKeyNode = None,
+                          addr_fnc: Callable[[Prv_or_PubKeyNode], str] = None
+                          ) -> Generator[str, int, None]:
         """
         Address generator.
 
         :param node: key node
-        :type node: Union[PrivKeyNode, PubKeyNode]
+        :type node: Union[PrvKeyNode, PubKeyNode]
         :param addr_fnc: function to use for address generation
-        :type addr_fnc: Callable[Union[PrivKeyNode, PubKeyNode], str]
+        :type addr_fnc: Callable[Union[PrvKeyNode, PubKeyNode], str]
         :return: address generator
         :rtype: Generator[str]
         """
@@ -347,14 +347,14 @@ class BaseWallet(object):
             adder = yield str(child), addr_fnc(child)
             index += adder or 1
 
-    def by_path(self, path: str) -> Priv_or_PubKeyNode:
+    def by_path(self, path: str) -> Prv_or_PubKeyNode:
         """
         Generate child node from master node by path.
 
         :param path: bip32 path
         :type path: str
         :return: child node
-        :rtype: Union[PrivKeyNode, PubKeyNode]
+        :rtype: Union[PrvKeyNode, PubKeyNode]
         """
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())

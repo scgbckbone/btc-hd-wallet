@@ -1,5 +1,5 @@
 import unittest
-from btc_hd_wallet.bip32 import PrivKeyNode
+from btc_hd_wallet.bip32 import PrvKeyNode
 from btc_hd_wallet.bip39 import bip39_seed_from_mnemonic
 
 
@@ -8,7 +8,7 @@ class TestBip44(unittest.TestCase):
         mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
         root_prv = "xprv9s21ZrQH143K3GJpoapnV8SFfukcVBSfeCficPSGfubmSFDxo1kuHnLisriDvSnRRuL2Qrg5ggqHKNVpxR86QEC8w35uxmGoggxtQTPvfUu"
 
-        node = PrivKeyNode.master_key(
+        node = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic)
         )
         self.assertEqual(node.extended_private_key(), root_prv)
@@ -51,7 +51,7 @@ class TestBip44(unittest.TestCase):
     def test_vector_2(self):
         mnemonic = "banner list crush drill oxygen grit donate chair expect cloud artist window dignity company salad clinic follow drive narrow crater enlist tortoise stay rain"
         root_prv = "xprv9s21ZrQH143K427wU7WXG3doLsxkVbzVubaGShVYLHnYgb6EiiEyhhr2GEzz6UDNFrhNk9s6Ms9iPzA6xz2t6VjmGtQmATGSXDEJyGLGmbT"
-        node = PrivKeyNode.master_key(
+        node = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic)
         )
         self.assertEqual(node.extended_private_key(), root_prv)
@@ -96,7 +96,7 @@ class TestBip44(unittest.TestCase):
     def test_vector_3(self):
         mnemonic = "alone process notice pool egg gift foster session code bright service change"
         root_prv = "tprv8ZgxMBicQKsPf4hvHELfyj2nzS7kiqu9fzi2rzHzEnTbcNSE7pEn47TDt2s8ZdD3jN6GkwbuX4W5jqSy1JvPbAdNLYRkh2jvC3WVWe9hxQr"
-        node = PrivKeyNode.master_key(
+        node = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic),
             testnet=True
         )
@@ -143,7 +143,7 @@ class TestBip44(unittest.TestCase):
     def test_vector_4(self):
         mnemonic = "fence test aunt appear calm supreme february fortune dog lunch dose volume envelope path must will vanish indicate switch click brush boy negative skate"
         root_prv = "tprv8ZgxMBicQKsPdNyrMJQzmyixu2wVHYhBC4BqFuCywjPP5QQYY7mqU1FMHF8cvvnC891zhihDeTji9s9DumwWG6fiU5vDs65n7BbgECfeGwP"
-        node = PrivKeyNode.master_key(
+        node = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic),
             testnet=True
         )

@@ -1,7 +1,7 @@
 import unittest
 from btc_hd_wallet.script import p2wpkh_script
 from btc_hd_wallet.helper import hash160, h160_to_p2sh_address
-from btc_hd_wallet.bip32 import PrivKeyNode
+from btc_hd_wallet.bip32 import PrvKeyNode
 from btc_hd_wallet.bip39 import bip39_seed_from_mnemonic
 
 
@@ -9,7 +9,7 @@ class TestBip49(unittest.TestCase):
     def test_vector_1(self):
         mnemonic = "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
         master_extended = "uprv8tXDerPXZ1QsVNjUJWTurs9kA1KGfKUAts74GCkcXtU8GwnH33GDRbNJpEqTvipfCyycARtQJhmdfWf8oKt41X9LL1zeD2pLsWmxEk3VAwd"
-        m = PrivKeyNode.master_key(
+        m = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic),
             testnet=True
         )
@@ -46,7 +46,7 @@ class TestBip49(unittest.TestCase):
     def test_vector_2(self):
         mnemonic = "goat trick april onion eight theory segment foil indicate smart submit replace used century acquire spray save helmet"
         master_extended = "yprvABrGsX5C9januNLW3qTv3oPvS7jBRxj2S36zQRTZvFg3CsE6tjFQ5WcraLVsMyvwtwhyGboKSLbBaz6osX5Az8SWc95afN2jCEWQKYHH2qZ"
-        m = PrivKeyNode.master_key(
+        m = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic)
         )
         self.assertEqual(
@@ -76,7 +76,7 @@ class TestBip49(unittest.TestCase):
     def test_vector_3(self):
         mnemonic = "never beach drink duty chicken inject morning loop hundred sleep alcohol artwork distance quality anxiety bind wrestle broom"
         master_extended = "yprvABrGsX5C9jansmRNiPoZkRJ79TdprUga5HUUmzeUMesm1nMLUmMdQMvS7gXRzFeC8vS4CakXjeQYGgrPMyuJM1b7tSxR7X6KcAdd7rJ1mUy"
-        m = PrivKeyNode.master_key(
+        m = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic)
         )
         self.assertEqual(
@@ -106,7 +106,7 @@ class TestBip49(unittest.TestCase):
     def test_vector_4(self):
         mnemonic = "decide crowd time timber switch rubber planet west all deal trick apology session barely reflect pupil blush laptop either eagle limit"
         master_extended = "uprv8tXDerPXZ1QsURvozt1czYYfwn7iGFpHdbMJpva9BgWGAKYGQBxJdyGgjfQUiiqRPd9WQ7GnrQ8TL7yNxMjjk7SsCMnBk9Pp6mgXYF5JrUx"
-        m = PrivKeyNode.master_key(
+        m = PrvKeyNode.master_key(
             bip39_seed=bip39_seed_from_mnemonic(mnemonic=mnemonic),
             testnet=True
         )
