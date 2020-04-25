@@ -32,35 +32,63 @@ class Version(object):
 
     main: dict = {
         Key.PUB.name: {
+            # xpub
             Bip.BIP44.name: 0x0488B21E,
+            # ypub
             Bip.BIP49.name: 0x049d7cb2,
+            # zpub
             Bip.BIP84.name: 0x04b24746
         },
         Key.PRV.name: {
+            # xprv
             Bip.BIP44.name: 0x0488ADE4,
+            # yprv
             Bip.BIP49.name: 0x049d7878,
+            # zprv
             Bip.BIP84.name: 0x04b2430c
         }
     }
     test: dict = {
         Key.PUB.name: {
+            # tpub
             Bip.BIP44.name: 0x043587CF,
+            # upub
             Bip.BIP49.name: 0x044a5262,
+            # vpub
             Bip.BIP84.name: 0x045f1cf6
         },
         Key.PRV.name: {
+            # tprv
             Bip.BIP44.name: 0x04358394,
+            # uprv
             Bip.BIP49.name: 0x044a4e28,
+            # vprv
             Bip.BIP84.name: 0x045f18bc
         }
     }
 
     def __init__(self, key_type: int, bip: int, testnet: bool):
+        """
+        Initializes version object.
+
+        :param key_type: type of key PRV/PUB
+        :type key_type: int
+        :param bip: bip number
+        :type bip: int
+        :param testnet: whether to choose from testnet versions
+        :type testnet: bool
+        """
         self.key_type = Key(key_type)
         self.bip_type = Bip(bip)
         self.testnet = testnet
 
     def __int__(self) -> int:
+        """
+        Returns correct extended key version based on key type, bip and network.
+
+        :return: extended key version
+        :rtype: int
+        """
         if self.testnet:
             return self.test[self.key_type.name][self.bip_type.name]
         return self.main[self.key_type.name][self.bip_type.name]
@@ -83,7 +111,7 @@ class Version(object):
         if not cls.valid_version(version=version_int):
             raise ValueError("unsupported version")
         testnet = version_int in cls.testnet_versions()
-        private = version_int in cls.priv_versions()
+        private = version_int in cls.prv_versions()
         return cls(
             key_type=Key.PRV.value if private else Key.PUB.value,
             bip=cls.bip(version=version_int),
@@ -92,6 +120,16 @@ class Version(object):
 
     @classmethod
     def valid_version(cls, version: int) -> bool:
+        """
+        Checks whether version is valid version.
+
+        Valid version means a version, that is recognized by this software.
+
+        :param version: extended key version
+        :type version: int
+        :return: True/False
+        :rtype: bool
+        """
         _all = cls.testnet_versions() + cls.mainnet_versions()
         if version in _all:
             return True
@@ -99,6 +137,14 @@ class Version(object):
 
     @classmethod
     def bip(cls, version: int) -> int:
+        """
+        Matches version to corresponding bip.
+
+        :param version: extended key version
+        :type version: int
+        :return: bip number
+        :rtype: int
+        """
         if version in cls.bip44_data().values():
             return Bip.BIP44.value
         elif version in cls.bip49_data().values():
@@ -110,6 +156,12 @@ class Version(object):
 
     @classmethod
     def bip44_data(cls) -> dict:
+        """
+        Provides mapping with bip44 versions.
+
+        :return: mapping from b58 encoded representation to extended key version
+        :rtype: dict
+        """
         return {
             "xprv": cls.main[Key.PRV.name][Bip.BIP44.name],
             "xpub": cls.main[Key.PUB.name][Bip.BIP44.name],
@@ -119,6 +171,12 @@ class Version(object):
 
     @classmethod
     def bip49_data(cls) -> dict:
+        """
+        Provides mapping with bip49 versions.
+
+        :return: mapping from b58 encoded representation to extended key version
+        :rtype: dict
+        """
         return {
             "yprv": cls.main[Key.PRV.name][Bip.BIP49.name],
             "ypub": cls.main[Key.PUB.name][Bip.BIP49.name],
@@ -128,6 +186,12 @@ class Version(object):
 
     @classmethod
     def bip84_data(cls) -> dict:
+        """
+        Provides mapping with bip84 versions.
+
+        :return: mapping from b58 encoded representation to extended key version
+        :rtype: dict
+        """
         return {
             "zprv": cls.main[Key.PRV.name][Bip.BIP84.name],
             "zpub": cls.main[Key.PUB.name][Bip.BIP84.name],
@@ -137,6 +201,14 @@ class Version(object):
 
     @staticmethod
     def get_versions(dct: dict) -> List[int]:
+        """
+        Gets versions from version mapping.
+
+        :param dct: version mapping
+        :type dct: dict
+        :return: sequence of versions
+        :rtype: list
+        """
         res = []
         for k, v in dct.items():
             res += v.values()
@@ -144,23 +216,55 @@ class Version(object):
 
     @classmethod
     def key_versions(cls, key_type: str) -> List[int]:
+        """
+        Gets versions for specific key type.
+
+        :param key_type: type of key PRV/PUB
+        :type key_type: str
+        :return: sequence of version for specific key type
+        :rtype: list
+        """
         return list(cls.test[key_type].values()) + \
-               list(cls.main[key_type].values())
+            list(cls.main[key_type].values())
 
     @classmethod
     def mainnet_versions(cls) -> List[int]:
+        """
+        Gets mainnet version.
+
+        :return: sequence of mainnet versions
+        :rtype: List[int]
+        """
         return cls.get_versions(cls.main)
 
     @classmethod
     def testnet_versions(cls) -> List[int]:
+        """
+        Gets testnet version.
+
+        :return: sequence of testnet versions
+        :rtype: List[int]
+        """
         return cls.get_versions(cls.test)
 
     @classmethod
-    def priv_versions(cls) -> List[int]:
+    def prv_versions(cls) -> List[int]:
+        """
+        Gets private key versions.
+
+        :return: sequence of private key versions
+        :rtype: List[int]
+        """
         return cls.key_versions(key_type=Key.PRV.name)
 
     @classmethod
     def pub_versions(cls) -> List[int]:
+        """
+        Gets public key versions.
+
+        :return: sequence of public key versions
+        :rtype: List[int]
+        """
         return cls.key_versions(key_type=Key.PUB.name)
 
 
@@ -178,6 +282,23 @@ class Bip32Path(object):
     def __init__(self, purpose: int = None, coin_type: int = None,
                  account: int = None, chain: int = None, addr_index: int = None,
                  private=True):
+        """
+        Initializes path object.
+
+        :param purpose: bip44 purpose
+        :type purpose: int
+        :param coin_type: bip44 coin type
+        :type coin_type: int
+        :param account: bip44 account
+        :type account: int
+        :param chain: bip44 chain
+        :type chain: int
+        :param addr_index: bip44 address index
+        :type addr_index: int
+        :param private: whether this path corresponds to private key
+                        (default=True)
+        :type private: bool
+        """
         self.purpose = purpose
         self.coin_type = coin_type
         self.account = account
@@ -187,6 +308,16 @@ class Bip32Path(object):
         self.integrity_check()
 
     def integrity_check(self) -> None:
+        """
+        Assures that current path makes logical sense.
+
+        Checks if no value has None on the left side. For example if account
+        is given, both purpose and coin type has to be known too. If this
+        is not the case - RuntimeError is raised.
+
+        :return: nothing
+        :rtype: None
+        """
         none_found = False
         for item in self._to_list():
             if item is None:
@@ -203,6 +334,13 @@ class Bip32Path(object):
         return "/".join(items)
 
     def __eq__(self, other: "Bip32Path") -> bool:
+        """
+        Checks whether two paths are equal.
+
+        :param other: other path
+        :type other: Bip32Path
+        :rtype: bool
+        """
         return self.m == other.m and \
             self.purpose == other.purpose and \
             self.coin_type == other.coin_type and \
@@ -212,30 +350,72 @@ class Bip32Path(object):
 
     @property
     def m(self) -> str:
+        """
+        Chooses correct mark. M for public key and m for private key.
+
+        :return: correct mark
+        :rtype: str
+        """
         return "m" if self.private else "M"
 
     @property
     def bitcoin_testnet(self) -> bool:
+        """
+        Testnet path.
+
+        :return: whether this path is testnet path
+        :rtype: bool
+        """
         return self.coin_type == 0x80000001
 
     @property
     def bitcoin_mainnet(self) -> bool:
+        """
+        Mainnet path.
+
+        :return: whether this path is mainnet path
+        :rtype: bool
+        """
         return self.coin_type == 0x80000000
 
     @property
     def external_chain(self) -> bool:
+        """
+        External chain path.
+
+        :return: whether this path is external chain path
+        :rtype: bool
+        """
         return self.chain == 0
 
     @property
     def bip44(self) -> bool:
+        """
+        Bip44 path.
+
+        :return: whether this path is bip44 path
+        :rtype: bool
+        """
         return self.purpose == 44 + (2 ** 31)
 
     @property
     def bip49(self) -> bool:
+        """
+        bip49 path.
+
+        :return: whether this path is bip49 path
+        :rtype: bool
+        """
         return self.purpose == 49 + (2 ** 31)
 
     @property
     def bip84(self) -> bool:
+        """
+        Bip84 path.
+
+        :return: whether this path is bip84 path
+        :rtype: bool
+        """
         return self.purpose == 84 + (2 ** 31)
 
     def bip(self) -> int:
@@ -250,25 +430,63 @@ class Bip32Path(object):
 
     @staticmethod
     def is_hardened(num: int) -> bool:
+        """
+        Checks whether num is hardened i.e. bigger or equal than
+        2 to the power of 31.
+
+        :param num: number
+        :type num: int
+        :return: whether num is hardened
+        :rtype: bool
+        """
         return num >= 2 ** 31
 
     @staticmethod
     def is_private(sign) -> bool:
+        """
+        Check whether mark/sign is for private key.
+
+        :param sign: mark M/m
+        :return: whether is private
+        :rtype: bool
+        """
         return True if sign == "m" else False
 
     @staticmethod
     def convert_hardened(str_int: str) -> int:
+        """
+        Converts hardened string representation to integer.
+
+        :param str_int: string representation of number
+        :type str_int: str
+        :return: number
+        :rtype: int
+        """
         if str_int[-1] == "'":
             return int(str_int[:-1]) + (2 ** 31)
         return int(str_int)
 
     def repr_hardened(self, num: int) -> str:
+        """
+        Converts integer to hardened string representation .
+
+        :param num: number
+        :type num: int
+        :return: string representation of number
+        :rtype: str
+        """
         if self.is_hardened(num):
             return str(num - 2 ** 31) + "'"
         else:
             return str(num)
 
     def _to_list(self) -> List[Union[int, None]]:
+        """
+        Converts path to sequence.
+
+        :return: sequence of numbers
+        :rtype: List[Union[int, None]]
+        """
         return [
             self.purpose,
             self.coin_type,
@@ -278,10 +496,24 @@ class Bip32Path(object):
         ]
 
     def to_list(self) -> List[int]:
+        """
+        Converts path to sequence.
+
+        :return: sequence of numbers
+        :rtype: List[int]
+        """
         return [x for x in self._to_list() if x is not None]
 
     @classmethod
     def parse(cls, s: str) -> "Bip32Path":
+        """
+        Initializes path from its string representation.
+
+        :param s: path
+        :type s: str
+        :return: path object
+        :rtype: Bip32Path
+        """
         s_lst = s.split("/")
         if s_lst[0] not in ("m", "M"):
             raise ValueError("incorrect marker")
