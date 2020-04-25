@@ -266,9 +266,11 @@ class TestPublicKey(unittest.TestCase):
         sk1 = PrivateKey(sec_exp=1256615165161)
 
         pk = PublicKey.parse(key_bytes=bytes.fromhex(
-            "0311f16bf6194093aea6bde62a44ffe7ca054daa4e779e6f427e100eff578bc4fd"))
+            "0311f16bf6194093aea6bde62a44ffe7ca054daa4e779e6f427e100eff578bc4fd"
+        ))
         pk1 = PublicKey.parse(key_bytes=bytes.fromhex(
-            "0311f16bf6194093aea6bde62a44ffe7ca054daa4e779e6f427e100eff578bc4fd"))
+            "0311f16bf6194093aea6bde62a44ffe7ca054daa4e779e6f427e100eff578bc4fd"
+        ))
         self.assertEqual(pk, pk1)
 
         pk = PublicKey.from_point(point=pk.point)
@@ -276,3 +278,8 @@ class TestPublicKey(unittest.TestCase):
 
         self.assertEqual(pk, pk1)
         self.assertEqual(sk.K, sk1.K)
+
+        pk2 = PublicKey.parse(key_bytes=bytes.fromhex(
+            "033c47bf0f7c18ed18f49efd78cfb14138e673eea135ccf0779f22c46c93ac2b2f"
+        ))
+        self.assertNotEqual(pk1, pk2)
