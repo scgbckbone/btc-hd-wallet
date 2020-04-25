@@ -8,49 +8,49 @@ from btc_hd_wallet.base_wallet import BaseWallet
 
 class PaperWallet(BaseWallet):
 
-    def bip44_triad(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
+    def bip44_group(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
         """
-        Generates bip44 triads from nodes.
+        Generates bip44 groups (path, address, sec, wif) from nodes.
 
-        :param nodes: nodes for triad generation
+        :param nodes: nodes for group generation
         :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
-        :return: generated triads
+        :return: generated groups
         :rtype: List[List[str]]
         """
-        return self.triad(nodes=nodes, addr_fnc=self.p2pkh_address)
+        return self.group(nodes=nodes, addr_fnc=self.p2pkh_address)
 
-    def bip49_triad(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
+    def bip49_group(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
         """
-        Generates bip49 triads from nodes.
+        Generates bip49 groups (path, address, sec, wif) from nodes.
 
-        :param nodes: nodes for triad generation
+        :param nodes: nodes for group generation
         :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
-        :return: generated triads
+        :return: generated groups
         :rtype: List[List[str]]
         """
-        return self.triad(nodes=nodes, addr_fnc=self.p2sh_p2wpkh_address)
+        return self.group(nodes=nodes, addr_fnc=self.p2sh_p2wpkh_address)
 
-    def bip84_triad(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
+    def bip84_group(self, nodes: List[Prv_or_PubKeyNode]) -> List[List[str]]:
         """
-        Generates bip84 triads from nodes.
+        Generates bip84 groups (path, address, sec, wif) from nodes.
 
-        :param nodes: nodes for triad generation
+        :param nodes: nodes for group generation
         :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
-        :return: generated triads
+        :return: generated groups
         :rtype: List[List[str]]
         """
-        return self.triad(nodes=nodes, addr_fnc=self.p2wpkh_address)
+        return self.group(nodes=nodes, addr_fnc=self.p2wpkh_address)
 
-    def triad(self, nodes: List[Prv_or_PubKeyNode],
+    def group(self, nodes: List[Prv_or_PubKeyNode],
               addr_fnc: Callable[[Prv_or_PubKeyNode], str]) -> List[List[str]]:
         """
-        Generates triads from nodes.
+        Generates groups (path, address, sec, wif) from nodes.
 
-        :param nodes: nodes for triad generation
+        :param nodes: nodes for group generation
         :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :param addr_fnc: function to use for address generation
         :type addr_fnc: Callable[Union[PrvKeyNode, PubKeyNode], str]
-        :return: generated triads
+        :return: generated groups
         :rtype: List[List[str]]
         """
         return [
@@ -67,14 +67,14 @@ class PaperWallet(BaseWallet):
 
     def bip44(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
         """
-        Generates bip44 account keys and triads (address, sec, wif)
+        Generates bip44 account keys and groups (address, sec, wif)
 
         :param account: bip44 account number
         :type account: int
         :param interval: specific interval of integers
                         from which to generate children
         :type interval: tuple
-        :return: account keys and triads
+        :return: account keys and groups
         :rtype: tuple
         """
         path = Bip32Path(
@@ -85,20 +85,20 @@ class PaperWallet(BaseWallet):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_ext_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_ext_keys, self.bip44_triad(
+        return acct_ext_keys, self.bip44_group(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
     def bip49(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
         """
-        Generates bip49 account keys and triads (address, sec, wif)
+        Generates bip49 account keys and groups (address, sec, wif)
 
         :param account: bip44 account number
         :type account: int
         :param interval: specific interval of integers
                         from which to generate children
         :type interval: tuple
-        :return: account keys and triads
+        :return: account keys and groups
         :rtype: tuple
         """
         path = Bip32Path(
@@ -109,20 +109,20 @@ class PaperWallet(BaseWallet):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_ext_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_ext_keys, self.bip49_triad(
+        return acct_ext_keys, self.bip49_group(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
     def bip84(self, account: int = 0, interval: tuple = (0, 20)) -> tuple:
         """
-        Generates bip84 account keys and triads (address, sec, wif)
+        Generates bip84 account keys and group (address, sec, wif)
 
         :param account: bip44 account number
         :type account: int
         :param interval: specific interval of integers
                         from which to generate children
         :type interval: tuple
-        :return: account keys and triads
+        :return: account keys and groups
         :rtype: tuple
         """
         path = Bip32Path(
@@ -133,7 +133,7 @@ class PaperWallet(BaseWallet):
         acct_node = self.master.derive_path(index_list=path.to_list())
         acct_ext_keys = self.node_extended_keys(node=acct_node)
         external_chain_node = acct_node.derive_path(index_list=[0])
-        return acct_ext_keys, self.bip84_triad(
+        return acct_ext_keys, self.bip84_group(
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
@@ -149,13 +149,13 @@ class PaperWallet(BaseWallet):
         :return: wallet mapping
         :rtype: dict
         """
-        acct_ext44, triads44 = self.bip44(account=account, interval=interval)
-        acct_ext49, triads49 = self.bip49(account=account, interval=interval)
-        acct_ext84, triads84 = self.bip84(account=account, interval=interval)
+        acct_ext44, groups44 = self.bip44(account=account, interval=interval)
+        acct_ext49, groups49 = self.bip49(account=account, interval=interval)
+        acct_ext84, groups84 = self.bip84(account=account, interval=interval)
         return {
-            "bip44": {"acct_ext_keys": acct_ext44, "triads": triads44},
-            "bip49": {"acct_ext_keys": acct_ext49, "triads": triads49},
-            "bip84": {"acct_ext_keys": acct_ext84, "triads": triads84},
+            "bip44": {"acct_ext_keys": acct_ext44, "groups": groups44},
+            "bip49": {"acct_ext_keys": acct_ext49, "groups": groups49},
+            "bip84": {"acct_ext_keys": acct_ext84, "groups": groups84},
         }
 
     @staticmethod
@@ -189,7 +189,7 @@ class PaperWallet(BaseWallet):
             writer = csv.writer(f)
             for bip_name, bip_obj in wallet_dict.items():
                 ext = self.extended_keys_to_csv_format(bip_obj["acct_ext_keys"])
-                res = ext + bip_obj["triads"]
+                res = ext + bip_obj["groups"]
                 writer.writerows(res)
                 writer.writerow([])
 
@@ -213,6 +213,6 @@ class PaperWallet(BaseWallet):
             print()
             print(fmt % ("bip32_path", "address",
                          "public_key(sec)", "private_key(wif)"))
-            for triad in bip_dct["triads"]:
-                print(fmt % tuple(triad))
+            for group in bip_dct["groups"]:
+                print(fmt % tuple(group))
             print()

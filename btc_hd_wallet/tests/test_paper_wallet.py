@@ -32,11 +32,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m44h0h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0.bip44_triad(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip44_group(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M44h0h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1.bip44_triad(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip44_group(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -61,11 +61,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m49h0h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0.bip49_triad(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip49_group(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M49h0h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1.bip49_triad(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip49_group(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -88,11 +88,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m84h0h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0.bip84_triad(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip84_group(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M84h0h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1.bip84_triad(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip84_group(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -118,11 +118,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m44h1h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0.bip44_triad(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip44_group(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M44h1h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1.bip44_triad(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip44_group(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -147,11 +147,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m49h1h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0.bip49_triad(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip49_group(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M49h1h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1.bip49_triad(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip49_group(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -174,11 +174,11 @@ class TestColdWallet(unittest.TestCase):
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m84h1h0h0)
         self.assertFalse(wallet0.watch_only)
-        wallet0 = wallet0.bip84_triad(nodes=wallet0.master.generate_children())
+        wallet0 = wallet0.bip84_group(nodes=wallet0.master.generate_children())
 
         wallet1 = PaperWallet.from_extended_key(extended_key=M84h1h0h0)
         self.assertTrue(wallet1.watch_only)
-        wallet1 = wallet1.bip84_triad(nodes=wallet1.master.generate_children())
+        wallet1 = wallet1.bip84_group(nodes=wallet1.master.generate_children())
 
         self.assertEqual(len(wallet), len(csv_f))
         self.assertEqual(len(wallet0), len(csv_f))
@@ -208,23 +208,23 @@ class TestColdWallet(unittest.TestCase):
         address = "13UkPjRAmH1sDWuoX1zeL8yCFWXdwPvGAE"
         pubkey = "03597d9a56c46c0e6e1827525bb517c5a8dfe21ace626f31a2e11c4e4e23cd353e"
         wif = "L5nBbbswFNu8wWP9VZY66Up4X3yNX7mcfArDHRQ5onMZhGC3qBZH"
-        self.assertEqual(pw["bip44"]["triads"][19][1], address)
-        self.assertEqual(pw["bip44"]["triads"][19][2], pubkey)
-        self.assertEqual(pw["bip44"]["triads"][19][3], wif)
+        self.assertEqual(pw["bip44"]["groups"][19][1], address)
+        self.assertEqual(pw["bip44"]["groups"][19][2], pubkey)
+        self.assertEqual(pw["bip44"]["groups"][19][3], wif)
 
         address = "3EGt757gbPFn1z5uvrUMhTcwKmxK78jsvC"
         pubkey = "020a0aff849f9addb615ef67ada2dfddbc59c377ab5668f2713bb379cc9d0f287b"
         wif = "L2PRabCy4qhKJTYkbcA6MEm2hC6DyPqSFj7jsCvNpHkU8DpmDWJR"
-        self.assertEqual(pw["bip49"]["triads"][19][1], address)
-        self.assertEqual(pw["bip49"]["triads"][19][2], pubkey)
-        self.assertEqual(pw["bip49"]["triads"][19][3], wif)
+        self.assertEqual(pw["bip49"]["groups"][19][1], address)
+        self.assertEqual(pw["bip49"]["groups"][19][2], pubkey)
+        self.assertEqual(pw["bip49"]["groups"][19][3], wif)
 
         address = "bc1q9gxcsd5wmdrg5909628kx96384h0w5dyyj82gz"
         pubkey = "03c66906128c24b82babeaea82205c10b0eeb09413da198ed8aa1337b82ac0d028"
         wif = "KzyLyHiys138p2EY4fPCV9JZfz6wVE4x6DeMg9HGM9eaXQkRENtF"
-        self.assertEqual(pw["bip84"]["triads"][19][1], address)
-        self.assertEqual(pw["bip84"]["triads"][19][2], pubkey)
-        self.assertEqual(pw["bip84"]["triads"][19][3], wif)
+        self.assertEqual(pw["bip84"]["groups"][19][1], address)
+        self.assertEqual(pw["bip84"]["groups"][19][2], pubkey)
+        self.assertEqual(pw["bip84"]["groups"][19][3], wif)
 
     def test_generate_testnet(self):
         pw = self.wallet_testnet.generate(account=66, interval=(0, 50))
@@ -246,23 +246,23 @@ class TestColdWallet(unittest.TestCase):
         address = "mjXHL5oujxymKFdRUpLbAxFGU9ZaGvhPQ4"
         pubkey = "03b0829cd964a0e1e716fae3bb83812087825d5aca3f102670d8449312ee5b6647"
         wif = "cUbsTivUmb1dcpGwbRMsCznmwLZMuT85akmScPtwEhco4EQ9xDtD"
-        self.assertEqual(pw["bip44"]["triads"][49][1], address)
-        self.assertEqual(pw["bip44"]["triads"][49][2], pubkey)
-        self.assertEqual(pw["bip44"]["triads"][49][3], wif)
+        self.assertEqual(pw["bip44"]["groups"][49][1], address)
+        self.assertEqual(pw["bip44"]["groups"][49][2], pubkey)
+        self.assertEqual(pw["bip44"]["groups"][49][3], wif)
 
         address = "2N6yVCdJu6Z3o3mUQfQizeVi1yNYEXwYEVe"
         pubkey = "02e10c0eddc2456720e337359948204f5cdc0ca05da6a3b5ac48580316e7fc9278"
         wif = "cSDgEWgZxSHJq36H6ou4jwnEG14Qdx7QwdMvvgLREdE932DFbwT2"
-        self.assertEqual(pw["bip49"]["triads"][49][1], address)
-        self.assertEqual(pw["bip49"]["triads"][49][2], pubkey)
-        self.assertEqual(pw["bip49"]["triads"][49][3], wif)
+        self.assertEqual(pw["bip49"]["groups"][49][1], address)
+        self.assertEqual(pw["bip49"]["groups"][49][2], pubkey)
+        self.assertEqual(pw["bip49"]["groups"][49][3], wif)
 
         address = "tb1q8fa5tlqsvs38knnn79y8lzduy7lznvhv74mvfs"
         pubkey = "03897e1a34923b60cf6ff25c60bc94fef9519c8e7f90fe7ce3db9faa9d9fd6cb22"
         wif = "cUpJB4hmzFgQL4oo33td3FYmGy3CatxWyPkSGtdrS4kfRRgPsqK9"
-        self.assertEqual(pw["bip84"]["triads"][49][1], address)
-        self.assertEqual(pw["bip84"]["triads"][49][2], pubkey)
-        self.assertEqual(pw["bip84"]["triads"][49][3], wif)
+        self.assertEqual(pw["bip84"]["groups"][49][1], address)
+        self.assertEqual(pw["bip84"]["groups"][49][2], pubkey)
+        self.assertEqual(pw["bip84"]["groups"][49][3], wif)
 
     def test_watch_only_generate_failure(self):
         # cannot do hardened ckd

@@ -338,7 +338,7 @@ class BaseWallet(object):
         :param addr_fnc: function to use for address generation
         :type addr_fnc: Callable[Union[PrvKeyNode, PubKeyNode], str]
         :return: address generator
-        :rtype: Generator[str]
+        :rtype: Generator[str, int, None]
         """
         index = 0
         addr_fnc = addr_fnc or self.p2wpkh_address
