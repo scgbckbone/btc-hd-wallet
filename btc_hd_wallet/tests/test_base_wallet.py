@@ -20,7 +20,7 @@ class TestBaseWallet(unittest.TestCase):
     def test_from_mnemonic(self):
         w = BaseWallet.new_wallet()
         self.assertEqual(w, BaseWallet.from_mnemonic(mnemonic=w.mnemonic))
-        w = BaseWallet.new_wallet(entropy_bits=128)
+        w = BaseWallet.new_wallet(mnemonic_length=12)
         self.assertEqual(w, BaseWallet.from_mnemonic(mnemonic=w.mnemonic))
 
     def test_from_bip39_seed_hex(self):

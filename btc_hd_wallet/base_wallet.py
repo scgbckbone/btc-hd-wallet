@@ -57,8 +57,36 @@ class BaseWallet(object):
         return type(self.master) == PubKeyNode
 
     @classmethod
-    def new_wallet(cls, entropy_bits: int = 256, password: str = "",
+    def new_wallet(cls, mnemonic_length: int = 24, password: str = "",
                    testnet: bool = False):
+        """
+        Creates new wallet.
+
+        :param mnemonic_length: length of mnemonic sentence (default=24)
+        :type mnemonic_length: int
+        :param password: optional passphrase (default="")
+        :type password: str
+        :param testnet: whether this node is testnet node (default=False)
+        :type testnet: bool
+        :return: wallet
+        :rtype: BaseWallet
+        """
+        mnemonic_length_to_entropy_bits = {
+            12: 128,
+            15: 160,
+            18: 192,
+            21: 224,
+            24: 256
+        }
+        return cls.from_entropy_bits(
+            entropy_bits=mnemonic_length_to_entropy_bits[mnemonic_length],
+            password=password,
+            testnet=testnet
+        )
+
+    @classmethod
+    def from_entropy_bits(cls, entropy_bits: int = 256, password: str = "",
+                          testnet: bool = False):
         """
         Creates new wallet.
 
