@@ -27,6 +27,7 @@ class InvalidKeyError(Exception):
 
 
 class PubKeyNode(object):
+
     mark: str = "M"
     testnet_version: int = 0x043587CF
     mainnet_version: int = 0x0488B21E
@@ -51,7 +52,7 @@ class PubKeyNode(object):
         Initializes Pub/PrvKeyNode.
 
         :param key: public or private key
-        :type key:bytes
+        :type key: bytes
         :param chain_code: chain code
         :type chain_code: bytes
         :param index: current node derivation index (default=0)
@@ -367,6 +368,7 @@ class PubKeyNode(object):
 
 
 class PrvKeyNode(PubKeyNode):
+
     mark: str = "m"
     testnet_version: int = 0x04358394
     mainnet_version: int = 0x0488ADE4
