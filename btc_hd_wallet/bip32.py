@@ -54,15 +54,15 @@ class PubKeyNode(object):
         :type key:bytes
         :param chain_code: chain code
         :type chain_code: bytes
-        :param index: current node derivation index
+        :param index: current node derivation index (default=0)
         :type index: int
-        :param depth: current node depth
+        :param depth: current node depth (default=0)
         :type depth: int
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
-        :param parent: parent node of the current node
+        :param parent: parent node of the current node (default=None)
         :type parent: Union[PubKeyNode, PrvKeyNode]
-        :param parent_fingerprint: fingerprint of parent node
+        :param parent_fingerprint: fingerprint of parent node (default=None)
         :type parent_fingerprint: bytes
         """
         self.parent = parent
@@ -210,7 +210,7 @@ class PubKeyNode(object):
 
         :param s: serialized node buffer
         :type s: BytesIO
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         :return: public/private key node
         :rtype: Union[PrvKeyNode, PubKeyNode]
@@ -236,7 +236,7 @@ class PubKeyNode(object):
         """
         Serializes public/private key node to extended key format.
 
-        :param version: extended public/private key version
+        :param version: extended public/private key version (default=None)
         :type version: int
         :return: serialized extended public/private key node
         :rtype: bytes
@@ -264,7 +264,7 @@ class PubKeyNode(object):
         """
         Serializes public key node to extended key format.
 
-        :param version: extended public key version
+        :param version: extended public key version (default=None)
         :type version: int
         :return: serialized extended public key node
         :rtype: bytes
@@ -276,9 +276,10 @@ class PubKeyNode(object):
 
     def extended_public_key(self, version: int = None) -> str:
         """
-        Base58 encodes serialized public key node.
+        Base58 encodes serialized public key node. If version is not
+        provided (default) it is determined by result of self.pub_version.
 
-        :param version: extended public key version
+        :param version: extended public key version (default=None)
         :type version: int
         :return: extended public key
         :rtype: str
@@ -343,7 +344,7 @@ class PubKeyNode(object):
         Generates children of current node.
 
         :param interval: specific interval of integers
-                        from which to generate children
+                        from which to generate children (default=(0, 20))
         :type interval: tuple
         :return: list of generated children
         :rtype: List[Union[PubKeyNode, PrvKeyNode]]
@@ -416,7 +417,7 @@ class PrvKeyNode(PubKeyNode):
 
         :param bip39_seed: bip39_seed
         :type bip39_seed: bytes
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         :return: master private key node
         :rtype: PrvKeyNode
@@ -450,7 +451,7 @@ class PrvKeyNode(PubKeyNode):
         """
         Serializes private key node to extended key format.
 
-        :param version: extended private key version
+        :param version: extended private key version (default=None)
         :type version: int
         :return: serialized extended private key node
         :rtype: bytes
@@ -462,9 +463,10 @@ class PrvKeyNode(PubKeyNode):
 
     def extended_private_key(self, version: int = None) -> str:
         """
-        Base58 encodes serialized private key node.
+        Base58 encodes serialized private key node. If version is not
+        provided (default) it is determined by result of self.prv_version.
 
-        :param version: extended private key version
+        :param version: extended private key version (default=None)
         :type version: int
         :return: extended private key
         :rtype: str

@@ -69,10 +69,10 @@ class PaperWallet(BaseWallet):
         """
         Generates bip44 account keys and groups (address, sec, wif)
 
-        :param account: bip44 account number
+        :param account: bip44 account number (default=0)
         :type account: int
         :param interval: specific interval of integers
-                        from which to generate children
+                        from which to generate children (default=(0, 20))
         :type interval: tuple
         :return: account keys and groups
         :rtype: tuple
@@ -93,10 +93,10 @@ class PaperWallet(BaseWallet):
         """
         Generates bip49 account keys and groups (address, sec, wif)
 
-        :param account: bip44 account number
+        :param account: bip44 account number (default=0)
         :type account: int
         :param interval: specific interval of integers
-                        from which to generate children
+                        from which to generate children (default=(0, 20))
         :type interval: tuple
         :return: account keys and groups
         :rtype: tuple
@@ -117,10 +117,10 @@ class PaperWallet(BaseWallet):
         """
         Generates bip84 account keys and group (address, sec, wif)
 
-        :param account: bip44 account number
+        :param account: bip44 account number (default=0)
         :type account: int
         :param interval: specific interval of integers
-                        from which to generate children
+                        from which to generate children (default=(0, 20))
         :type interval: tuple
         :return: account keys and groups
         :rtype: tuple
@@ -141,10 +141,10 @@ class PaperWallet(BaseWallet):
         """
         Generates wallet mapping.
 
-        :param account: bip44 account number
+        :param account: bip44 account number (default=0)
         :type account: int
         :param interval: specific interval of integers
-                        from which to generate children
+                        from which to generate children (default=(0, 20))
         :type interval: tuple
         :return: wallet mapping
         :rtype: dict
@@ -179,7 +179,7 @@ class PaperWallet(BaseWallet):
 
         :param file_path: path to file that will be created
         :type file_path: str
-        :param wallet_dict: wallet mapping as generated from self.generate.
+        :param wallet_dict: wallet mapping (default=self.generate)
         :type wallet_dict: dict
         :return: nothing
         :rtype: None
@@ -197,7 +197,7 @@ class PaperWallet(BaseWallet):
         """
         Prints wallet to the console.
 
-        :param wallet_dict: wallet mapping as generated from self.generate.
+        :param wallet_dict: wallet mapping (default=self.generate)
         :type wallet_dict: dict
         :return: nothing
         :rtype: None

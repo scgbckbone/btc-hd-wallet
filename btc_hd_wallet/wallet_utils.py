@@ -285,15 +285,15 @@ class Bip32Path(object):
         """
         Initializes path object.
 
-        :param purpose: bip44 purpose
+        :param purpose: bip44 purpose (default=None)
         :type purpose: int
-        :param coin_type: bip44 coin type
+        :param coin_type: bip44 coin type (default=None)
         :type coin_type: int
-        :param account: bip44 account
+        :param account: bip44 account (default=None)
         :type account: int
-        :param chain: bip44 chain
+        :param chain: bip44 chain (default=None)
         :type chain: int
-        :param addr_index: bip44 address index
+        :param addr_index: bip44 address index (default=None)
         :type addr_index: int
         :param private: whether this path corresponds to private key
                         (default=True)

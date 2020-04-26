@@ -59,10 +59,10 @@ class PrivateKey(object):
         """
         Encodes private key into wallet import/export format.
 
-        :param compressed: whether public key is compressed
-        :type compressed: bool (default=True)
-        :param testnet: whether to encode as a testnet key
-        :type testnet: bool (default=False)
+        :param compressed: whether public key is compressed (default=True)
+        :type compressed: bool
+        :param testnet: whether to encode as a testnet key (default=False)
+        :type testnet: bool
         :return: WIF encoded private key
         :rtype: str
         """
@@ -193,7 +193,7 @@ class PublicKey(object):
 
         :param compressed: whether to use compressed format (default=True)
         :type: compressed: bool
-        :param testnet: whether to encode as a testnet address
+        :param testnet: whether to encode as a testnet address (default=False)
         :type testnet: bool
         :param addr_type: which address type to generate:
                             1. p2pkh

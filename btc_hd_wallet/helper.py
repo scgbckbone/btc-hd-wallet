@@ -161,7 +161,7 @@ def hash160(s: bytes) -> bytes:
     """
     sha256 followed by ripemd160
 
-    :param s: to be hashed
+    :param s: data
     :type s: bytes
     :return: hashed
     :rtype: bytes
@@ -173,7 +173,7 @@ def hash256(s: bytes) -> bytes:
     """
     two rounds of sha256
 
-    :param s: to be hashed
+    :param s: data
     :type s: bytes
     :return: hashed
     :rtype: bytes
@@ -185,7 +185,7 @@ def sha256(s: bytes) -> bytes:
     """
     one round of sha256
 
-    :param s: to be hashed
+    :param s: data
     :type s: bytes
     :return: hashed
     :rtype: bytes

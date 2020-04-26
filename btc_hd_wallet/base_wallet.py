@@ -28,7 +28,7 @@ class BaseWallet(object):
 
         :param master: master node
         :type master: Union[PrvKeyNode, PubKeyNode]
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         """
         self.master = master
@@ -62,11 +62,11 @@ class BaseWallet(object):
         """
         Creates new wallet.
 
-        :param entropy_bits: how much entropy bits to use
+        :param entropy_bits: number of entropy bits (default=256)
         :type entropy_bits: int
         :param password: optional passphrase (default="")
         :type password: str
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         :return: wallet
         :rtype: BaseWallet
@@ -88,7 +88,7 @@ class BaseWallet(object):
         :type entropy_hex: str
         :param password: optional passphrase (default="")
         :type password: str
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         :return: wallet
         :rtype: BaseWallet
@@ -107,7 +107,7 @@ class BaseWallet(object):
 
         :param bip39_seed: bip39 seed
         :type bip39_seed: str
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         :return: wallet
         :rtype: BaseWallet
@@ -125,7 +125,7 @@ class BaseWallet(object):
 
         :param bip39_seed: bip39 seed
         :type bip39_seed: bytes
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         :return: wallet
         :rtype: BaseWallet
@@ -148,7 +148,7 @@ class BaseWallet(object):
         :type mnemonic: str
         :param password: optional passphrase (default="")
         :type password: str
-        :param testnet: whether this node is testnet node
+        :param testnet: whether this node is testnet node (default=False)
         :type testnet: bool
         :return: wallet
         :rtype: BaseWallet
@@ -327,7 +327,7 @@ class BaseWallet(object):
             testnet=self.testnet
         )
 
-    def address_generator(self, node: Prv_or_PubKeyNode = None,
+    def address_generator(self, node: Prv_or_PubKeyNode,
                           addr_fnc: Callable[[Prv_or_PubKeyNode], str] = None
                           ) -> Generator[str, int, None]:
         """
@@ -336,6 +336,7 @@ class BaseWallet(object):
         :param node: key node
         :type node: Union[PrvKeyNode, PubKeyNode]
         :param addr_fnc: function to use for address generation
+                            (default=self.p2wpkh_address)
         :type addr_fnc: Callable[Union[PrvKeyNode, PubKeyNode], str]
         :return: address generator
         :rtype: Generator[str, int, None]

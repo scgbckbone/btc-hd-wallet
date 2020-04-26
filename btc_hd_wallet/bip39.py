@@ -54,7 +54,7 @@ def mnemonic_from_entropy_bits(entropy_bits: int = 256) -> str:
     """
     Generate mnemonic sentence from random bits.
 
-    :param entropy_bits: number of entropy bits
+    :param entropy_bits: number of entropy bits (default=256)
     :type entropy_bits: int
     :return: mnemonic sentence
     :rtype: str
@@ -98,7 +98,7 @@ def bip39_seed_from_mnemonic(mnemonic: str, password: str = "") -> bytes:
 
     :param mnemonic: mnemonic sentence
     :type mnemonic: str
-    :param password: password (optional)
+    :param password: password (default="")
     :return: bip39 seed
     :rtype: bytes
     """
