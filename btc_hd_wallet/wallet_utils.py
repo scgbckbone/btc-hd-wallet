@@ -72,11 +72,8 @@ class Version(object):
         Initializes version object.
 
         :param key_type: type of key PRV/PUB
-        :type key_type: int
         :param bip: bip number
-        :type bip: int
         :param testnet: whether to choose from testnet versions
-        :type testnet: bool
         """
         self.key_type = Key(key_type)
         self.bip_type = Bip(bip)
@@ -87,7 +84,6 @@ class Version(object):
         Returns correct extended key version based on key type, bip and network.
 
         :return: extended key version
-        :rtype: int
         """
         if self.testnet:
             return self.test[self.key_type.name][self.bip_type.name]
@@ -102,9 +98,7 @@ class Version(object):
         Initializes version object from extended key version.
 
         :param version_int: extended key version
-        :type version_int: int
         :return: version object
-        :rtype: Version
         """
         if not isinstance(version_int, int):
             raise ValueError("has to be integer")
@@ -126,9 +120,7 @@ class Version(object):
         Valid version means a version, that is recognized by this software.
 
         :param version: extended key version
-        :type version: int
         :return: True/False
-        :rtype: bool
         """
         _all = cls.testnet_versions() + cls.mainnet_versions()
         if version in _all:
@@ -141,9 +133,7 @@ class Version(object):
         Matches version to corresponding bip.
 
         :param version: extended key version
-        :type version: int
         :return: bip number
-        :rtype: int
         """
         if version in cls.bip44_data().values():
             return Bip.BIP44.value
@@ -160,7 +150,6 @@ class Version(object):
         Provides mapping with bip44 versions.
 
         :return: mapping from b58 encoded representation to extended key version
-        :rtype: dict
         """
         return {
             "xprv": cls.main[Key.PRV.name][Bip.BIP44.name],
@@ -175,7 +164,6 @@ class Version(object):
         Provides mapping with bip49 versions.
 
         :return: mapping from b58 encoded representation to extended key version
-        :rtype: dict
         """
         return {
             "yprv": cls.main[Key.PRV.name][Bip.BIP49.name],
@@ -190,7 +178,6 @@ class Version(object):
         Provides mapping with bip84 versions.
 
         :return: mapping from b58 encoded representation to extended key version
-        :rtype: dict
         """
         return {
             "zprv": cls.main[Key.PRV.name][Bip.BIP84.name],
@@ -205,9 +192,7 @@ class Version(object):
         Gets versions from version mapping.
 
         :param dct: version mapping
-        :type dct: dict
         :return: sequence of versions
-        :rtype: list
         """
         res = []
         for k, v in dct.items():
@@ -220,9 +205,7 @@ class Version(object):
         Gets versions for specific key type.
 
         :param key_type: type of key PRV/PUB
-        :type key_type: str
         :return: sequence of version for specific key type
-        :rtype: list
         """
         return list(cls.test[key_type].values()) + \
             list(cls.main[key_type].values())
@@ -233,7 +216,6 @@ class Version(object):
         Gets mainnet version.
 
         :return: sequence of mainnet versions
-        :rtype: List[int]
         """
         return cls.get_versions(cls.main)
 
@@ -243,7 +225,6 @@ class Version(object):
         Gets testnet version.
 
         :return: sequence of testnet versions
-        :rtype: List[int]
         """
         return cls.get_versions(cls.test)
 
@@ -253,7 +234,6 @@ class Version(object):
         Gets private key versions.
 
         :return: sequence of private key versions
-        :rtype: List[int]
         """
         return cls.key_versions(key_type=Key.PRV.name)
 
@@ -263,7 +243,6 @@ class Version(object):
         Gets public key versions.
 
         :return: sequence of public key versions
-        :rtype: List[int]
         """
         return cls.key_versions(key_type=Key.PUB.name)
 
@@ -286,18 +265,12 @@ class Bip32Path(object):
         Initializes path object.
 
         :param purpose: bip44 purpose (default=None)
-        :type purpose: int
         :param coin_type: bip44 coin type (default=None)
-        :type coin_type: int
         :param account: bip44 account (default=None)
-        :type account: int
         :param chain: bip44 chain (default=None)
-        :type chain: int
         :param addr_index: bip44 address index (default=None)
-        :type addr_index: int
         :param private: whether this path corresponds to private key
                         (default=True)
-        :type private: bool
         """
         self.purpose = purpose
         self.coin_type = coin_type
@@ -315,8 +288,7 @@ class Bip32Path(object):
         is given, both purpose and coin type has to be known too. If this
         is not the case - RuntimeError is raised.
 
-        :return: nothing
-        :rtype: None
+        :return: None
         """
         none_found = False
         for item in self._to_list():
@@ -338,8 +310,6 @@ class Bip32Path(object):
         Checks whether two paths are equal.
 
         :param other: other path
-        :type other: Bip32Path
-        :rtype: bool
         """
         return self.m == other.m and \
             self.purpose == other.purpose and \
@@ -354,7 +324,6 @@ class Bip32Path(object):
         Chooses correct mark. M for public key and m for private key.
 
         :return: correct mark
-        :rtype: str
         """
         return "m" if self.private else "M"
 
@@ -364,7 +333,6 @@ class Bip32Path(object):
         Testnet path.
 
         :return: whether this path is testnet path
-        :rtype: bool
         """
         return self.coin_type == 0x80000001
 
@@ -374,7 +342,6 @@ class Bip32Path(object):
         Mainnet path.
 
         :return: whether this path is mainnet path
-        :rtype: bool
         """
         return self.coin_type == 0x80000000
 
@@ -384,7 +351,6 @@ class Bip32Path(object):
         External chain path.
 
         :return: whether this path is external chain path
-        :rtype: bool
         """
         return self.chain == 0
 
@@ -394,7 +360,6 @@ class Bip32Path(object):
         Bip44 path.
 
         :return: whether this path is bip44 path
-        :rtype: bool
         """
         return self.purpose == 44 + (2 ** 31)
 
@@ -404,7 +369,6 @@ class Bip32Path(object):
         bip49 path.
 
         :return: whether this path is bip49 path
-        :rtype: bool
         """
         return self.purpose == 49 + (2 ** 31)
 
@@ -414,11 +378,15 @@ class Bip32Path(object):
         Bip84 path.
 
         :return: whether this path is bip84 path
-        :rtype: bool
         """
         return self.purpose == 84 + (2 ** 31)
 
     def bip(self) -> int:
+        """
+        Check current object purpose path and returns bip value.
+
+        :return: bip number
+        """
         if self.bip44:
             return Bip.BIP44.value
         elif self.bip49:
@@ -435,9 +403,7 @@ class Bip32Path(object):
         2 to the power of 31.
 
         :param num: number
-        :type num: int
         :return: whether num is hardened
-        :rtype: bool
         """
         return num >= 2 ** 31
 
@@ -448,7 +414,6 @@ class Bip32Path(object):
 
         :param sign: mark M/m
         :return: whether is private
-        :rtype: bool
         """
         return True if sign == "m" else False
 
@@ -458,9 +423,7 @@ class Bip32Path(object):
         Converts hardened string representation to integer.
 
         :param str_int: string representation of number
-        :type str_int: str
         :return: number
-        :rtype: int
         """
         if str_int[-1] == "'":
             return int(str_int[:-1]) + (2 ** 31)
@@ -471,9 +434,7 @@ class Bip32Path(object):
         Converts integer to hardened string representation .
 
         :param num: number
-        :type num: int
         :return: string representation of number
-        :rtype: str
         """
         if self.is_hardened(num):
             return str(num - 2 ** 31) + "'"
@@ -485,7 +446,6 @@ class Bip32Path(object):
         Converts path to sequence.
 
         :return: sequence of numbers
-        :rtype: List[Union[int, None]]
         """
         return [
             self.purpose,
@@ -500,7 +460,6 @@ class Bip32Path(object):
         Converts path to sequence.
 
         :return: sequence of numbers
-        :rtype: List[int]
         """
         return [x for x in self._to_list() if x is not None]
 
@@ -510,9 +469,7 @@ class Bip32Path(object):
         Initializes path from its string representation.
 
         :param s: path
-        :type s: str
         :return: path object
-        :rtype: Bip32Path
         """
         s_lst = s.split("/")
         if s_lst[0] not in ("m", "M"):

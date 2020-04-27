@@ -52,19 +52,12 @@ class PubKeyNode(object):
         Initializes Pub/PrvKeyNode.
 
         :param key: public or private key
-        :type key: bytes
         :param chain_code: chain code
-        :type chain_code: bytes
         :param index: current node derivation index (default=0)
-        :type index: int
         :param depth: current node depth (default=0)
-        :type depth: int
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :param parent: parent node of the current node (default=None)
-        :type parent: Union[PubKeyNode, PrvKeyNode]
         :param parent_fingerprint: fingerprint of parent node (default=None)
-        :type parent_fingerprint: bytes
         """
         self.parent = parent
         self.key = key
@@ -81,8 +74,6 @@ class PubKeyNode(object):
         Checks whether two private/public key nodes are equal.
 
         :param other: other private/public key node
-        :type other: Union[PubKeyNode, PrvKeyNode]
-        :rtype: bool
         """
         if type(self) != type(other):
             return False
@@ -101,7 +92,6 @@ class PubKeyNode(object):
         Public key node's public key.
 
         :return: public key of public key node
-        :rtype: PublicKey
         """
         return PublicKey.parse(key_bytes=self.key)
 
@@ -115,7 +105,6 @@ class PubKeyNode(object):
         from parent node.
 
         :return: parent fingerprint
-        :rtype: bytes
         """
         if self.parent:
             fingerprint = self.parent.fingerprint()
@@ -131,7 +120,6 @@ class PubKeyNode(object):
         based on testnet parameter.
 
         :return: extended public key version
-        :rtype: int
         """
         if self.testnet:
             return PubKeyNode.testnet_version
@@ -148,27 +136,15 @@ class PubKeyNode(object):
         return parent + "/" + index
 
     def is_hardened(self) -> bool:
-        """
-        Check whether current key node is hardened.
-
-        :rtype: bool
-        """
+        """Check whether current key node is hardened."""
         return self.index >= 2**31
 
     def is_master(self) -> bool:
-        """
-        Check whether current key node is master node.
-
-        :rtype: bool
-        """
+        """Check whether current key node is master node."""
         return self.depth == 0 and self.index == 0 and self.parent is None
 
     def is_root(self) -> bool:
-        """
-        Check whether current key node is root (has no parent).
-
-        :rtype: bool
-        """
+        """Check whether current key node is root (has no parent)."""
         return self.parent is None
 
     def fingerprint(self) -> bytes:
@@ -176,7 +152,6 @@ class PubKeyNode(object):
         Gets current node fingerprint.
 
         :return: first four bytes of SHA256(RIPEMD160(public key))
-        :rtype: bytes
         """
         return hash160(self.public_key.sec())[:4]
 
@@ -188,11 +163,8 @@ class PubKeyNode(object):
         extended key.
 
         :param s: serialized node or extended key
-        :type s: Union[str, bytes, BytesIO]
         :param testnet: whether this node is testnet node
-        :type testnet: bool
         :return: public/private key node
-        :rtype: Union[PrvKeyNode, PubKeyNode]
         """
         if isinstance(s, str):
             s = BytesIO(decode_base58_checksum(s=s))
@@ -210,11 +182,8 @@ class PubKeyNode(object):
         Initializes private/public key node from serialized node buffer.
 
         :param s: serialized node buffer
-        :type s: BytesIO
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: public/private key node
-        :rtype: Union[PrvKeyNode, PubKeyNode]
         """
         version = big_endian_to_int(s.read(4))
         depth = big_endian_to_int(s.read(1))
@@ -238,9 +207,7 @@ class PubKeyNode(object):
         Serializes public/private key node to extended key format.
 
         :param version: extended public/private key version (default=None)
-        :type version: int
         :return: serialized extended public/private key node
-        :rtype: bytes
         """
         # 4 byte: version bytes
         result = int_to_big_endian(version, 4)
@@ -266,9 +233,7 @@ class PubKeyNode(object):
         Serializes public key node to extended key format.
 
         :param version: extended public key version (default=None)
-        :type version: int
         :return: serialized extended public key node
-        :rtype: bytes
         """
         return self._serialize(
             version=self.pub_version if version is None else version,
@@ -281,9 +246,7 @@ class PubKeyNode(object):
         provided (default) it is determined by result of self.pub_version.
 
         :param version: extended public key version (default=None)
-        :type version: int
         :return: extended public key
-        :rtype: str
         """
         return encode_base58_checksum(self.serialize_public(version=version))
 
@@ -306,9 +269,7 @@ class PubKeyNode(object):
              value for i.
 
         :param index: derivation index
-        :type index: int
         :return: derived child
-        :rtype: PubKeyNode
         """
         if index >= HARDENED:
             raise RuntimeError("failure: hardened child for public ckd")
@@ -346,9 +307,7 @@ class PubKeyNode(object):
 
         :param interval: specific interval of integers
                         from which to generate children (default=(0, 20))
-        :type interval: tuple
         :return: list of generated children
-        :rtype: List[Union[PubKeyNode, PrvKeyNode]]
         """
         return [self.ckd(index=i) for i in range(*interval)]
 
@@ -357,9 +316,7 @@ class PubKeyNode(object):
         Derives node from current node.
 
         :param index_list: specific index list (or index path) for derivation
-        :type index_list: List[int]
         :return: derived node
-        :rtype: Union[PubKeyNode, PrvKeyNode]
         """
         node = self
         for i in index_list:
@@ -379,7 +336,6 @@ class PrvKeyNode(PubKeyNode):
         Private key node's private key.
 
         :return: public key of private key node
-        :rtype: PrivateKey
         """
         return PrivateKey(sec_exp=big_endian_to_int(self.key))
 
@@ -389,7 +345,6 @@ class PrvKeyNode(PubKeyNode):
         Private key node's public key.
 
         :return: public key of public key node
-        :rtype: PublicKey
         """
         return self.private_key.K
 
@@ -400,7 +355,6 @@ class PrvKeyNode(PubKeyNode):
         based on testnet parameter.
 
         :return: extended private key version
-        :rtype: int
         """
         if self.testnet:
             return PrvKeyNode.testnet_version
@@ -418,11 +372,8 @@ class PrvKeyNode(PubKeyNode):
         * Use parse256(IL) as master secret key, and IR as master chain code.
 
         :param bip39_seed: bip39_seed
-        :type bip39_seed: bytes
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: master private key node
-        :rtype: PrvKeyNode
         """
         I = hmac.new(
             key=b"Bitcoin seed",
@@ -454,9 +405,7 @@ class PrvKeyNode(PubKeyNode):
         Serializes private key node to extended key format.
 
         :param version: extended private key version (default=None)
-        :type version: int
         :return: serialized extended private key node
-        :rtype: bytes
         """
         return self._serialize(
             version=self.prv_version if version is None else version,
@@ -469,9 +418,7 @@ class PrvKeyNode(PubKeyNode):
         provided (default) it is determined by result of self.prv_version.
 
         :param version: extended private key version (default=None)
-        :type version: int
         :return: extended private key
-        :rtype: str
         """
         return encode_base58_checksum(self.serialize_private(version=version))
 
@@ -494,9 +441,7 @@ class PrvKeyNode(PubKeyNode):
             (Note: this has probability lower than 1 in 2**127.)
 
         :param index: derivation index
-        :type index: int
         :return: derived child
-        :rtype: PrvKeyNode
         """
         if index >= HARDENED:
             # hardened

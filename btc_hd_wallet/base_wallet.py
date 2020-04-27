@@ -27,9 +27,7 @@ class BaseWallet(object):
         Initializes wallet object.
 
         :param master: master node
-        :type master: Union[PrvKeyNode, PubKeyNode]
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         """
         self.master = master
         self.testnet = testnet
@@ -41,8 +39,6 @@ class BaseWallet(object):
         Checks whether two wallet objects are equal.
 
         :param other: other base wallet
-        :type other: BaseWallet
-        :rtype: bool
         """
         return self.master == other.master and self.testnet == other.testnet
 
@@ -52,7 +48,6 @@ class BaseWallet(object):
         Checks whether this wallet is watch only wallet.
 
         :return: whether is watch only
-        :rtype: bool
         """
         return type(self.master) == PubKeyNode
 
@@ -63,13 +58,9 @@ class BaseWallet(object):
         Creates new wallet.
 
         :param mnemonic_length: length of mnemonic sentence (default=24)
-        :type mnemonic_length: int
         :param password: optional passphrase (default="")
-        :type password: str
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: wallet
-        :rtype: BaseWallet
         """
         mnemonic_length_to_entropy_bits = {
             12: 128,
@@ -91,13 +82,9 @@ class BaseWallet(object):
         Creates new wallet.
 
         :param entropy_bits: number of entropy bits (default=256)
-        :type entropy_bits: int
         :param password: optional passphrase (default="")
-        :type password: str
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: wallet
-        :rtype: BaseWallet
         """
         mnemonic = mnemonic_from_entropy_bits(entropy_bits=entropy_bits)
         return cls.from_mnemonic(
@@ -113,13 +100,9 @@ class BaseWallet(object):
         Creates new wallet from entropy hex.
 
         :param entropy_hex: entropy hex
-        :type entropy_hex: str
         :param password: optional passphrase (default="")
-        :type password: str
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: wallet
-        :rtype: BaseWallet
         """
         mnemonic = mnemonic_from_entropy(entropy=entropy_hex)
         return cls.from_mnemonic(
@@ -134,11 +117,8 @@ class BaseWallet(object):
         creates new wallet from bip39 seed hex.
 
         :param bip39_seed: bip39 seed
-        :type bip39_seed: str
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: wallet
-        :rtype: BaseWallet
         """
         seed_bytes = bytes.fromhex(bip39_seed)
         return cls.from_bip39_seed_bytes(
@@ -152,11 +132,8 @@ class BaseWallet(object):
         creates new wallet from bip39 seed.
 
         :param bip39_seed: bip39 seed
-        :type bip39_seed: bytes
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: wallet
-        :rtype: BaseWallet
         """
         return cls(
             master=PrvKeyNode.master_key(
@@ -173,13 +150,9 @@ class BaseWallet(object):
         Creates new wallet from mnemonic sentence.
 
         :param mnemonic: mnemonic sentence
-        :type mnemonic: str
         :param password: optional passphrase (default="")
-        :type password: str
         :param testnet: whether this node is testnet node (default=False)
-        :type testnet: bool
         :return: wallet
-        :rtype: BaseWallet
         """
         bip39_seed = bip39_seed_from_mnemonic(
             mnemonic=mnemonic,
@@ -199,9 +172,7 @@ class BaseWallet(object):
         Creates new wallet from extended key.
 
         :param extended_key: extended public or private key
-        :type extended_key: str
         :return: wallet
-        :rtype: BaseWallet
         """
         # just need version, key type does not matter in here
         version_int = PrvKeyNode.parse(s=extended_key).parsed_version
@@ -220,11 +191,8 @@ class BaseWallet(object):
         Determines node version.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :param key_type: type of key private/public
-        :type key_type: Key
         :return: version object
-        :rtype: Version
         """
         bip = Bip32Path.parse(str(node))
         version = Version(
@@ -239,9 +207,7 @@ class BaseWallet(object):
         Gets node's extended public key.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: extended public key
-        :rtype: str
         """
         version = self.determine_node_version_int(node=node, key_type=Key.PUB)
         return node.extended_public_key(version=int(version))
@@ -251,9 +217,7 @@ class BaseWallet(object):
         Gets node's extended private key.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: extended private key
-        :rtype: str
         """
         if type(node) == PubKeyNode:
             raise ValueError("wallet is watch only")
@@ -265,9 +229,7 @@ class BaseWallet(object):
         Gets node's extended keys.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: extended keys mapping
-        :rtype: dict
         """
         prv = None if self.watch_only else self.node_extended_private_key(
             node=node
@@ -283,9 +245,7 @@ class BaseWallet(object):
         Generates p2pkh address from node.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2pkh address
-        :rtype: str
         """
         return node.public_key.address(testnet=self.testnet, addr_type="p2pkh")
 
@@ -294,9 +254,7 @@ class BaseWallet(object):
         Generates p2wpkh address from node.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2wpkh address
-        :rtype: str
         """
         return node.public_key.address(testnet=self.testnet, addr_type="p2wpkh")
 
@@ -305,9 +263,7 @@ class BaseWallet(object):
         Generates p2wpkh wrapped in p2sh address from node.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2sh-p2wpkh address
-        :rtype: str
         """
         return h160_to_p2sh_address(
             h160=hash160(
@@ -321,9 +277,7 @@ class BaseWallet(object):
         Generates p2wsh address from node.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2wsh address
-        :rtype: str
         """
         # TODO remove one of 1of1 multisig and provide rather simple
         # TODO singlesig script
@@ -342,9 +296,7 @@ class BaseWallet(object):
         Generates p2wsh wrapped in p2sh address from node.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :return: p2sh-p2wsh address
-        :rtype: str
         """
         # [OP_1, sec, OP_1, OP_CHECKMULTISIG]
         witness_script = Script([0x51, node.public_key.sec(), 0x51, 0xae])
@@ -362,12 +314,9 @@ class BaseWallet(object):
         Address generator.
 
         :param node: key node
-        :type node: Union[PrvKeyNode, PubKeyNode]
         :param addr_fnc: function to use for address generation
                             (default=self.p2wpkh_address)
-        :type addr_fnc: Callable[Union[PrvKeyNode, PubKeyNode], str]
         :return: address generator
-        :rtype: Generator[str, int, None]
         """
         index = 0
         addr_fnc = addr_fnc or self.p2wpkh_address
@@ -381,9 +330,7 @@ class BaseWallet(object):
         Generate child node from master node by path.
 
         :param path: bip32 path
-        :type path: str
         :return: child node
-        :rtype: Union[PrvKeyNode, PubKeyNode]
         """
         path = Bip32Path.parse(s=path)
         return self.master.derive_path(index_list=path.to_list())

@@ -13,9 +13,7 @@ class PaperWallet(BaseWallet):
         Generates bip44 groups (path, address, sec, wif) from nodes.
 
         :param nodes: nodes for group generation
-        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :return: generated groups
-        :rtype: List[List[str]]
         """
         return self.group(nodes=nodes, addr_fnc=self.p2pkh_address)
 
@@ -24,9 +22,7 @@ class PaperWallet(BaseWallet):
         Generates bip49 groups (path, address, sec, wif) from nodes.
 
         :param nodes: nodes for group generation
-        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :return: generated groups
-        :rtype: List[List[str]]
         """
         return self.group(nodes=nodes, addr_fnc=self.p2sh_p2wpkh_address)
 
@@ -35,9 +31,7 @@ class PaperWallet(BaseWallet):
         Generates bip84 groups (path, address, sec, wif) from nodes.
 
         :param nodes: nodes for group generation
-        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :return: generated groups
-        :rtype: List[List[str]]
         """
         return self.group(nodes=nodes, addr_fnc=self.p2wpkh_address)
 
@@ -47,11 +41,8 @@ class PaperWallet(BaseWallet):
         Generates groups (path, address, sec, wif) from nodes.
 
         :param nodes: nodes for group generation
-        :type nodes: List[Union[PrvKeyNode, PubKeyNode]]
         :param addr_fnc: function to use for address generation
-        :type addr_fnc: Callable[Union[PrvKeyNode, PubKeyNode], str]
         :return: generated groups
-        :rtype: List[List[str]]
         """
         return [
             [
@@ -70,12 +61,9 @@ class PaperWallet(BaseWallet):
         Generates bip44 account keys and groups (address, sec, wif)
 
         :param account: bip44 account number (default=0)
-        :type account: int
         :param interval: specific interval of integers
                         from which to generate children (default=(0, 20))
-        :type interval: tuple
         :return: account keys and groups
-        :rtype: tuple
         """
         path = Bip32Path(
             purpose=44 + HARDENED,
@@ -94,12 +82,9 @@ class PaperWallet(BaseWallet):
         Generates bip49 account keys and groups (address, sec, wif)
 
         :param account: bip44 account number (default=0)
-        :type account: int
         :param interval: specific interval of integers
                         from which to generate children (default=(0, 20))
-        :type interval: tuple
         :return: account keys and groups
-        :rtype: tuple
         """
         path = Bip32Path(
             purpose=49 + HARDENED,
@@ -118,12 +103,9 @@ class PaperWallet(BaseWallet):
         Generates bip84 account keys and group (address, sec, wif)
 
         :param account: bip44 account number (default=0)
-        :type account: int
         :param interval: specific interval of integers
                         from which to generate children (default=(0, 20))
-        :type interval: tuple
         :return: account keys and groups
-        :rtype: tuple
         """
         path = Bip32Path(
             purpose=84 + HARDENED,
@@ -142,12 +124,9 @@ class PaperWallet(BaseWallet):
         Generates wallet mapping.
 
         :param account: bip44 account number (default=0)
-        :type account: int
         :param interval: specific interval of integers
                         from which to generate children (default=(0, 20))
-        :type interval: tuple
         :return: wallet mapping
-        :rtype: dict
         """
         acct_ext44, groups44 = self.bip44(account=account, interval=interval)
         acct_ext49, groups49 = self.bip49(account=account, interval=interval)
@@ -164,9 +143,7 @@ class PaperWallet(BaseWallet):
         Convert extended keys mapping to csv exportable format.
 
         :param ext_keys: extended keys mapping
-        :type ext_keys: dict
         :return: extended keys in csv exportable format
-        :rtype: List[List[str]]
         """
         return [
             [ext_keys["path"], ext_keys["prv"]],
@@ -178,11 +155,8 @@ class PaperWallet(BaseWallet):
         Exports wallet to file in csv format.
 
         :param file_path: path to file that will be created
-        :type file_path: str
         :param wallet_dict: wallet mapping (default=self.generate)
-        :type wallet_dict: dict
-        :return: nothing
-        :rtype: None
+        :return: None
         """
         wallet_dict = wallet_dict or self.generate()
         with open(file_path, "w", newline='') as f:
@@ -198,9 +172,7 @@ class PaperWallet(BaseWallet):
         Prints wallet to the console.
 
         :param wallet_dict: wallet mapping (default=self.generate)
-        :type wallet_dict: dict
-        :return: nothing
-        :rtype: None
+        :return: None
         """
         fmt = "%19s %34s %68s %54s"
         wallet_dict = wallet_dict or self.generate()

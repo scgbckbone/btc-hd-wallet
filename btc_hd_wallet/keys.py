@@ -27,7 +27,6 @@ class PrivateKey(object):
         Initializes private key from secret exponent.
 
         :param sec_exp: secret
-        :type sec_exp: int
         """
         self.sec_exp = sec_exp
         self.k = ecdsa.SigningKey.from_secret_exponent(
@@ -41,7 +40,6 @@ class PrivateKey(object):
         Encodes private key into corresponding byte sequence.
 
         :return: byte representation of PrivateKey object
-        :rtype: bytes
         """
         return self.k.to_string()
 
@@ -50,8 +48,6 @@ class PrivateKey(object):
         Checks whether two private keys are equal.
 
         :param other: other private key
-        :type other: PrivateKey
-        :rtype: bool
         """
         return self.sec_exp == other.sec_exp
 
@@ -60,11 +56,8 @@ class PrivateKey(object):
         Encodes private key into wallet import/export format.
 
         :param compressed: whether public key is compressed (default=True)
-        :type compressed: bool
         :param testnet: whether to encode as a testnet key (default=False)
-        :type testnet: bool
         :return: WIF encoded private key
-        :rtype: str
         """
         prefix = b"\xef" if testnet else b"\x80"
         suffix = b"\x01" if compressed else b""
@@ -76,9 +69,7 @@ class PrivateKey(object):
         Initializes private key from wallet import format encoding.
 
         :param wif_str: wallet import format private key
-        :type wif_str: str
         :return: private key
-        :rtype: PrivateKey
         """
         decoded = decode_base58_checksum(s=wif_str)
         if wif_str[0] in ("K", "L", "c"):
@@ -93,9 +84,7 @@ class PrivateKey(object):
         Initializes private key from byte sequence.
 
         :param key_bytes: byte representation of private key
-        :type key_bytes: bytes
         :return: private key
-        :rtype: PrivateKey
         """
         return cls(sec_exp=big_endian_to_int(key_bytes))
 
@@ -111,7 +100,6 @@ class PublicKey(object):
         Initializes PublicKey object from ecdsa verifying key
 
         :param key: ecdsa verifying key
-        :type key: ecdsa.VerifyingKey
         """
         self.K = key
 
@@ -120,8 +108,6 @@ class PublicKey(object):
         Checks whether two public keys are equal.
 
         :param other: other public key
-        :type other: PublicKey
-        :rtype: bool
         """
         return self.sec() == other.sec()
 
@@ -131,7 +117,6 @@ class PublicKey(object):
         Point on curve (x and y coordinates).
 
         :return: point on curve
-        :rtype: ecdsa.ellipticcurve.Point
         """
         return self.K.pubkey.point
 
@@ -140,9 +125,7 @@ class PublicKey(object):
         Encodes public key to SEC format.
 
         :param compressed: whether to use compressed format (default=True)
-        :type compressed: bool
         :return: SEC encoded public key
-        :rtype: bytes
         """
         if compressed:
             return self.K.to_string(encoding="compressed")
@@ -154,9 +137,7 @@ class PublicKey(object):
         Initializes public key from byte sequence.
 
         :param key_bytes: byte representation of public key
-        :type key_bytes: bytes
         :return: public key
-        :rtype: PublicKey
         """
         return cls(ecdsa.VerifyingKey.from_string(key_bytes, curve=SECP256k1))
 
@@ -166,12 +147,7 @@ class PublicKey(object):
         Initializes public key from point on elliptic curve.
 
         :param point: point on elliptic curve
-        :type point: Union[
-            ecdsa.ellipticcurve.Point,
-            ecdsa.ellipticcurve.PointJacobi
-        ]
         :return: public key
-        :rtype: PublicKey
         """
         return cls(ecdsa.VerifyingKey.from_public_point(point, curve=SECP256k1))
 
@@ -180,9 +156,7 @@ class PublicKey(object):
         SHA256 followed by RIPEMD160 of public key.
 
         :param compressed: whether to use compressed format (default=True)
-        :type compressed: bool
         :return: SHA256(RIPEMD160(public key))
-        :rtype: bytes
         """
         return hash160(self.sec(compressed=compressed))
 
@@ -192,15 +166,11 @@ class PublicKey(object):
         Generates bitcoin address from public key.
 
         :param compressed: whether to use compressed format (default=True)
-        :type: compressed: bool
         :param testnet: whether to encode as a testnet address (default=False)
-        :type testnet: bool
         :param addr_type: which address type to generate:
                             1. p2pkh
                             2. p2wpkh (default)
-        :type addr_type: str
         :return: bitcoin address
-        :rtype: str
         """
         h160 = self.h160(compressed=compressed)
         if addr_type == "p2pkh":

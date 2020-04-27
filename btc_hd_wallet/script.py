@@ -11,9 +11,7 @@ def p2wsh_script(h256: bytes) -> "Script":
     Creates p2wsh script.
 
     :param h256: sha256 hash
-    :type h256: bytes
     :return: p2wsh script
-    :rtype: Script
     """
     # [OP_0, 32-byte element]
     return Script([0x00, h256])
@@ -24,9 +22,7 @@ def p2wpkh_script(h160: bytes) -> "Script":
     Creates p2wpkh script.
 
     :param h160: SHA256 followed by RIPEMD160 hash
-    :type h160: bytes
     :return: p2wpkh script
-    :rtype: Script
     """
     # [OP_0, 20-byte element]
     return Script([0x00, h160])
@@ -37,9 +33,7 @@ def p2sh_script(h160: bytes) -> "Script":
     Creates p2sh script.
 
     :param h160: SHA256 followed by RIPEMD160 hash
-    :type h160: bytes
     :return: p2sh script
-    :rtype: Script
     """
     # [OP_HASH160, 20-byte element, OP_EQUAL]
     return Script([0xa9, h160, 0x87])
@@ -50,9 +44,7 @@ def p2pkh_script(h160: bytes) -> "Script":
     Creates p2pkh script.
 
     :param h160: SHA256 followed by RIPEMD160 hash
-    :type h160: bytes
     :return: p2pkh script
-    :rtype: Script
     """
     # [OP_DUP, OP_HASH160, 20-byte element, OP_EQUALVERIFY, OP_CHECKSIG]
     return Script([0x76, 0xa9, h160, 0x88, 0xac])
@@ -64,7 +56,6 @@ class Script:
         Initializes script from command list.
 
         :param cmds: command list
-        :type cmds: list
         """
         if cmds is None:
             self.cmds = []
@@ -76,8 +67,6 @@ class Script:
         Checks whether two scripts are equal.
 
         :param other: other script
-        :type other: Script
-        :rtype: bool
         """
         return self.cmds == other.cmds
 
@@ -99,9 +88,7 @@ class Script:
         Combines two scripts.
 
         :param other: other script
-        :type other: Script
         :return: combined script
-        :rtype: Script
         """
         return Script(self.cmds + other.cmds)
 
@@ -111,9 +98,7 @@ class Script:
         Initializes script from buffer.
 
         :param s: buffer
-        :type s: BytesIO
         :return: script
-        :rtype: Script
         """
         # Script serialization starts with the length of the entire script.
         length = read_varint(s)
@@ -153,7 +138,6 @@ class Script:
         Serializes script.
 
         :return: serialized script
-        :rtype: bytes
         """
         result = b""
         for cmd in self.cmds:
@@ -190,7 +174,6 @@ class Script:
         Serializes script. Prepended with the length of script.
 
         :return: serialized script
-        :rtype: bytes
         """
         result = self.raw_serialize()
         # Script serialization starts with the length of the entire script.

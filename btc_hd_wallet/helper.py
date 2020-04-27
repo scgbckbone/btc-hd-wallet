@@ -9,22 +9,20 @@ BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 TWO_WEEKS = 60 * 60 * 24 * 14
 
 
-def encode_base58(s: bytes) -> str:
+def encode_base58(data: bytes) -> str:
     """
     Encode base58.
 
-    :param s: what to encode
-    :type s: bytes
-    :return: encoded
-    :rtype: str
+    :param data: data to encode
+    :return: base58 encoded string
     """
     count = 0
-    for c in s:
+    for c in data:
         if c == 0:
             count += 1
         else:
             break
-    num = int.from_bytes(s, 'big')
+    num = int.from_bytes(data, 'big')
     prefix = '1' * count
     result = ''
     while num > 0:
@@ -33,26 +31,22 @@ def encode_base58(s: bytes) -> str:
     return prefix + result
 
 
-def encode_base58_checksum(s: bytes) -> str:
+def encode_base58_checksum(data: bytes) -> str:
     """
     Encode base58 checksum.
 
-    :param s: what to encode
-    :type s: bytes
-    :return: encoded
-    :rtype: str
+    :param data: data to encode
+    :return: base58 encoded string with checksum
     """
-    return encode_base58(s + hash256(s)[:4])
+    return encode_base58(data + hash256(data)[:4])
 
 
 def decode_base58(s: str) -> bytes:
     """
     Decode base58.
 
-    :param s: base58 encoded
-    :type s: str
-    :return: decoded
-    :rtype: bytes
+    :param s: base58 encoded string
+    :return: decoded data
     """
     num = 0
     for c in s:
@@ -81,10 +75,8 @@ def decode_base58_checksum(s: str) -> bytes:
     """
     Decode base58 checksum.
 
-    :param s: base58 encoded
-    :type s: str
-    :return: decoded
-    :rtype: bytes
+    :param s: base58 encoded string with checksum
+    :return: decoded data (without checksum)
     """
     num_bytes = decode_base58(s=s)
     checksum = num_bytes[-4:]
@@ -100,12 +92,10 @@ def decode_base58_checksum(s: str) -> bytes:
 
 def read_varint(s: BytesIO) -> int:
     """
-    Reads variable integer.
+    Reads variable integer from buffer.
 
-    :param s: buffer
-    :type s: BytesIO
-    :return: varint
-    :rtype: int
+    :param s: encoded varint
+    :return: integer
     """
     i = s.read(1)[0]
     if i == 0xfd:
@@ -130,9 +120,7 @@ def encode_varint(i: int) -> bytes:
     Encode variable integer.
 
     :param i: integer
-    :type i: int
-    :return: encoded integer
-    :rtype: bytes
+    :return: encoded varint
     """
     if i < 0xfd:
         return int_to_little_endian(i, 1)
@@ -149,10 +137,9 @@ def encode_varint(i: int) -> bytes:
 def b58decode_addr(s: str) -> bytes:
     """
     Base58 decode + remove first byte (mostly testnet/mainnet marker)
+
     :param s: base58 encoded
-    :type s: str
     :return: decoded with first byte removed
-    :rtype: bytes
     """
     return decode_base58_checksum(s=s)[1:]
 
@@ -162,9 +149,7 @@ def hash160(s: bytes) -> bytes:
     sha256 followed by ripemd160
 
     :param s: data
-    :type s: bytes
-    :return: hashed
-    :rtype: bytes
+    :return: hashed data
     """
     return hashlib.new('ripemd160', hashlib.sha256(s).digest()).digest()
 
@@ -174,9 +159,7 @@ def hash256(s: bytes) -> bytes:
     two rounds of sha256
 
     :param s: data
-    :type s: bytes
-    :return: hashed
-    :rtype: bytes
+    :return: hashed data
     """
     return hashlib.sha256(hashlib.sha256(s).digest()).digest()
 
@@ -186,9 +169,7 @@ def sha256(s: bytes) -> bytes:
     one round of sha256
 
     :param s: data
-    :type s: bytes
-    :return: hashed
-    :rtype: bytes
+    :return: hashed data
     """
     return hashlib.sha256(s).digest()
 
@@ -198,9 +179,7 @@ def little_endian_to_int(b: bytes) -> int:
     Little endian representation to integer.
 
     :param b: little endian representation
-    :type b: bytes
     :return: integer
-    :rtype: int
     """
     return int.from_bytes(b, 'little')
 
@@ -210,11 +189,8 @@ def int_to_little_endian(n: int, length: int) -> bytes:
     Represents integer in little endian byteorder.
 
     :param n: integer
-    :type n: int
     :param length: byte length
-    :type length: int
     :return: little endian
-    :rtype: bytes
     """
     return n.to_bytes(length, 'little')
 
@@ -224,9 +200,7 @@ def big_endian_to_int(b: bytes) -> int:
     Big endian representation to integer.
 
     :param b: big endian representation
-    :type b: bytes
     :return: integer
-    :rtype: int
     """
     return int.from_bytes(b, "big")
 
@@ -236,11 +210,8 @@ def int_to_big_endian(n: int, length: int) -> bytes:
     Represents integer in big endian byteorder.
 
     :param n: integer
-    :type n: int
     :param length: byte length
-    :type length: int
     :return: big endian
-    :rtype: bytes
     """
     return n.to_bytes(length, "big")
 
@@ -250,11 +221,8 @@ def h160_to_p2pkh_address(h160: bytes, testnet: bool = False) -> str:
     p2pkh address from hash160.
 
     :param h160: hash160 hashed data
-    :type h160: bytes
     :param testnet: whether to encode as a testnet address (default=False)
-    :type testnet: bool
     :return: p2pkh bitcoin address
-    :rtype: str
     """
     prefix = b"\x6f" if testnet else b"\x00"
     return encode_base58_checksum(prefix + h160)
@@ -265,11 +233,8 @@ def h160_to_p2sh_address(h160: bytes, testnet: bool = False) -> str:
     p2sh address from hash160.
 
     :param h160: hash160 hashed data
-    :type h160: bytes
     :param testnet: whether to encode as a testnet address (default=False)
-    :type testnet: bool
     :return: p2sh bitcoin address
-    :rtype: str
     """
     prefix = b"\xc4" if testnet else b"\x05"
     return encode_base58_checksum(prefix + h160)
@@ -281,13 +246,9 @@ def h160_to_p2wpkh_address(h160: bytes, testnet: bool = False,
     p2wpkh address from hash160.
 
     :param h160: hash160 hashed data
-    :type h160: bytes
     :param testnet: whether to encode as a testnet address (default=False)
-    :type testnet: bool
     :param witver: witness version (default=0)
-    :type witver: int
     :return: p2wpkh bitcoin address
-    :rtype: str
     """
     hrp = "tb" if testnet else "bc"
     return bech32.encode(hrp=hrp, witver=witver, witprog=h160)
@@ -299,13 +260,9 @@ def h256_to_p2wsh_address(h256: bytes, testnet: bool = False,
     p2wpkh address from hash160.
 
     :param h256: sha256 hashed data
-    :type h256: bytes
     :param testnet: whether to encode as a testnet address (default=False)
-    :type testnet: bool
     :param witver: witness version (default=0)
-    :type witver: int
     :return: p2wsh bitcoin address
-    :rtype: str
     """
     hrp = "tb" if testnet else "bc"
     return bech32.encode(hrp=hrp, witver=witver, witprog=h256)
@@ -316,11 +273,8 @@ def bech32_decode_address(addr: str, testnet: bool = False) -> bytes:
     Decodes bech32 address.
 
     :param addr: bech32 address
-    :type addr: str
     :param testnet: whether to encode as a testnet address (default=False)
-    :type testnet: bool
     :return: decoded address
-    :rtype: str
     """
     hrp = "tb" if testnet else "bc"
     return bytes(bech32.decode(hrp=hrp, addr=addr)[1])
@@ -331,11 +285,8 @@ def merkle_parent(hash1: bytes, hash2: bytes) -> bytes:
     Calculates merkle parent of two children.
 
     :param hash1: hash 1
-    :type hash1: bytes
     :param hash2: hash 2
-    :type hash2: bytes
     :return: parent
-    :rtype: bytes
     """
     return hash256(hash1 + hash2)
 
@@ -345,9 +296,7 @@ def merkle_parent_level(hashes: List[bytes]) -> List[bytes]:
     Calculates merkle parent level from child level (one below parent).
 
     :param hashes: child level
-    :type hashes: List[bytes]
     :return: parent level
-    :rtype: List[bytes]
     """
     # if the list has exactly 1 element raise an error
     if len(hashes) == 1:
@@ -372,9 +321,7 @@ def merkle_root(hashes: List[bytes]) -> bytes:
     Calculates merkle root.
 
     :param hashes: child level
-    :type hashes: List[bytes]
     :return: merkle root
-    :rtype: bytes
     """
     # current level starts as hashes
     current_level = hashes
