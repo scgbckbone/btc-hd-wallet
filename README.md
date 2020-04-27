@@ -79,6 +79,13 @@ w.pretty_print()
 w.export_to_csv(file_path="wallet.csv")
 ```
 
+# Documentation
+Sphinx documentation is located in the `docs` subdirectory. 
+Run `make html` from there to create html documentation from docstrings.
+Documentation html is available in `docs/build/html/index.html`
+
+dependency: Sphinx
+
 ## Roadmap:
 This project is Work In Progress
 1. basic HD paper wallet generator supporting bip32, bip44, bip49, bip84, slip132 (Multi-signature P2WSH in P2SH, Multi-signature P2WSH)
