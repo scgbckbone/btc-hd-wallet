@@ -79,6 +79,44 @@ w.pretty_print()
 w.export_to_csv(file_path="wallet.csv")
 ```
 
+# Private and Public keys
+```python3
+from btc_hd_wallet import PrivateKey
+
+# initialize private key object from secret exponent
+sk = PrivateKey(sec_exp=61513215313213513843213)
+# from wif format
+sk = PrivateKey.from_wif("KxNH4NuQoDJjA9LwvHXn5KBTDPSG9YeoA7RBed2LwLRNqd1Tc4Wv")
+# from byte sequence
+sk = PrivateKey.parse(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x15&X\xc0\xe3\xee\\\r$bU\x18')
+
+# secret exponent
+secret_exponent = sk.sec_exp
+# to wif
+wif_str = sk.wif(testnet=False)
+# to bytes
+sk_bytes = bytes(sk)
+
+
+# to access corresponding public key
+pk = sk.K
+# RIPEMD160(SHA256) of public key
+h160 = pk.h160()
+# p2pkh testnet address
+p2pkh = pk.address(addr_type="p2pkh", testnet=True) 
+# p2wpkh address
+p2wpkh = pk.address()
+# SEC encoding
+sec = pk.sec()
+# elliptic curve point
+point = pk.point
+
+# public key can also be parsed from sec
+pk = PublicKey.parse("030975d7fc3e27bcb3d37dd83a84f5ae2f48cec392e781e35ec849142bcc6e2cce")
+# or from ecdsa Point or PointJacobi
+pk = PublicKey.from_point(point)
+```
+
 # Documentation
 Sphinx documentation is located in the `docs` subdirectory. 
 Run `make html` from there to create html documentation from docstrings.
