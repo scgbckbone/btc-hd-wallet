@@ -117,6 +117,22 @@ pk = PublicKey.parse("030975d7fc3e27bcb3d37dd83a84f5ae2f48cec392e781e35ec849142b
 pk = PublicKey.from_point(point)
 ```
 
+# Bip39 related methods
+```python3
+from btc_hd_wallet import (
+    bip39_seed_from_mnemonic, mnemonic_from_entropy_bits, mnemonic_from_entropy
+)
+
+# mnemonic from number of entropy bits (allowed entropy bits 128,160,192,224,256)
+menmonic = mnemonic_from_entropy_bits(entropy_bits=256)
+# mnemonic from entropy hex
+mnemonic = mnemonic_from_entropy("0a84d45bb74a0d80c144f9ad765c3b9edc40a8dbb5c053c0930ef040992036d2")
+# create bip39 seed from mnemonic (password can be optionally passed)
+seed = bip39_seed_from_mnemonic(mnemonic=mnemonic)
+# or with optional password
+seed = bip39_seed_from_mnemonic(mnemonic=mnemonic, password)
+```
+
 # Documentation
 Sphinx documentation is located in the `docs` subdirectory. 
 Run `make html` from there to create html documentation from docstrings.
