@@ -5,4 +5,6 @@ from btc_hd_wallet.bip39 import (
 )
 from btc_hd_wallet.bip32 import PrvKeyNode, PubKeyNode
 from btc_hd_wallet.keys import PublicKey, PrivateKey
-from btc_hd_wallet.script import Script
+from btc_hd_wallet.script import (
+    Script, p2sh_script, p2wsh_script, p2pkh_script, p2wpkh_script
+)

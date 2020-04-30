@@ -133,6 +133,34 @@ seed = bip39_seed_from_mnemonic(mnemonic=mnemonic)
 seed = bip39_seed_from_mnemonic(mnemonic=mnemonic, password)
 ```
 
+# Script
+```pytohn3
+from io import BytesIO
+from btc_hd_wallet import BaseWallet
+from btc_hd_wallet import (
+    Script, p2wsh_script, p2wpkh_script, p2sh_script, p2pkh_script
+)
+
+# you can parse script hex
+script_hex = "1976a9148ca70d5eda840e9fb5d38234ae948dfad1d266d788ac"
+script = Script.parse(BytesIO(bytes.fromhex(script_hex)))
+str(script)
+> OP_DUP OP_HASH160 8ca70d5eda840e9fb5d38234ae948dfad1d266d7 OP_EQUALVERIFY OP_CHECKSIG
+# script can be raw serialized
+script.raw_serialize()
+# or it can be serialized with length prepended
+script.serialize()
+
+# or creating script pubkeys from wallet
+w = BaseWallet.new_wallet()
+# derive some child node to use (I'll go with bip84)
+node = w.by_path("m/84'/0'/100'/0/0")
+hash160_pub_key = node.public_key.hash160()
+script = p2wpkh_script(hash160_pub_key)
+str(script)
+> OP_0 8ca70d5eda840e9fb5d38234ae948dfad1d266d7
+```
+
 # Documentation
 Sphinx documentation is located in the `docs` subdirectory. 
 Run `make html` from there to create html documentation from docstrings.
