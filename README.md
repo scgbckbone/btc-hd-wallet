@@ -134,7 +134,7 @@ seed = bip39_seed_from_mnemonic(mnemonic=mnemonic, password)
 ```
 
 # Script
-```pytohn3
+```python3
 from io import BytesIO
 from btc_hd_wallet import BaseWallet
 from btc_hd_wallet import (
