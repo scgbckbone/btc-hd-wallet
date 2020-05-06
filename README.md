@@ -127,7 +127,7 @@ from btc_hd_wallet import (
 menmonic = mnemonic_from_entropy_bits(entropy_bits=256)
 # mnemonic from entropy hex
 mnemonic = mnemonic_from_entropy("0a84d45bb74a0d80c144f9ad765c3b9edc40a8dbb5c053c0930ef040992036d2")
-# create bip39 seed from mnemonic (password can be optionally passed)
+# create bip39 seed from mnemonic
 seed = bip39_seed_from_mnemonic(mnemonic=mnemonic)
 # or with optional password
 seed = bip39_seed_from_mnemonic(mnemonic=mnemonic, password)
