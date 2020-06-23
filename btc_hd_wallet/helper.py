@@ -1,3 +1,4 @@
+import hmac
 import hashlib
 from io import BytesIO
 from typing import List
@@ -172,6 +173,17 @@ def sha256(s: bytes) -> bytes:
     :return: hashed data
     """
     return hashlib.sha256(s).digest()
+
+
+def hmac_sha512(key: bytes, msg: bytes) -> bytes:
+    """
+    Hash-based message authentication code with sha512
+
+    :param key: secret key
+    :param msg: message
+    :return: digest bytes
+    """
+    return hmac.new(key=key, msg=msg, digestmod=hashlib.sha512).digest()
 
 
 def little_endian_to_int(b: bytes) -> int:

@@ -1,4 +1,3 @@
-import hmac
 import ecdsa
 import hashlib
 from io import BytesIO
@@ -7,7 +6,7 @@ from typing import List, Union
 from btc_hd_wallet.keys import PrivateKey, PublicKey
 from btc_hd_wallet.helper import (
     encode_base58_checksum, big_endian_to_int, int_to_big_endian,
-    decode_base58_checksum, hash160
+    decode_base58_checksum, hash160, hmac_sha512
 )
 
 
@@ -273,11 +272,10 @@ class PubKeyNode(object):
         """
         if index >= HARDENED:
             raise RuntimeError("failure: hardened child for public ckd")
-        I = hmac.new(
+        I = hmac_sha512(
             key=self.chain_code,
-            msg=self.key + int_to_big_endian(index, 4),
-            digestmod=hashlib.sha512
-        ).digest()
+            msg=self.key + int_to_big_endian(index, 4)
+        )
         IL, IR = I[:32], I[32:]
         if big_endian_to_int(IL) >= CURVE_ORDER:
             InvalidKeyError(
@@ -375,11 +373,7 @@ class PrvKeyNode(PubKeyNode):
         :param testnet: whether this node is testnet node (default=False)
         :return: master private key node
         """
-        I = hmac.new(
-            key=b"Bitcoin seed",
-            msg=bip39_seed,
-            digestmod=hashlib.sha512
-        ).digest()
+        I = hmac_sha512(key=b"Bitcoin seed", msg=bip39_seed)
         # private key
         IL = I[:32]
         # In case IL is 0 or ≥ n, the master key is invalid
@@ -448,11 +442,7 @@ class PrvKeyNode(PubKeyNode):
             data = b"\x00"+bytes(self.private_key) + int_to_big_endian(index, 4)
         else:
             data = self.public_key.sec() + int_to_big_endian(index, 4)
-        I = hmac.new(
-            key=self.chain_code,
-            msg=data,
-            digestmod=hashlib.sha512
-        ).digest()
+        I = hmac_sha512(key=self.chain_code, msg=data)
         IL, IR = I[:32], I[32:]
         if big_endian_to_int(IL) >= CURVE_ORDER:
             InvalidKeyError(
