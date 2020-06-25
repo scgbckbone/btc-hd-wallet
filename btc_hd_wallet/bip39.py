@@ -9,6 +9,10 @@ from btc_hd_wallet.helper import big_endian_to_int, int_to_big_endian, sha256
 
 random = random.SystemRandom()
 CORRECT_ENTROPY_BITS = [128, 160, 192, 224, 256]
+CORRECT_MNEMONIC_LENGTH = [12, 15, 18, 21, 24]
+MNEMONIC_LENGTH_TO_ENTROPY_BITS = dict(zip(
+    CORRECT_MNEMONIC_LENGTH, CORRECT_ENTROPY_BITS
+))
 PBKDF2_ROUNDS = 2048
 
 

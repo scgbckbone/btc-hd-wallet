@@ -44,6 +44,16 @@ class TestBaseWallet(unittest.TestCase):
         self.assertIsNone(ext_keys["prv"])
         self.assertEqual(ext_keys["pub"], xpub)
 
+    def test_no_bip85_for_watch_only(self):
+        xpub = "xpub6CEGxdGrXswwWNoqpBePNgiQhjBmcEZWoPfkGcLg7zEjBxrFBkSzcFGrkpPqvH7TJwkjyuGMShKuyU7VpjvKnUoTavL9xSaq3DvKCAgNhwM"
+        w = BaseWallet.from_extended_key(extended_key=xpub)
+        self.assertTrue(w.watch_only)
+        self.assertIsNone(w.bip85)
+
+    def test_bip85_for_watch_only(self):
+        self.assertFalse(self.wallet.watch_only)
+        self.assertIsNotNone(self.wallet.bip85)
+
     def test_p2pkh_address(self):
         node = self.wallet.by_path(path="m/44'/0'/0'/0/100")
         self.assertEqual(

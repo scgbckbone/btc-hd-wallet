@@ -4,13 +4,15 @@ from btc_hd_wallet.bip32 import (
     PrvKeyNode, PubKeyNode, Prv_or_PubKeyNode
 )
 from btc_hd_wallet.bip39 import (
-    mnemonic_from_entropy, mnemonic_from_entropy_bits, bip39_seed_from_mnemonic
+    mnemonic_from_entropy, mnemonic_from_entropy_bits, bip39_seed_from_mnemonic,
+    MNEMONIC_LENGTH_TO_ENTROPY_BITS
 )
 from btc_hd_wallet.helper import (
     hash160, sha256, h160_to_p2sh_address, h256_to_p2wsh_address
 )
 from btc_hd_wallet.wallet_utils import Bip32Path, Version, Key
 from btc_hd_wallet.script import Script, p2wpkh_script, p2wsh_script
+from btc_hd_wallet.bip85 import BIP85DeterministicEntropy
 
 
 class BaseWallet(object):
@@ -19,7 +21,8 @@ class BaseWallet(object):
         "mnemonic",
         "testnet",
         "password",
-        "master"
+        "master",
+        "bip85"
     )
 
     def __init__(self, master: Prv_or_PubKeyNode, testnet: bool = False):
@@ -33,6 +36,10 @@ class BaseWallet(object):
         self.testnet = testnet
         self.mnemonic = None
         self.password = None
+        self.bip85 = BIP85DeterministicEntropy(
+            master_node=self.master,
+            testnet=self.testnet
+        ) if not self.watch_only else None
 
     def __eq__(self, other: "BaseWallet") -> bool:
         """
@@ -62,15 +69,8 @@ class BaseWallet(object):
         :param testnet: whether this node is testnet node (default=False)
         :return: wallet
         """
-        mnemonic_length_to_entropy_bits = {
-            12: 128,
-            15: 160,
-            18: 192,
-            21: 224,
-            24: 256
-        }
         return cls.from_entropy_bits(
-            entropy_bits=mnemonic_length_to_entropy_bits[mnemonic_length],
+            entropy_bits=MNEMONIC_LENGTH_TO_ENTROPY_BITS[mnemonic_length],
             password=password,
             testnet=testnet
         )

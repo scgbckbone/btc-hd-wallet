@@ -1,5 +1,4 @@
 import ecdsa
-import hashlib
 from io import BytesIO
 from typing import List, Union
 
@@ -421,7 +420,7 @@ class PrvKeyNode(PubKeyNode):
         The function CKDpriv((kpar, cpar), i) → (ki, ci) computes
         a child extended private key from the parent extended private key:
 
-        * Check whether i ≥ 231 (whether the child is a hardened key).
+        * Check whether i ≥ 2**31 (whether the child is a hardened key).
         * If so (hardened child):
             let I = HMAC-SHA512(Key=cpar, Data=0x00 || ser256(kpar) || ser32(i))
             (Note: The 0x00 pads the private key to make it 33 bytes long.)

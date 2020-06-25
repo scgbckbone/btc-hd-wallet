@@ -163,6 +163,47 @@ str(script)
 > OP_0 8ca70d5eda840e9fb5d38234ae948dfad1d266d7
 ```
 
+# Bip85
+```python3
+xprv = "xprv9s21ZrQH143K2n9ryKS5EXxvQaNSbCxrVHSUigxG9ywY6GVQYsrk6n8e9j6m9z9LvBULFnSyjcLFxbG6WtXoeYRF19f1FY23nni39XSLPWm"
+from btc_hd_wallet.bip85 import BIP85DeterministicEntropy
+# create new deterministic entropy object from extended private key
+bip85 = BIP85DeterministicEntropy.from_xprv(xprv=xprv)
+
+# bip39 mnemonic
+bip85.bip39_mnemonic(path="m/83696968'/39'/0'/24'/0'")
+> lift boost vague vanish occur stamp eagle twice kite pause sunny execute defy grocery mercy assist volume venture subject analyst fiscal lecture connect bunker
+bip85.bip39_mnemonic(path="m/83696968'/39'/0'/12'/0'")
+> good brave hunt license deliver conduct more dutch donkey green skill gauge
+bip85.bip39_mnemonic(path="m/83696968'/39'/0'/15'/1'")
+> vessel nerve buzz wife good ski sock walnut crew toward team vast dynamic parade candy
+
+# wallet import format (WIF)
+bip85.wif(path="m/83696968'/2'/0'")
+> 'KyxeP1pijLmtKZv8ry7d3tbNsq3XDeGgN99Mqi2Gn2Kx6WwPr2wC'
+bip85.wif(path="m/83696968'/2'/1'")
+> 'KxsrnifkxsZTBeP52VxHzZGawyUSULBi1trHrJhU7ndQxkTXguFJ'
+
+# extended private key (XPRV)
+bip85.xprv(path="m/83696968'/32'/0'")
+> 'xprv9s21ZrQH143K2SrZ37WGmQ4TcqHbcAxy7tfuoVNZBxnd7huX6XuD2UZBUuXVfrZjjtw5X3B9JgUvoVegVALTeTXWsiUSK9F4FWXFZLfZVzV'
+bip85.xprv(path="m/83696968'/32'/1'")
+> 'xprv9s21ZrQH143K4RPx2iS7FecFHCUiC4CA2x4PqY6rtqjgqpxqWNcTxK88oRDyiZf8WiTLA6GWwR7BSoFkjjNSEx4wAgGq7nnxukd2FJP7AKH'
+
+# hex
+bip85.hex(path="m/83696968'/128169'/32'/0'")
+> '78ebebfc701429f60ab4540168950c8fc9db5d275324545e7512f9e23b1fcd42'
+bip85.hex(path="m/83696968'/128169'/64'/0'")
+> '2205163efb2ae4e78609b4a7410e9a4856f673b04dd0af7ce9851a9f2f7883c854f76a3e1cf639c217adde4956604dcdd853104dfcb93751856e3e13dcb9ab35'
+
+# bip85 is also available in BaseWallet class as its attribute
+from btc_hd_wallet.base_wallet import BaseWallet
+
+w = BaseWallet.new_wallet()
+type(w.bip85) == BIP85DeterministicEntropy
+> True
+```
+
 # Documentation
 Sphinx documentation is located in the `docs` subdirectory. 
 Run `make html` from there to create html documentation from docstrings.
