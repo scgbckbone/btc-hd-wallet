@@ -90,60 +90,65 @@ class BIP85DeterministicEntropy(object):
                 )
             )
 
-    def bip39_mnemonic(self, path: str) -> str:
+    def bip39_mnemonic(self, word_count: int = 24, index: int = 0) -> str:
         """
-        Create BIP39 mnemonic sentence from deterministic entropy
-        specified by path.
+        Create BIP39 mnemonic sentence of length word count
+        from deterministic entropy specified by path.
 
-        :param path: path to child node
+        :param word_count: desired number of words in mnemonic (default=24)
+        :param index: derivation index (default=0)
         :return: mnemonic sentence
         """
+        # for now (and maybe forever) only supported language is english
+        path = "m/83696968'/39'/0'/{}'/{}'".format(word_count, index)
         entropy = self.entropy(path=path)
-        word_count = int(path.split("/")[4][:-1])
         width = self.byte_count_from_word_count(word_count=word_count)
         return mnemonic_from_entropy(entropy=entropy[:width].hex())
 
-    def wif(self, path: str) -> str:
+    def wif(self, index: int = 0) -> str:
         """
         Create WIF private key from deterministic entropy
         specified by path.
 
-        :param path: path to child node
+        :param index: derivation index (default=0)
         :return: WIF private key
         """
+        path = "m/83696968'/2'/{}'".format(index)
         entropy = self.entropy(path=path)
         key_int = big_endian_to_int(entropy[:32])
         self.correct_key(key=key_int)
         prv_key = PrivateKey(sec_exp=key_int)
         return prv_key.wif()
 
-    def xprv(self, path: str) -> str:
+    def xprv(self, index: int = 0) -> str:
         """
         Create extended private key from deterministic entropy
         specified by path.
 
-        :param path: path to child node
+        :param index: derivation index (default=0)
         :return: extended private key (XPRV)
         """
+        path = "m/83696968'/32'/{}'".format(index)
         entropy = self.entropy(path=path)
         left, right = entropy[:32], entropy[32:]
         self.correct_key(big_endian_to_int(right))
         prv_node = PrvKeyNode(key=right, chain_code=left)
         return prv_node.extended_private_key()
 
-    def hex(self, path: str) -> str:
+    def hex(self, num_bytes: int = 32, index: int = 0) -> str:
         """
-        Create hex private key from deterministic entropy
-        specified by path.
+        Create hex private key of byte length num bytes
+        from deterministic entropy specified by path.
 
-        :param path: path to child node
+        :param num_bytes: desired number of bytes
+        :param index: derivation index (default=0)
         :return: hex
         """
-        entropy = self.entropy(path=path)
-        num_bytes = int(path.split("/")[3][:-1])
         if not 16 <= num_bytes <= 64:
             raise RuntimeError("Incorrect number of bytes specified."
                                " Has to be in closed interval <16-64>")
+        path = "m/83696968'/128169'/{}'/{}'".format(num_bytes, index)
+        entropy = self.entropy(path=path)
         return entropy[:num_bytes].hex()
 
 

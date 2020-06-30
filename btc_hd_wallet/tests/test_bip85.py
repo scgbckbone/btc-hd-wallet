@@ -64,35 +64,35 @@ class TestBIP85DeterministicEntropy(unittest.TestCase):
 
     def test_entropy_to_mnemonic(self):
         words12 = "girl mad pet galaxy egg matter matrix prison refuse sense ordinary nose"
-        self.assertEqual(words12, self.bip85.bip39_mnemonic(path="m/83696968'/39'/0'/12'/0'"))
+        self.assertEqual(words12, self.bip85.bip39_mnemonic(word_count=12, index=0))
 
         word15 = "aerobic able grant hobby uncle boss filter auction tip exact mixed again soda race absorb"
-        self.assertEqual(word15, self.bip85.bip39_mnemonic(path="m/83696968'/39'/0'/15'/0'"))
+        self.assertEqual(word15, self.bip85.bip39_mnemonic(word_count=15, index=0))
 
         words18 = "near account window bike charge season chef number sketch tomorrow excuse sniff circle vital hockey outdoor supply token"
-        self.assertEqual(words18, self.bip85.bip39_mnemonic(path="m/83696968'/39'/0'/18'/0'"))
+        self.assertEqual(words18, self.bip85.bip39_mnemonic(word_count=18, index=0))
 
         word21 = "feed excite donkey pepper enhance box stock asset submit tomorrow quick divert frost setup cream elder unable harbor enlist fabric this"
-        self.assertEqual(word21, self.bip85.bip39_mnemonic(path="m/83696968'/39'/0'/21'/0'"))
+        self.assertEqual(word21, self.bip85.bip39_mnemonic(word_count=21, index=0))
 
         words24 = "puppy ocean match cereal symbol another shed magic wrap hammer bulb intact gadget divorce twin tonight reason outdoor destroy simple truth cigar social volcano"
-        self.assertEqual(words24, self.bip85.bip39_mnemonic(path="m/83696968'/39'/0'/24'/0'"))
+        self.assertEqual(words24, self.bip85.bip39_mnemonic(word_count=24, index=0))
 
     def test_entropy_to_wif(self):
         expected = "Kzyv4uF39d4Jrw2W7UryTHwZr1zQVNk4dAFyqE6BuMrMh1Za7uhp"
-        self.assertEqual(expected, self.bip85.wif(path="m/83696968'/2'/0'"))
+        self.assertEqual(expected, self.bip85.wif())
 
     def test_entropy_to_xprv(self):
         expected = "xprv9s21ZrQH143K2srSbCSg4m4kLvPMzcWydgmKEnMmoZUurYuBuYG46c6P71UGXMzmriLzCCBvKQWBUv3vPB3m1SATMhp3uEjXHJ42jFg7myX"
-        self.assertEqual(expected, self.bip85.xprv(path="m/83696968'/32'/0'"))
+        self.assertEqual(expected, self.bip85.xprv())
 
     def test_entropy_to_hex(self):
         expected = "ea3ceb0b02ee8e587779c63f4b7b3a21e950a213f1ec53cab608d13e8796e6dc"
-        self.assertEqual(expected, self.bip85.hex(path="m/83696968'/128169'/32'/0'"))
+        self.assertEqual(expected, self.bip85.hex(num_bytes=32, index=0))
 
         expected = "492db4698cf3b73a5a24998aa3e9d7fa96275d85724a91e71aa2d645442f878555d078fd1f1f67e368976f04137b1f7a0d19232136ca50c44614af72b5582a5c"
-        self.assertEqual(expected, self.bip85.hex(path="m/83696968'/128169'/64'/0'"))
+        self.assertEqual(expected, self.bip85.hex(num_bytes=64, index=0))
 
         expected = "61d3c182f7388268463ef327c454a10bc01b3992fa9d2ee1b3891a6b487a5248793e61271066be53660d24e8cb76ff0cfdd0e84e478845d797324c195df9ab8e"
-        self.assertEqual(expected, self.bip85.hex(path="m/83696968'/128169'/64'/1234'"))
+        self.assertEqual(expected, self.bip85.hex(num_bytes=64, index=1234))
 
