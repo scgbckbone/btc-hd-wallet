@@ -1,13 +1,19 @@
 import hmac
 import hashlib
 from io import BytesIO
-from typing import List
+from typing import List, Any, Generator
 
 import btc_hd_wallet.bech32 as bech32
 
 
 BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 TWO_WEEKS = 60 * 60 * 24 * 14
+
+
+def chunks(lst: List[Any], n: int) -> Generator[List[Any], None, None]:
+    """Yield successive n-sized chunks from lst."""
+    for i in range(0, len(lst), n):
+        yield lst[i:i + n]
 
 
 def encode_base58(data: bytes) -> str:

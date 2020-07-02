@@ -165,8 +165,9 @@ str(script)
 
 # Bip85
 ```python3
+from btc_hd_wallet import BIP85DeterministicEntropy
+
 xprv = "xprv9s21ZrQH143K2n9ryKS5EXxvQaNSbCxrVHSUigxG9ywY6GVQYsrk6n8e9j6m9z9LvBULFnSyjcLFxbG6WtXoeYRF19f1FY23nni39XSLPWm"
-from btc_hd_wallet.bip85 import BIP85DeterministicEntropy
 # create new deterministic entropy object from extended private key
 bip85 = BIP85DeterministicEntropy.from_xprv(xprv=xprv)
 

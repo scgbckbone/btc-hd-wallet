@@ -8,3 +8,4 @@ from btc_hd_wallet.keys import PublicKey, PrivateKey
 from btc_hd_wallet.script import (
     Script, p2sh_script, p2wsh_script, p2pkh_script, p2wpkh_script
 )
+from btc_hd_wallet.bip85 import BIP85DeterministicEntropy

@@ -150,7 +150,3 @@ class BIP85DeterministicEntropy(object):
         path = "m/83696968'/128169'/{}'/{}'".format(num_bytes, index)
         entropy = self.entropy(path=path)
         return entropy[:num_bytes].hex()
-
-
-
-
