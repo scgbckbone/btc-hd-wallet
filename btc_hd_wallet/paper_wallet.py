@@ -1,8 +1,6 @@
-import csv
 from typing import List, Callable
 
 from btc_hd_wallet.bip32 import Prv_or_PubKeyNode, HARDENED
-from btc_hd_wallet.helper import chunks
 from btc_hd_wallet.wallet_utils import Bip32Path
 from btc_hd_wallet.base_wallet import BaseWallet
 
@@ -149,88 +147,9 @@ class PaperWallet(BaseWallet):
         acct_ext49, groups49 = self.bip49(account=account, interval=interval)
         acct_ext84, groups84 = self.bip84(account=account, interval=interval)
         return {
-            "bip44": {"acct_ext_keys": acct_ext44, "groups": groups44},
-            "bip49": {"acct_ext_keys": acct_ext49, "groups": groups49},
-            "bip84": {"acct_ext_keys": acct_ext84, "groups": groups84},
+            "BIP44": {"acct_ext_keys": acct_ext44, "groups": groups44},
+            "BIP49": {"acct_ext_keys": acct_ext49, "groups": groups49},
+            "BIP84": {"acct_ext_keys": acct_ext84, "groups": groups84},
         }
 
-    @staticmethod
-    def extended_keys_to_csv_format(ext_keys: dict) -> List[List[str]]:
-        """
-        Convert extended keys mapping to csv exportable format.
 
-        :param ext_keys: extended keys mapping
-        :return: extended keys in csv exportable format
-        """
-        return [
-            [ext_keys["path"], ext_keys["prv"]],
-            [ext_keys["path"].replace("m", "M"), ext_keys["pub"]]
-        ]
-
-    def export_to_csv(self, file_path: str, wallet_dict: dict = None) -> None:
-        """
-        Exports wallet to file in csv format.
-
-        :param file_path: path to file that will be created
-        :param wallet_dict: wallet mapping (default=self.generate)
-        :return: None
-        """
-        wallet_dict = wallet_dict or self.generate()
-        with open(file_path, "w", newline='') as f:
-            writer = csv.writer(f)
-            for bip_name, bip_obj in wallet_dict.items():
-                ext = self.extended_keys_to_csv_format(bip_obj["acct_ext_keys"])
-                res = ext + bip_obj["groups"]
-                writer.writerows(res)
-                writer.writerow([])
-
-    def pprint_mnemonic(self, mnemonic: str = None) -> None:
-        """
-        Pretty prints mnemonic sentence to stdout.
-
-        :param mnemonic: mnemonic sentence (default=self.mnemonic)
-        :return: None
-        """
-        if mnemonic is None:
-            mnemonic = self.mnemonic
-        enumerated_mnemonic = [
-            "{}. {}".format(*pair)
-            for pair in enumerate(mnemonic.split(" "), start=1)
-        ]
-        chunk_size = int(len(enumerated_mnemonic) / 3)
-        for zipped in zip(*list(chunks(lst=enumerated_mnemonic, n=chunk_size))):
-            print("{:15} {:15} {:15}".format(*zipped))
-            # TODO unify formatting
-
-    def pprint(self, wallet_dict: dict = None) -> None:
-        """
-        Pretty prints wallet to stdout.
-
-        :param wallet_dict: wallet mapping (default=self.generate)
-        :return: None
-        """
-        fmt = "%19s %34s %68s %54s"
-        print("MASTER SEED")
-        self.pprint_mnemonic()
-        print()
-        print("BIP39 Password")
-        print(self.password)
-        print()
-        print("BIP85")
-        for line in self.bip85_():
-            print("\t{}\n\t\t{}".format(*line))
-        print()
-        wallet_dict = wallet_dict or self.generate()
-        for bip_name, bip_dct in wallet_dict.items():
-            ext_keys = self.extended_keys_to_csv_format(bip_dct["acct_ext_keys"])
-            print(bip_name.upper())
-            print("\taccount extended keys:")
-            print("\t\t{},{}".format(ext_keys[0][0], ext_keys[0][1]))
-            print("\t\t{},{}".format(ext_keys[1][0], ext_keys[1][1]))
-            print()
-            print(fmt % ("bip32_path", "address",
-                         "public_key(sec)", "private_key(wif)"))
-            for group in bip_dct["groups"]:
-                print(fmt % tuple(group))
-            print()
-# TODO add master mnemonic and bip85 derivates to both csv and pretty print

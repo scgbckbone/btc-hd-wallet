@@ -198,33 +198,33 @@ class TestColdWallet(unittest.TestCase):
         zpub = "zpub6rjjS2aQooWoAWUtXrdfiNxz38iL9SxgMVo2W4SRhVMTrYnqkJ8oeTF951rcKriKKFdEKDcFFMZMMBspF257wQmQhDR6yjufpqFXJKr4e1m"
         zprv = "zprvAdkP2X3WyRxVx2QRRq6fMF2FV6sqjzEpzGsRhg2p99pUykThCkpZ6evfDi62aycv5soGZq25vd1puNSeju96NPzCtdrUAzX4xaGDTK7buQn"
 
-        self.assertEqual(pw["bip44"]["acct_ext_keys"]["pub"], xpub)
-        self.assertEqual(pw["bip44"]["acct_ext_keys"]["prv"], xprv)
-        self.assertEqual(pw["bip49"]["acct_ext_keys"]["pub"], ypub)
-        self.assertEqual(pw["bip49"]["acct_ext_keys"]["prv"], yprv)
-        self.assertEqual(pw["bip84"]["acct_ext_keys"]["pub"], zpub)
-        self.assertEqual(pw["bip84"]["acct_ext_keys"]["prv"], zprv)
+        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["pub"], xpub)
+        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["prv"], xprv)
+        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["pub"], ypub)
+        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["prv"], yprv)
+        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["pub"], zpub)
+        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["prv"], zprv)
 
         address = "13UkPjRAmH1sDWuoX1zeL8yCFWXdwPvGAE"
         pubkey = "03597d9a56c46c0e6e1827525bb517c5a8dfe21ace626f31a2e11c4e4e23cd353e"
         wif = "L5nBbbswFNu8wWP9VZY66Up4X3yNX7mcfArDHRQ5onMZhGC3qBZH"
-        self.assertEqual(pw["bip44"]["groups"][19][1], address)
-        self.assertEqual(pw["bip44"]["groups"][19][2], pubkey)
-        self.assertEqual(pw["bip44"]["groups"][19][3], wif)
+        self.assertEqual(pw["BIP44"]["groups"][19][1], address)
+        self.assertEqual(pw["BIP44"]["groups"][19][2], pubkey)
+        self.assertEqual(pw["BIP44"]["groups"][19][3], wif)
 
         address = "3EGt757gbPFn1z5uvrUMhTcwKmxK78jsvC"
         pubkey = "020a0aff849f9addb615ef67ada2dfddbc59c377ab5668f2713bb379cc9d0f287b"
         wif = "L2PRabCy4qhKJTYkbcA6MEm2hC6DyPqSFj7jsCvNpHkU8DpmDWJR"
-        self.assertEqual(pw["bip49"]["groups"][19][1], address)
-        self.assertEqual(pw["bip49"]["groups"][19][2], pubkey)
-        self.assertEqual(pw["bip49"]["groups"][19][3], wif)
+        self.assertEqual(pw["BIP49"]["groups"][19][1], address)
+        self.assertEqual(pw["BIP49"]["groups"][19][2], pubkey)
+        self.assertEqual(pw["BIP49"]["groups"][19][3], wif)
 
         address = "bc1q9gxcsd5wmdrg5909628kx96384h0w5dyyj82gz"
         pubkey = "03c66906128c24b82babeaea82205c10b0eeb09413da198ed8aa1337b82ac0d028"
         wif = "KzyLyHiys138p2EY4fPCV9JZfz6wVE4x6DeMg9HGM9eaXQkRENtF"
-        self.assertEqual(pw["bip84"]["groups"][19][1], address)
-        self.assertEqual(pw["bip84"]["groups"][19][2], pubkey)
-        self.assertEqual(pw["bip84"]["groups"][19][3], wif)
+        self.assertEqual(pw["BIP84"]["groups"][19][1], address)
+        self.assertEqual(pw["BIP84"]["groups"][19][2], pubkey)
+        self.assertEqual(pw["BIP84"]["groups"][19][3], wif)
 
     def test_generate_testnet(self):
         pw = self.wallet_testnet.generate(account=66, interval=(0, 50))
@@ -236,33 +236,33 @@ class TestColdWallet(unittest.TestCase):
         vpub = "vpub5ZF51BznVkRj1LC7XDbJDJT1vNwpbWhx4p3Y1m1UpMhho5SPg4v7PLNatXNQ1dggtSyJoRN9tKsoXcJZamEai1dmy1wurF1rJbZAFBxqht4"
         vprv = "vprv9LFibgTtfNsRnr7eRC4HrAWHNM7LC3z6hb7wDNbsG2AivH7F8XbrqY473HJhZJ45d9waTjewHxRixpQsL7RceZwZ5dNkoJ4yNyEMNXowdoa"
 
-        self.assertEqual(pw["bip44"]["acct_ext_keys"]["pub"], tpub)
-        self.assertEqual(pw["bip44"]["acct_ext_keys"]["prv"], tprv)
-        self.assertEqual(pw["bip49"]["acct_ext_keys"]["pub"], upub)
-        self.assertEqual(pw["bip49"]["acct_ext_keys"]["prv"], uprv)
-        self.assertEqual(pw["bip84"]["acct_ext_keys"]["pub"], vpub)
-        self.assertEqual(pw["bip84"]["acct_ext_keys"]["prv"], vprv)
+        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["pub"], tpub)
+        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["prv"], tprv)
+        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["pub"], upub)
+        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["prv"], uprv)
+        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["pub"], vpub)
+        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["prv"], vprv)
 
         address = "mjXHL5oujxymKFdRUpLbAxFGU9ZaGvhPQ4"
         pubkey = "03b0829cd964a0e1e716fae3bb83812087825d5aca3f102670d8449312ee5b6647"
         wif = "cUbsTivUmb1dcpGwbRMsCznmwLZMuT85akmScPtwEhco4EQ9xDtD"
-        self.assertEqual(pw["bip44"]["groups"][49][1], address)
-        self.assertEqual(pw["bip44"]["groups"][49][2], pubkey)
-        self.assertEqual(pw["bip44"]["groups"][49][3], wif)
+        self.assertEqual(pw["BIP44"]["groups"][49][1], address)
+        self.assertEqual(pw["BIP44"]["groups"][49][2], pubkey)
+        self.assertEqual(pw["BIP44"]["groups"][49][3], wif)
 
         address = "2N6yVCdJu6Z3o3mUQfQizeVi1yNYEXwYEVe"
         pubkey = "02e10c0eddc2456720e337359948204f5cdc0ca05da6a3b5ac48580316e7fc9278"
         wif = "cSDgEWgZxSHJq36H6ou4jwnEG14Qdx7QwdMvvgLREdE932DFbwT2"
-        self.assertEqual(pw["bip49"]["groups"][49][1], address)
-        self.assertEqual(pw["bip49"]["groups"][49][2], pubkey)
-        self.assertEqual(pw["bip49"]["groups"][49][3], wif)
+        self.assertEqual(pw["BIP49"]["groups"][49][1], address)
+        self.assertEqual(pw["BIP49"]["groups"][49][2], pubkey)
+        self.assertEqual(pw["BIP49"]["groups"][49][3], wif)
 
         address = "tb1q8fa5tlqsvs38knnn79y8lzduy7lznvhv74mvfs"
         pubkey = "03897e1a34923b60cf6ff25c60bc94fef9519c8e7f90fe7ce3db9faa9d9fd6cb22"
         wif = "cUpJB4hmzFgQL4oo33td3FYmGy3CatxWyPkSGtdrS4kfRRgPsqK9"
-        self.assertEqual(pw["bip84"]["groups"][49][1], address)
-        self.assertEqual(pw["bip84"]["groups"][49][2], pubkey)
-        self.assertEqual(pw["bip84"]["groups"][49][3], wif)
+        self.assertEqual(pw["BIP84"]["groups"][49][1], address)
+        self.assertEqual(pw["BIP84"]["groups"][49][2], pubkey)
+        self.assertEqual(pw["BIP84"]["groups"][49][3], wif)
 
     def test_watch_only_generate_failure(self):
         # cannot do hardened ckd
@@ -271,12 +271,3 @@ class TestColdWallet(unittest.TestCase):
         self.assertTrue(w.watch_only)
         with self.assertRaises(RuntimeError):
             w.generate()
-
-    def test_csv_export(self):
-        self.wallet.export_to_csv(
-            file_path="test.csv",
-            wallet_dict=self.wallet.generate()
-        )
-        self.assertTrue(os.path.isfile("test.csv"))
-        self.assertTrue(os.path.getsize("test.csv"))
-        os.remove("test.csv")
