@@ -214,7 +214,8 @@ class PaperWallet(BaseWallet):
         node = self.by_path("m/84'/0'/0'")
         return self.json({
             "ExtPubKey": node.extended_public_key(),
-            "MasterFingerprint": self.master.fingerprint().hex().upper()
+            "MasterFingerprint": self.master.fingerprint().hex().upper(),
+            "ColdCardFirmwareVersion": "3.1.3"
         }, indent=indent)
 
     def export_wasabi(self, file_path: str, indent: int = None) -> None:
@@ -229,6 +230,3 @@ class PaperWallet(BaseWallet):
             file_path=file_path,
             contents=self.wasabi_json(indent=indent)
         )
-
-
-
