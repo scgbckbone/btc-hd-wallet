@@ -1,3 +1,5 @@
+import sys
+import json
 from typing import List, Callable
 
 from btc_hd_wallet.bip32 import Prv_or_PubKeyNode, HARDENED
@@ -118,21 +120,35 @@ class PaperWallet(BaseWallet):
             nodes=external_chain_node.generate_children(interval=interval)
         )
 
-    def bip85_(self):
-        return [
-            [
-                "m/83696968'/39'/0'/24'/0'",
-                self.bip85.bip39_mnemonic(word_count=24, index=0)
-            ],
-            [
-                "m/83696968'/39'/0'/12'/0'",
-                self.bip85.bip39_mnemonic(word_count=12, index=0)
-            ],
-            ["m/83696968'/2'/0'", self.bip85.wif(index=0)],
-            ["m/83696968'/2'/1'", self.bip85.wif(index=1)],
-            ["m/83696968'/32'/0'", self.bip85.xprv(index=0)],
-            ["m/83696968'/32'/1'", self.bip85.xprv(index=1)],
-        ]
+    def bip85_data(self):
+        """
+        Produces BIP85 additional wallet secrets from deterministic entropy.
+
+        :return: BIP85 mapping
+        """
+        return {
+            "m/83696968'/39'/0'/24'/0'": self.bip85.bip39_mnemonic(
+                word_count=24, index=0
+            ),
+            "m/83696968'/39'/0'/18'/0'": self.bip85.bip39_mnemonic(
+                word_count=18, index=0
+            ),
+            "m/83696968'/39'/0'/12'/0'": self.bip85.bip39_mnemonic(
+                word_count=12, index=0
+            ),
+            "m/83696968'/2'/0'": self.bip85.wif(index=0),
+            "m/83696968'/2'/1'": self.bip85.wif(index=1),
+            "m/83696968'/2'/2'": self.bip85.wif(index=2),
+            "m/83696968'/32'/0'": self.bip85.xprv(index=0),
+            "m/83696968'/32'/1'": self.bip85.xprv(index=1),
+            "m/83696968'/32'/2'": self.bip85.xprv(index=2),
+        }
+
+    def master_data(self) -> dict:
+        return {
+            "mnemonic": self.mnemonic,
+            "password": self.password
+        }
 
     def generate(self, account: int = 0, interval: tuple = (0, 20)) -> dict:
         """
@@ -147,9 +163,72 @@ class PaperWallet(BaseWallet):
         acct_ext49, groups49 = self.bip49(account=account, interval=interval)
         acct_ext84, groups84 = self.bip84(account=account, interval=interval)
         return {
-            "BIP44": {"acct_ext_keys": acct_ext44, "groups": groups44},
-            "BIP49": {"acct_ext_keys": acct_ext49, "groups": groups49},
-            "BIP84": {"acct_ext_keys": acct_ext84, "groups": groups84},
+            "MASTER": self.master_data(),
+            "BIP85": self.bip85_data(),
+            "BIP44": {"account_extended_keys": acct_ext44, "groups": groups44},
+            "BIP49": {"account_extended_keys": acct_ext49, "groups": groups49},
+            "BIP84": {"account_extended_keys": acct_ext84, "groups": groups84},
         }
+
+    def json(self, data: dict = None, indent: int = None) -> str:
+        """
+        JSON representation of data dictionary.
+
+        :param data: source dictionary
+        :param indent: indent width
+        :return: JSON string
+        """
+        data = data if data else self.generate()
+        return json.dumps(data, indent=indent)
+
+    def pprint(self, data: dict = None, indent: int = 4) -> None:
+        """
+        Emit JSON representation of data dictionary to standard output.
+
+        :param data: source dictionary
+        :param indent: indent width
+        :return: None
+        """
+        data = data if data else self.generate()
+        sys.stdout.write(self.json(data=data, indent=indent))
+
+    @staticmethod
+    def export_to_file(file_path: str, contents: str) -> None:
+        """
+        Export contents to file at file path.
+
+        :param file_path: path to target file
+        :param contents: contents
+        :return: None
+        """
+        with open(file_path, "w") as f:
+            f.write(contents)
+
+    def wasabi_json(self, indent: int = None):
+        """
+        Wasabi wallet JSON import format.
+
+        :param indent: indent width
+        :return: JSON string
+        """
+        node = self.by_path("m/84'/0'/0'")
+        return self.json({
+            "ExtPubKey": node.extended_public_key(),
+            "MasterFingerprint": self.master.fingerprint().hex().upper()
+        }, indent=indent)
+
+    def export_wasabi(self, file_path: str, indent: int = None) -> None:
+        """
+        Wasabi wallet JSON import format dumped to file at file path.
+
+        :param file_path: path to target file
+        :param indent: indent width
+        :return: None
+        """
+        self.export_to_file(
+            file_path=file_path,
+            contents=self.wasabi_json(indent=indent)
+        )
+
 
 

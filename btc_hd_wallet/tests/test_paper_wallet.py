@@ -1,5 +1,6 @@
 import os
 import csv
+import json
 import unittest
 from btc_hd_wallet.paper_wallet import PaperWallet
 
@@ -198,12 +199,12 @@ class TestColdWallet(unittest.TestCase):
         zpub = "zpub6rjjS2aQooWoAWUtXrdfiNxz38iL9SxgMVo2W4SRhVMTrYnqkJ8oeTF951rcKriKKFdEKDcFFMZMMBspF257wQmQhDR6yjufpqFXJKr4e1m"
         zprv = "zprvAdkP2X3WyRxVx2QRRq6fMF2FV6sqjzEpzGsRhg2p99pUykThCkpZ6evfDi62aycv5soGZq25vd1puNSeju96NPzCtdrUAzX4xaGDTK7buQn"
 
-        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["pub"], xpub)
-        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["prv"], xprv)
-        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["pub"], ypub)
-        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["prv"], yprv)
-        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["pub"], zpub)
-        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["prv"], zprv)
+        self.assertEqual(pw["BIP44"]["account_extended_keys"]["pub"], xpub)
+        self.assertEqual(pw["BIP44"]["account_extended_keys"]["prv"], xprv)
+        self.assertEqual(pw["BIP49"]["account_extended_keys"]["pub"], ypub)
+        self.assertEqual(pw["BIP49"]["account_extended_keys"]["prv"], yprv)
+        self.assertEqual(pw["BIP84"]["account_extended_keys"]["pub"], zpub)
+        self.assertEqual(pw["BIP84"]["account_extended_keys"]["prv"], zprv)
 
         address = "13UkPjRAmH1sDWuoX1zeL8yCFWXdwPvGAE"
         pubkey = "03597d9a56c46c0e6e1827525bb517c5a8dfe21ace626f31a2e11c4e4e23cd353e"
@@ -236,12 +237,12 @@ class TestColdWallet(unittest.TestCase):
         vpub = "vpub5ZF51BznVkRj1LC7XDbJDJT1vNwpbWhx4p3Y1m1UpMhho5SPg4v7PLNatXNQ1dggtSyJoRN9tKsoXcJZamEai1dmy1wurF1rJbZAFBxqht4"
         vprv = "vprv9LFibgTtfNsRnr7eRC4HrAWHNM7LC3z6hb7wDNbsG2AivH7F8XbrqY473HJhZJ45d9waTjewHxRixpQsL7RceZwZ5dNkoJ4yNyEMNXowdoa"
 
-        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["pub"], tpub)
-        self.assertEqual(pw["BIP44"]["acct_ext_keys"]["prv"], tprv)
-        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["pub"], upub)
-        self.assertEqual(pw["BIP49"]["acct_ext_keys"]["prv"], uprv)
-        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["pub"], vpub)
-        self.assertEqual(pw["BIP84"]["acct_ext_keys"]["prv"], vprv)
+        self.assertEqual(pw["BIP44"]["account_extended_keys"]["pub"], tpub)
+        self.assertEqual(pw["BIP44"]["account_extended_keys"]["prv"], tprv)
+        self.assertEqual(pw["BIP49"]["account_extended_keys"]["pub"], upub)
+        self.assertEqual(pw["BIP49"]["account_extended_keys"]["prv"], uprv)
+        self.assertEqual(pw["BIP84"]["account_extended_keys"]["pub"], vpub)
+        self.assertEqual(pw["BIP84"]["account_extended_keys"]["prv"], vprv)
 
         address = "mjXHL5oujxymKFdRUpLbAxFGU9ZaGvhPQ4"
         pubkey = "03b0829cd964a0e1e716fae3bb83812087825d5aca3f102670d8449312ee5b6647"
@@ -271,3 +272,44 @@ class TestColdWallet(unittest.TestCase):
         self.assertTrue(w.watch_only)
         with self.assertRaises(RuntimeError):
             w.generate()
+
+    def test_master_data(self):
+        md = self.wallet.master_data()
+        self.assertEqual(md["mnemonic"], self.wallet.mnemonic)
+        self.assertEqual(md["password"], self.wallet.password)
+
+        md = self.wallet_testnet.master_data()
+        self.assertEqual(md["mnemonic"], self.wallet_testnet.mnemonic)
+        self.assertEqual(md["password"], self.wallet_testnet.password)
+
+    def test_json(self):
+        json_ = self.wallet.json()
+        self.assertIsInstance(json_, str)
+        self.assertEqual(self.wallet.generate(), json.loads(json_))
+
+        json_ = self.wallet_testnet.json()
+        self.assertIsInstance(json_, str)
+        self.assertEqual(self.wallet_testnet.generate(), json.loads(json_))
+
+    def test_wasabi_json(self):
+        expect = '{"ExtPubKey": "xpub6D5CphEaWSRm5bAdeWs2cewL1RPNpFopxKShM9AcCo8eZGTugZKuc3AfihFiMqsughhtcePDQzuJJdKuVGSAbyTCQ1CB5LDmq2mx17Xq3rZ", "MasterFingerprint": "2D36E0EB"}'
+        json_ = self.wallet.wasabi_json()
+        self.assertEqual(json_, expect)
+
+        expect = '{"ExtPubKey": "tpubDDSqLw4GDiPDMPMV6hr7paGhLYV2oeJtVx2zhhDkYhtYJZ8cknAzkUqVxjLVtLq9UcEoEDu5x6jLzopWt8HQVQuVTbwUkrt1QzNMm7dYpen", "MasterFingerprint": "2D36E0EB"}'
+        json_ = self.wallet_testnet.wasabi_json()
+        self.assertEqual(json_, expect)
+
+    def test_export_wasabi(self):
+        expect = {
+            "ExtPubKey": "xpub6D5CphEaWSRm5bAdeWs2cewL1RPNpFopxKShM9AcCo8eZGTugZKuc3AfihFiMqsughhtcePDQzuJJdKuVGSAbyTCQ1CB5LDmq2mx17Xq3rZ",
+            "MasterFingerprint": "2D36E0EB"
+        }
+        filename = "wasabi.json"
+        self.wallet.export_wasabi(file_path=filename)
+        self.assertTrue(os.path.isfile(filename))
+        with open(filename, "r") as f:
+            data = json.loads(f.read())
+        self.assertEqual(expect, data)
+        os.remove(filename)
+        self.assertFalse(os.path.isfile(filename))
