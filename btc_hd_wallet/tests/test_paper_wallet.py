@@ -292,18 +292,19 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(self.wallet_testnet.generate(), json.loads(json_))
 
     def test_wasabi_json(self):
-        expect = '{"ExtPubKey": "xpub6D5CphEaWSRm5bAdeWs2cewL1RPNpFopxKShM9AcCo8eZGTugZKuc3AfihFiMqsughhtcePDQzuJJdKuVGSAbyTCQ1CB5LDmq2mx17Xq3rZ", "MasterFingerprint": "2D36E0EB"}'
+        expect = '{"ExtPubKey": "xpub6D5CphEaWSRm5bAdeWs2cewL1RPNpFopxKShM9AcCo8eZGTugZKuc3AfihFiMqsughhtcePDQzuJJdKuVGSAbyTCQ1CB5LDmq2mx17Xq3rZ", "MasterFingerprint": "2D36E0EB", "ColdCardFirmwareVersion": "3.1.3"}'
         json_ = self.wallet.wasabi_json()
         self.assertEqual(json_, expect)
 
-        expect = '{"ExtPubKey": "tpubDDSqLw4GDiPDMPMV6hr7paGhLYV2oeJtVx2zhhDkYhtYJZ8cknAzkUqVxjLVtLq9UcEoEDu5x6jLzopWt8HQVQuVTbwUkrt1QzNMm7dYpen", "MasterFingerprint": "2D36E0EB"}'
+        expect = '{"ExtPubKey": "tpubDDSqLw4GDiPDMPMV6hr7paGhLYV2oeJtVx2zhhDkYhtYJZ8cknAzkUqVxjLVtLq9UcEoEDu5x6jLzopWt8HQVQuVTbwUkrt1QzNMm7dYpen", "MasterFingerprint": "2D36E0EB", "ColdCardFirmwareVersion": "3.1.3"}'
         json_ = self.wallet_testnet.wasabi_json()
         self.assertEqual(json_, expect)
 
     def test_export_wasabi(self):
         expect = {
             "ExtPubKey": "xpub6D5CphEaWSRm5bAdeWs2cewL1RPNpFopxKShM9AcCo8eZGTugZKuc3AfihFiMqsughhtcePDQzuJJdKuVGSAbyTCQ1CB5LDmq2mx17Xq3rZ",
-            "MasterFingerprint": "2D36E0EB"
+            "MasterFingerprint": "2D36E0EB",
+            "ColdCardFirmwareVersion": "3.1.3"
         }
         filename = "wasabi.json"
         self.wallet.export_wasabi(file_path=filename)
