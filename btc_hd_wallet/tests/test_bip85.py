@@ -21,10 +21,10 @@ class TestBIP85DeterministicEntropy(unittest.TestCase):
         for wc, expected in zip(CORRECT_MNEMONIC_LENGTH, [16, 20, 24, 28, 32]):
             self.assertEqual(expected, self.bip85.byte_count_from_word_count(wc))
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             self.bip85.byte_count_from_word_count(11)
 
-        with self.assertRaises(RuntimeError):
+        with self.assertRaises(ValueError):
             self.bip85.byte_count_from_word_count(25)
 
     def test_from_xprv(self):
@@ -96,3 +96,8 @@ class TestBIP85DeterministicEntropy(unittest.TestCase):
         expected = "61d3c182f7388268463ef327c454a10bc01b3992fa9d2ee1b3891a6b487a5248793e61271066be53660d24e8cb76ff0cfdd0e84e478845d797324c195df9ab8e"
         self.assertEqual(expected, self.bip85.hex(num_bytes=64, index=1234))
 
+        with self.assertRaises(ValueError):
+            self.bip85.hex(15)
+
+        with self.assertRaises(ValueError):
+            self.bip85.hex(65)

@@ -286,16 +286,14 @@ def h256_to_p2wsh_address(h256: bytes, testnet: bool = False,
     return bech32.encode(hrp=hrp, witver=witver, witprog=h256)
 
 
-def bech32_decode_address(addr: str, testnet: bool = False) -> bytes:
+def bech32_decode_address(addr: str) -> bytes:
     """
     Decodes bech32 address.
 
     :param addr: bech32 address
-    :param testnet: whether to encode as a testnet address (default=False)
     :return: decoded address
     """
-    hrp = "tb" if testnet else "bc"
-    return bytes(bech32.decode(hrp=hrp, addr=addr)[1])
+    return bytes(bech32.decode(hrp=addr[:2], addr=addr)[1])
 
 
 def merkle_parent(hash1: bytes, hash2: bytes) -> bytes:

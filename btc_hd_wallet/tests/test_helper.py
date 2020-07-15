@@ -5,11 +5,28 @@ from btc_hd_wallet.helper import (
     little_endian_to_int, int_to_little_endian, encode_base58_checksum,
     b58decode_addr, h160_to_p2pkh_address, h160_to_p2sh_address, merkle_root,
     merkle_parent, merkle_parent_level, big_endian_to_int, int_to_big_endian,
-    encode_varint, read_varint
+    encode_varint, read_varint, h160_to_p2wpkh_address, h256_to_p2wsh_address,
+    chunks, bech32_decode_address
 )
 
 
 class HelperTest(unittest.TestCase):
+
+    def test_chunks(self):
+        lst = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        expected = [[0, 1], [2, 3], [4, 5], [6, 7], [8, 9]]
+        self.assertEqual(expected, list(chunks(lst, 2)))
+
+        expected = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9]]
+        self.assertEqual(expected, list(chunks(lst, 3)))
+
+        expected = [[0, 1, 2, 3], [4, 5, 6, 7], [8, 9]]
+        self.assertEqual(expected, list(chunks(lst, 4)))
+
+        expected = [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]
+        self.assertEqual(expected, list(chunks(lst, 5)))
+
+        self.assertEqual([lst], list(chunks(lst, 11)))
 
     def test_little_endian_to_int(self):
         h = bytes.fromhex('99c3980000000000')
@@ -125,6 +142,35 @@ class HelperTest(unittest.TestCase):
         self.assertEqual(h160_to_p2sh_address(h160, testnet=False), want)
         want = '2N3u1R6uwQfuobCqbCgBkpsgBxvr1tZpe7B'
         self.assertEqual(h160_to_p2sh_address(h160, testnet=True), want)
+
+    def test_h160_to_p2wpkh_address(self):
+        h160 = bytes.fromhex('74d691da1574e6b3c192ecfb52cc8984ee7b6c56')
+        want = "bc1qwntfrks4wnnt8svjana49nyfsnh8kmzk75frtp"
+        self.assertEqual(want, h160_to_p2wpkh_address(h160=h160))
+        want = "tb1qwntfrks4wnnt8svjana49nyfsnh8kmzk5jjssj"
+        self.assertEqual(want, h160_to_p2wpkh_address(h160=h160, testnet=True))
+
+    def test_h256_to_p2wsh_address(self):
+        h256 = bytes.fromhex('c3ef08811cd374113edddaf67bf00894889671b8bad0ce5abd0bdec0c09a4ae1')
+        want = "bc1qc0hs3qgu6d6pz0kamtm8huqgjjyfvudchtgvuk4ap00vpsy6ftssepf4fd"
+        self.assertEqual(want, h160_to_p2wpkh_address(h160=h256))
+        want = "tb1qc0hs3qgu6d6pz0kamtm8huqgjjyfvudchtgvuk4ap00vpsy6ftsswfl6nz"
+        self.assertEqual(want, h160_to_p2wpkh_address(h160=h256, testnet=True))
+
+    def test_bech32_decode_address(self):
+        want = bytes.fromhex("74d691da1574e6b3c192ecfb52cc8984ee7b6c56")
+        mainnet_addr = "bc1qwntfrks4wnnt8svjana49nyfsnh8kmzk75frtp"
+        self.assertEqual(want, bech32_decode_address(mainnet_addr))
+
+        testnet_addr = "tb1qwntfrks4wnnt8svjana49nyfsnh8kmzk5jjssj"
+        self.assertEqual(want, bech32_decode_address(testnet_addr))
+
+        want = bytes.fromhex("c3ef08811cd374113edddaf67bf00894889671b8bad0ce5abd0bdec0c09a4ae1")
+        mainnet_addr = "bc1qc0hs3qgu6d6pz0kamtm8huqgjjyfvudchtgvuk4ap00vpsy6ftssepf4fd"
+        self.assertEqual(want, bech32_decode_address(mainnet_addr))
+
+        testnet_addr = "tb1qc0hs3qgu6d6pz0kamtm8huqgjjyfvudchtgvuk4ap00vpsy6ftsswfl6nz"
+        self.assertEqual(want, bech32_decode_address(testnet_addr))
 
     def test_merkle_parent(self):
         tx_hash0 = bytes.fromhex(

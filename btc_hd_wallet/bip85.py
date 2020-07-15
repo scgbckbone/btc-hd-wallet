@@ -66,7 +66,7 @@ class BIP85DeterministicEntropy(object):
         :return: correct byte length
         """
         if word_count not in CORRECT_MNEMONIC_LENGTH:
-            raise RuntimeError(
+            raise ValueError(
                 "Incorrect word count! Allowed {}".format(
                     CORRECT_MNEMONIC_LENGTH
                 )
@@ -145,8 +145,8 @@ class BIP85DeterministicEntropy(object):
         :return: hex
         """
         if not 16 <= num_bytes <= 64:
-            raise RuntimeError("Incorrect number of bytes specified."
-                               " Has to be in closed interval <16-64>")
+            raise ValueError("Incorrect number of bytes specified."
+                             " Has to be in closed interval <16-64>")
         path = "m/83696968'/128169'/{}'/{}'".format(num_bytes, index)
         entropy = self.entropy(path=path)
         return entropy[:num_bytes].hex()
