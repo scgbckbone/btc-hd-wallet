@@ -75,10 +75,17 @@ from btc_hd_wallet import PaperWallet
 w = PaperWallet.new_wallet()
 
 # to display paper wallet in console
-w.pretty_print()
+w.pprint()
 
-# export paper wallet to csv file
-w.export_to_csv(file_path="wallet.csv")
+# get python dictionary repsresentation of paper wallte
+json_dct = w.generate()
+
+# get json serialized string representation of paper wallet
+json_str = w.json(indent=4)
+
+# wasabi import file format (inspired by ColdCard)
+file_path = "/home/john/wasabi0.json"
+w.export_wasabi(file_path=file_path)
 ```
 
 # Private and Public keys
