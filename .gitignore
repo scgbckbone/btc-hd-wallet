@@ -15,3 +15,6 @@
 
 # builded documentation
 docs/build
+
+# upgrade notes
+upgrade_notes.txt

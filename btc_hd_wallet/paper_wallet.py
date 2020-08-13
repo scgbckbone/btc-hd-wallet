@@ -220,6 +220,19 @@ class PaperWallet(BaseWallet):
             "ColdCardFirmwareVersion": "3.1.3"
         }, indent=indent)
 
+    def export_wallet(self, file_path: str, indent: int = 4) -> None:
+        """
+        Export wallet to file at file path.
+
+        :param file_path: path to target file
+        :param indent: indent width
+        :return: None
+        """
+        self.export_to_file(
+            file_path=file_path,
+            contents=self.json(indent=indent)
+        )
+
     def export_wasabi(self, file_path: str, indent: int = None) -> None:
         """
         Wasabi wallet JSON import format dumped to file at file path.
