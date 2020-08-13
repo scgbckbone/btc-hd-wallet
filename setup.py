@@ -16,6 +16,7 @@ install_requires = [
 setup(
     name='btc_hd_wallet',
     version=__version__,
+    license="MIT",
     author="Andrej Virgovic",
     author_email="virgovica@gmail.com",
     description='Bitcoin HD paper wallet implementation.',
@@ -31,8 +32,15 @@ setup(
       "Programming Language :: Python :: 3.9",
     ],
     url='https://github.com/scgbckbone/btc-hd-wallet',
-    keywords='bitcoin',
-    packages=["btc_hd_wallet", "bip39_wordlist"],
+    keywords=[
+        "bitcoin",
+        "btc",
+        "hierarchical deterministic wallet",
+        "BIP32",
+        "BIP85",
+        "BIP39",
+    ],
+    packages=["btc_hd_wallet"],
     zip_safe=False,
     install_requires=install_requires,
     test_suite="tests"
