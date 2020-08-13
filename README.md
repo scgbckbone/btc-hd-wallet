@@ -1,6 +1,12 @@
 # Installation
 1. install python3.6 or higher for your OS
 2. [install](https://www.linode.com/docs/development/version-control/how-to-install-git-on-linux-mac-and-windows/) git 
+3. install btc_hd_wallet:
+
+a.) via pypi 
+`pip install btc_hd_wallet`
+
+b.) from source
 ```shell script
 # clone btc-hd-wallet repository
 git clone https://github.com/scgbckbone/btc-hd-wallet.git

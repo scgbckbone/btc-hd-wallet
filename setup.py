@@ -3,7 +3,7 @@
 from setuptools import setup
 import os
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
@@ -40,7 +40,7 @@ setup(
         "BIP85",
         "BIP39",
     ],
-    packages=["btc_hd_wallet"],
+    packages=["btc_hd_wallet", "btc_hd_wallet/bip39_wordlist"],
     zip_safe=False,
     install_requires=install_requires,
     test_suite="tests"
