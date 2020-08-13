@@ -140,7 +140,7 @@ class BIP85DeterministicEntropy(object):
         Create hex private key of byte length num bytes
         from deterministic entropy specified by path.
 
-        :param num_bytes: desired number of bytes
+        :param num_bytes: desired number of bytes (default=32)
         :param index: derivation index (default=0)
         :return: hex
         """

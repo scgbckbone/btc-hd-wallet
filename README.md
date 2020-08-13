@@ -32,35 +32,46 @@ from btc_hd_wallet import BaseWallet
 # 1. totally new wallet
 # this will generate new mainnet wallet with 24 words mnemonic
 w = BaseWallet.new_wallet()
+
 # you can also generate testnet wallet with different length mnemonic
 w = BaseWallet.new_wallet(mnemonic_length=12, testnet=True)
+assert len(w.mnemonic.split(" ")) == 12 and w.testnet
+
 # you can also secure your wallet with optional passphrase
 w = BaseWallet.new_wallet(mnemonic_length=18, password="optional_secret_pwd")
+assert len(w.mnemonic.split(" ")) == 18 and not w.testnet and w.password == "optional_secret_pwd"
+
 # 2. from entropy hex string 
 w = BaseWallet.from_entropy_hex(
     entropy_hex="064338c5a50fcf96436142e164e005be3d0a51cb7bcc6050a6d0798e863c5b44"
 )
+
 # testnet with password
 w = BaseWallet.from_entropy_hex(
     entropy_hex="1e0479633a5c856b88a78b1977d3c214",
     password="optional_super_secret_password",
     testnet=True
 )
+
 # 3. from bip39 seed hex
 w = BaseWallet.from_bip39_seed_hex(
     bip39_seed="353cc8f20663196c2181b462e5d5d1a62192521b7604a578f87a3224a7ea9df91925c7e5b399094d996a2951acb1a95eba44b8293a5218bb6d964ba1def5f501",
     testnet=True
 )
+assert w.mnemonic is None and w.password is None
+
 # 4. from mnemonic
 w = BaseWallet.from_mnemonic(
     mnemonic="bulk cat flee input sign remind card vapor bonus salon vacuum cinnamon",
     password="optional_secret_pwd",
     testnet=False
 )
+
 # 5. from extended key
 w = BaseWallet.from_extended_key(
     extended_key="xprv9s21ZrQH143K2n9ryKS5EXxvQaNSbCxrVHSUigxG9ywY6GVQYsrk6n8e9j6m9z9LvBULFnSyjcLFxbG6WtXoeYRF19f1FY23nni39XSLPWm"
 )
+
 # here you can also create watch only wallet from extended pub key
 # for instance: generate wallet offline, derive external chain extended pub key
 ew = BaseWallet.from_extended_key(
@@ -102,12 +113,14 @@ w.export_wasabi(file_path=file_path)
 
 # Private and Public keys
 ```python3
-from btc_hd_wallet import PrivateKey
+from btc_hd_wallet import PrivateKey, PublicKey
 
 # initialize private key object from secret exponent
 sk = PrivateKey(sec_exp=61513215313213513843213)
+
 # from wif format
 sk = PrivateKey.from_wif("KxNH4NuQoDJjA9LwvHXn5KBTDPSG9YeoA7RBed2LwLRNqd1Tc4Wv")
+
 # from byte sequence
 sk = PrivateKey.parse(b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x15&X\xc0\xe3\xee\\\r$bU\x18')
 
@@ -121,19 +134,26 @@ sk_bytes = bytes(sk)
 
 # to access corresponding public key
 pk = sk.K
+
 # RIPEMD160(SHA256) of public key
 h160 = pk.h160()
+
 # p2pkh testnet address
 p2pkh = pk.address(addr_type="p2pkh", testnet=True) 
-# p2wpkh address
+
+# p2wpkh address (p2wpkh is default 'addr_type')
 p2wpkh = pk.address()
-# SEC encoding
+
+# SEC encoding (bytes)
 sec = pk.sec()
+
 # elliptic curve point
 point = pk.point
 
 # public key can also be parsed from sec
-pk = PublicKey.parse("030975d7fc3e27bcb3d37dd83a84f5ae2f48cec392e781e35ec849142bcc6e2cce")
+sec_str = "030975d7fc3e27bcb3d37dd83a84f5ae2f48cec392e781e35ec849142bcc6e2cce"
+pk = PublicKey.parse(bytes.fromhex(sec_str))
+
 # or from ecdsa Point or PointJacobi
 pk = PublicKey.from_point(point)
 ```
@@ -146,12 +166,15 @@ from btc_hd_wallet import (
 
 # mnemonic from number of entropy bits (allowed entropy bits 128,160,192,224,256)
 menmonic = mnemonic_from_entropy_bits(entropy_bits=256)
+
 # mnemonic from entropy hex
 mnemonic = mnemonic_from_entropy("0a84d45bb74a0d80c144f9ad765c3b9edc40a8dbb5c053c0930ef040992036d2")
+
 # create bip39 seed from mnemonic
 seed = bip39_seed_from_mnemonic(mnemonic=mnemonic)
+
 # or with optional password
-seed = bip39_seed_from_mnemonic(mnemonic=mnemonic, password)
+seed = bip39_seed_from_mnemonic(mnemonic=mnemonic, password="secret")
 ```
 
 # Script
@@ -167,8 +190,10 @@ script_hex = "1976a9148ca70d5eda840e9fb5d38234ae948dfad1d266d788ac"
 script = Script.parse(BytesIO(bytes.fromhex(script_hex)))
 str(script)
 > OP_DUP OP_HASH160 8ca70d5eda840e9fb5d38234ae948dfad1d266d7 OP_EQUALVERIFY OP_CHECKSIG
+
 # script can be raw serialized
 script.raw_serialize()
+
 # or it can be serialized with length prepended
 script.serialize()
 
@@ -176,7 +201,7 @@ script.serialize()
 w = BaseWallet.new_wallet()
 # derive some child node to use (I'll go with bip84)
 node = w.by_path("m/84'/0'/100'/0/0")
-hash160_pub_key = node.public_key.hash160()
+hash160_pub_key = node.public_key.h160()
 script = p2wpkh_script(hash160_pub_key)
 str(script)
 > OP_0 8ca70d5eda840e9fb5d38234ae948dfad1d266d7
@@ -191,29 +216,29 @@ xprv = "xprv9s21ZrQH143K2n9ryKS5EXxvQaNSbCxrVHSUigxG9ywY6GVQYsrk6n8e9j6m9z9LvBUL
 bip85 = BIP85DeterministicEntropy.from_xprv(xprv=xprv)
 
 # bip39 mnemonic
-bip85.bip39_mnemonic(path="m/83696968'/39'/0'/24'/0'")
+bip85.bip39_mnemonic(word_count=24, index=0)
 > lift boost vague vanish occur stamp eagle twice kite pause sunny execute defy grocery mercy assist volume venture subject analyst fiscal lecture connect bunker
-bip85.bip39_mnemonic(path="m/83696968'/39'/0'/12'/0'")
+bip85.bip39_mnemonic(word_count=12, index=0)
 > good brave hunt license deliver conduct more dutch donkey green skill gauge
-bip85.bip39_mnemonic(path="m/83696968'/39'/0'/15'/1'")
+bip85.bip39_mnemonic(word_count=15, index=1)
 > vessel nerve buzz wife good ski sock walnut crew toward team vast dynamic parade candy
 
 # wallet import format (WIF)
-bip85.wif(path="m/83696968'/2'/0'")
+bip85.wif(index=0)
 > 'KyxeP1pijLmtKZv8ry7d3tbNsq3XDeGgN99Mqi2Gn2Kx6WwPr2wC'
-bip85.wif(path="m/83696968'/2'/1'")
+bip85.wif(index=1)
 > 'KxsrnifkxsZTBeP52VxHzZGawyUSULBi1trHrJhU7ndQxkTXguFJ'
 
 # extended private key (XPRV)
-bip85.xprv(path="m/83696968'/32'/0'")
+bip85.xprv(index=0)
 > 'xprv9s21ZrQH143K2SrZ37WGmQ4TcqHbcAxy7tfuoVNZBxnd7huX6XuD2UZBUuXVfrZjjtw5X3B9JgUvoVegVALTeTXWsiUSK9F4FWXFZLfZVzV'
-bip85.xprv(path="m/83696968'/32'/1'")
+bip85.xprv(index=1)
 > 'xprv9s21ZrQH143K4RPx2iS7FecFHCUiC4CA2x4PqY6rtqjgqpxqWNcTxK88oRDyiZf8WiTLA6GWwR7BSoFkjjNSEx4wAgGq7nnxukd2FJP7AKH'
 
 # hex
-bip85.hex(path="m/83696968'/128169'/32'/0'")
+bip85.hex(index=0)
 > '78ebebfc701429f60ab4540168950c8fc9db5d275324545e7512f9e23b1fcd42'
-bip85.hex(path="m/83696968'/128169'/64'/0'")
+bip85.hex(num_bytes=64, index=0)
 > '2205163efb2ae4e78609b4a7410e9a4856f673b04dd0af7ce9851a9f2f7883c854f76a3e1cf639c217adde4956604dcdd853104dfcb93751856e3e13dcb9ab35'
 
 # bip85 is also available in BaseWallet class as its attribute
