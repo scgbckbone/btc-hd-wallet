@@ -1,3 +1,4 @@
+import os
 import sys
 import json
 from typing import List, Callable
@@ -191,6 +192,7 @@ class PaperWallet(BaseWallet):
         """
         data = data if data else self.generate()
         sys.stdout.write(self.json(data=data, indent=indent))
+        sys.stdout.write(os.linesep)
 
     @staticmethod
     def export_to_file(file_path: str, contents: str) -> None:

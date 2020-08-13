@@ -224,6 +224,9 @@ Run `make html` from there to create html documentation from docstrings.
 Documentation html is available in `docs/build/html/index.html`
 
 dependency: Sphinx
+```shell script
+pip install Sphinx
+```
 
 ## Roadmap:
 This project is Work In Progress

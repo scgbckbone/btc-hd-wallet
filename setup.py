@@ -14,13 +14,15 @@ install_requires = [
 ]
 
 setup(
-    name='btc-hd-wallet',
+    name='btc_hd_wallet',
     version=__version__,
-    description='Bitcoin HD paper wallet implementation based on BIP32',
+    author="Andrej Virgovic",
+    author_email="virgovica@gmail.com",
+    description='Bitcoin HD paper wallet implementation.',
     long_description=README,
     long_description_content_type='text/markdown',
     classifiers=[
-      "Development Status :: 3 - Alpha"
+      "Development Status :: 4 - Beta",
       "Programming Language :: Python :: 3 :: Only",
       "Programming Language :: Python :: 3.5",
       "Programming Language :: Python :: 3.6",
@@ -30,7 +32,7 @@ setup(
     ],
     url='https://github.com/scgbckbone/btc-hd-wallet',
     keywords='bitcoin',
-    packages=["btc_hd_wallet"],
+    packages=["btc_hd_wallet", "bip39_wordlist"],
     zip_safe=False,
     install_requires=install_requires,
     test_suite="tests"
