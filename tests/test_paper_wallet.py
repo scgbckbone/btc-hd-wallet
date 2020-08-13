@@ -29,7 +29,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
         self.assertEqual(acct_ext_pub, acct_ext_keys["pub"])
         csv_f = self.load_csv_file(
-            _file="btc_hd_wallet/tests/data/bip44_vast_tell_razor_drip_stick_one_engine"
+            _file="tests/data/bip44_vast_tell_razor_drip_stick_one_engine"
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m44h0h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -58,7 +58,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
         self.assertEqual(acct_ext_pub, acct_ext_keys["pub"])
         csv_f = self.load_csv_file(
-            _file="btc_hd_wallet/tests/data/bip49_vast_tell_razor_drip_stick_one_engine"
+            _file="tests/data/bip49_vast_tell_razor_drip_stick_one_engine"
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m49h0h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -85,7 +85,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
         self.assertEqual(acct_ext_pub, acct_ext_keys["pub"])
         csv_f = self.load_csv_file(
-            _file="btc_hd_wallet/tests/data/bip84_vast_tell_razor_drip_stick_one_engine"
+            _file="tests/data/bip84_vast_tell_razor_drip_stick_one_engine"
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m84h0h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -115,7 +115,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
         self.assertEqual(acct_ext_pub, acct_ext_keys["pub"])
         csv_f = self.load_csv_file(
-            _file="btc_hd_wallet/tests/data/bip44_vast_tell_razor_drip_stick_one_engine-testnet"
+            _file="tests/data/bip44_vast_tell_razor_drip_stick_one_engine-testnet"
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m44h1h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -144,7 +144,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
         self.assertEqual(acct_ext_pub, acct_ext_keys["pub"])
         csv_f = self.load_csv_file(
-            _file="btc_hd_wallet/tests/data/bip49_vast_tell_razor_drip_stick_one_engine-testnet"
+            _file="tests/data/bip49_vast_tell_razor_drip_stick_one_engine-testnet"
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m49h1h0h0)
         self.assertFalse(wallet0.watch_only)
@@ -171,7 +171,7 @@ class TestColdWallet(unittest.TestCase):
         self.assertEqual(acct_ext_prv, acct_ext_keys["prv"])
         self.assertEqual(acct_ext_pub, acct_ext_keys["pub"])
         csv_f = self.load_csv_file(
-            _file="btc_hd_wallet/tests/data/bip84_vast_tell_razor_drip_stick_one_engine-testnet"
+            _file="tests/data/bip84_vast_tell_razor_drip_stick_one_engine-testnet"
         )
         wallet0 = PaperWallet.from_extended_key(extended_key=m84h1h0h0)
         self.assertFalse(wallet0.watch_only)

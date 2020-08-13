@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from setuptools import setup, find_packages
+from setuptools import setup
 import os
 
 __version__ = "0.0.1"
@@ -9,11 +9,13 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
 
-requires = [
-    "requests",
+install_requires = [
     "ecdsa"
 ]
 
+test_requires = [
+    "Sphinx"
+]
 
 setup(
     name='btc-hd-wallet',
@@ -34,6 +36,7 @@ setup(
     keywords='bitcoin',
     packages=["btc_hd_wallet"],
     zip_safe=False,
-    install_requires=requires,
-    test_suite="btc_hd_wallet.tests"
+    install_requires=install_requires,
+    test_require=test_requires,
+    test_suite="tests"
 )
