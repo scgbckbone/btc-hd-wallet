@@ -3,7 +3,7 @@
 from setuptools import setup
 import os
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
