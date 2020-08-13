@@ -10,7 +10,7 @@ with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
 
 install_requires = [
-    "ecdsa"
+    "ecdsa>=0.15"
 ]
 
 setup(
