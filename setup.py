@@ -13,10 +13,6 @@ install_requires = [
     "ecdsa"
 ]
 
-test_requires = [
-    "Sphinx"
-]
-
 setup(
     name='btc-hd-wallet',
     version=__version__,
@@ -37,6 +33,5 @@ setup(
     packages=["btc_hd_wallet"],
     zip_safe=False,
     install_requires=install_requires,
-    test_require=test_requires,
     test_suite="tests"
 )

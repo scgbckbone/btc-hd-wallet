@@ -6,6 +6,12 @@
 git clone https://github.com/scgbckbone/btc-hd-wallet.git
 # change directory to project root
 cd btc-hd-wallet
+# create virtual environment
+python3 -m venv btc-hd-wallet
+# activate virtual environment
+source btc-hd-wallet/bin/activate
+# upgrade pip, setuptools and wheel (optional)
+pip install -U pip setuptools wheel
 # install project
 python setup.py install
 # run unittests (optional)
