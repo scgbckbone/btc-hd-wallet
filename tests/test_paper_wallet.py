@@ -300,6 +300,27 @@ class TestColdWallet(unittest.TestCase):
         json_ = self.wallet_testnet.wasabi_json()
         self.assertEqual(json_, expect)
 
+    def load_file_data(self, file_path):
+        self.assertTrue(os.path.isfile(file_path))
+        with open(file_path, "r") as f:
+            data = json.loads(f.read())
+        os.remove(file_path)
+        self.assertFalse(os.path.isfile(file_path))
+        return data
+
+    def test_export_wallet(self):
+        expected_mainnet = self.wallet.generate()
+        filename_mainnet = "wallet.json"
+        self.wallet.export_wallet(file_path=filename_mainnet)
+        data_mainnet = self.load_file_data(file_path=filename_mainnet)
+        self.assertEqual(expected_mainnet, data_mainnet)
+
+        expected_testnet = self.wallet_testnet.generate()
+        filename_testnet = "wallet_testnet.json"
+        self.wallet_testnet.export_wallet(file_path=filename_testnet)
+        data_testnet = self.load_file_data(file_path=filename_testnet)
+        self.assertEqual(expected_testnet, data_testnet)
+
     def test_export_wasabi(self):
         expect = {
             "ExtPubKey": "xpub6D5CphEaWSRm5bAdeWs2cewL1RPNpFopxKShM9AcCo8eZGTugZKuc3AfihFiMqsughhtcePDQzuJJdKuVGSAbyTCQ1CB5LDmq2mx17Xq3rZ",
@@ -308,9 +329,5 @@ class TestColdWallet(unittest.TestCase):
         }
         filename = "wasabi.json"
         self.wallet.export_wasabi(file_path=filename)
-        self.assertTrue(os.path.isfile(filename))
-        with open(filename, "r") as f:
-            data = json.loads(f.read())
+        data = self.load_file_data(file_path=filename)
         self.assertEqual(expect, data)
-        os.remove(filename)
-        self.assertFalse(os.path.isfile(filename))
