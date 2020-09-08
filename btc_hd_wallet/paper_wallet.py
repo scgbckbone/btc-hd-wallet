@@ -220,17 +220,20 @@ class PaperWallet(BaseWallet):
             "ColdCardFirmwareVersion": "3.1.3"
         }, indent=indent)
 
-    def export_wallet(self, file_path: str, indent: int = 4) -> None:
+    def export_wallet(self, file_path: str, indent: int = 4,
+                      data: dict = None) -> None:
         """
         Export wallet to file at file path.
 
         :param file_path: path to target file
         :param indent: indent width
+        :param data: source dictionary
         :return: None
         """
+        data = data if data else self.generate()
         self.export_to_file(
             file_path=file_path,
-            contents=self.json(indent=indent)
+            contents=self.json(data=data, indent=indent)
         )
 
     def export_wasabi(self, file_path: str, indent: int = None) -> None:

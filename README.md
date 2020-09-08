@@ -77,7 +77,7 @@ w = BaseWallet.from_extended_key(
 ew = BaseWallet.from_extended_key(
     extended_key="xpub6BvTr9tVPEDEDQ12sR7Ty4tVGnNGfDEeDg7dgmNkYzr3QXLS9amBxYHWRBbCJ2uD1RpVXZNkqXji2u3YE1bKxR7g6TUpxxB7C3Cx76i6wHL"
 )
-# this will pass just fine as wallet loaded from extended public key is warch only
+# this will pass just fine as wallet loaded from extended public key is watch only
 assert ew.watch_only == True 
 
 # 'ew' represents wallet which has as its master key external chain of 
