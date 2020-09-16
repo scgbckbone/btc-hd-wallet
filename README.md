@@ -22,9 +22,116 @@ pip install -U pip setuptools wheel
 python setup.py install
 # run unittests (optional)
 python setup.py test
+# to run test without setup - run below command in project root (btc-hd-wallet)
+python -m unittest -v
 ```
 
-# Base Wallet
+# CLI
+Command line interface provides functions for generating paper wallets and saving
+them into a file.
+
+##### General help message
+```shell script
+python -m btc_hd_wallet --help
+```
+```text
+usage: __main__.py [-h] [-f FILE] [--testnet] [--paranoia] [--account ACCOUNT]
+                   [--interval START END]
+                   {new,from-master-xprv,from-mnemonic,from-bip39-seed,from-entropy-hex}
+                   ...
+
+Bitcoin paper wallet generator.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE, --file FILE  save to FILE
+  --testnet             testnet network - default False
+  --paranoia            hide secret information from output (mnemonic,
+                        password, BIP85, private keys) - default False
+  --account ACCOUNT     account derivation index - default 0
+  --interval START END  range of key pairs and addresses to generate - default
+                        [0-20]
+
+commands:
+  {new,from-master-xprv,from-mnemonic,from-bip39-seed,from-entropy-hex}
+    new                 create new wallet
+    from-master-xprv    create wallet from extended key
+    from-mnemonic       create wallet from mnemonic sentence
+    from-bip39-seed     create wallet from BIP39 seed hex
+    from-entropy-hex    create wallet from entropy hex
+```
+##### Subcommand help messages
+* new
+```shell script
+python -m btc_hd_wallet new --help
+```
+```text
+usage: __main__.py new [-h] [--password PASSWORD]
+                       [--mnemonic-len {12,15,18,21,24}]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --password PASSWORD   optional BIP39 password
+  --mnemonic-len {12,15,18,21,24}
+                        mnemonic sentence length
+```
+* from-master-xprv
+```shell script
+python -m btc_hd_wallet from-master-xprv --help
+```
+```text
+usage: __main__.py from-master-xprv [-h] master_xprv
+
+positional arguments:
+  master_xprv  master extended private key
+
+optional arguments:
+  -h, --help   show this help message and exit
+```
+* from-mnemonic
+```shell script
+python -m btc_hd_wallet from-mnemonic --help
+```
+```text
+usage: __main__.py from-mnemonic [-h] [--password PASSWORD] mnemonic
+
+positional arguments:
+  mnemonic             mnemonic sentence
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --password PASSWORD  optional BIP39 password
+```
+* from-bip39-seed
+```shell script
+python -m btc_hd_wallet from-bip39-seed --help
+```
+```text
+usage: __main__.py from-bip39-seed [-h] seed_hex
+
+positional arguments:
+  seed_hex    BIP39 seed hex
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+* from-entropy-hex
+```shell script
+python -m btc_hd_wallet from-entropy-hex --help
+```
+```text
+usage: __main__.py from-entropy-hex [-h] [--password PASSWORD] entropy_hex
+
+positional arguments:
+  entropy_hex          entropy hex
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --password PASSWORD  optional BIP39 password
+```
+
+# API
+##### Base Wallet
 ```python3
 from btc_hd_wallet import BaseWallet
 
@@ -92,7 +199,7 @@ next(bip84_gen)
 > ("m/84'/0'/100'/0/0", "bc1qqv548euf07gx0h87d4sjczn65t8wnlv5jshp0z")
 ```
 
-# Paper Wallet
+##### Paper Wallet
 ```python3
 from btc_hd_wallet import PaperWallet
 w = PaperWallet.new_wallet()
@@ -111,7 +218,7 @@ file_path = "/home/john/wasabi0.json"
 w.export_wasabi(file_path=file_path)
 ```
 
-# Private and Public keys
+##### Private and Public keys
 ```python3
 from btc_hd_wallet import PrivateKey, PublicKey
 
@@ -158,7 +265,7 @@ pk = PublicKey.parse(bytes.fromhex(sec_str))
 pk = PublicKey.from_point(point)
 ```
 
-# Bip39 related methods
+##### Bip39 related methods
 ```python3
 from btc_hd_wallet import (
     bip39_seed_from_mnemonic, mnemonic_from_entropy_bits, mnemonic_from_entropy
@@ -177,7 +284,7 @@ seed = bip39_seed_from_mnemonic(mnemonic=mnemonic)
 seed = bip39_seed_from_mnemonic(mnemonic=mnemonic, password="secret")
 ```
 
-# Script
+##### Script
 ```python3
 from io import BytesIO
 from btc_hd_wallet import BaseWallet
@@ -207,7 +314,7 @@ str(script)
 > OP_0 8ca70d5eda840e9fb5d38234ae948dfad1d266d7
 ```
 
-# Bip85
+##### Bip85
 ```python3
 from btc_hd_wallet import BIP85DeterministicEntropy
 

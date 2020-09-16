@@ -201,7 +201,7 @@ def parse_args(args: List[str]) -> Tuple[ArgumentParser, Namespace]:
         help="range of key pairs and addresses to generate - default [0-20]"
     )
     # new wallet
-    subparsers = parser.add_subparsers(dest="command")
+    subparsers = parser.add_subparsers(dest="command", title="commands")
     parser_new_wallet = subparsers.add_parser(
         "new",
         help="create new wallet"
