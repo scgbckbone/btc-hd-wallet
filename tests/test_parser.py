@@ -138,7 +138,7 @@ class TestArgumentParsing(unittest.TestCase):
             parse_args(["from-master-xprv", invalid_xprv])
         self.assertRegexpMatches(
             mock_stderr.getvalue(),
-            r"Bitcoin extended key cannot be longer than 112 characters"
+            r"Extended key has to be 111 characters long"
         )
 
     @patch('sys.stderr', new_callable=StringIO)
@@ -231,7 +231,3 @@ class TestArgumentParsing(unittest.TestCase):
             self.assertFalse("prv" in data[bip]["account_extended_keys"])
             for group in data[bip]["groups"]:
                 self.assertEqual(len(group), 3)
-
-
-
-
