@@ -133,19 +133,22 @@ def file_(value: str) -> str:
     :param value: file path
     :return: file path
     """
-    error_msg = None
     path = pathlib.Path(value)
-    if path.exists():
-        error_msg = "File {} already exists".format(value)
     if path.is_dir():
-        error_msg = "{} is directory".format(value)
-    parent_dir_path = str(path.parent)
-    if not os.access(parent_dir_path, os.W_OK):
-        error_msg = "Parent directory {} not writable".format(parent_dir_path)
-    if error_msg:
         raise argparse.ArgumentError(
             argument=None,
-            message=error_msg
+            message="{} is directory".format(value)
+        )
+    if path.exists():
+        raise argparse.ArgumentError(
+            argument=None,
+            message="File {} already exists".format(value)
+        )
+    parent_dir_path = str(path.parent)
+    if not os.access(parent_dir_path, os.W_OK):
+        raise argparse.ArgumentError(
+            argument=None,
+            message="Parent directory {} not writable".format(parent_dir_path)
         )
     return value
 
