@@ -61,17 +61,15 @@ def account_index(value: str) -> int:
 
 def extended_key(value: str) -> str:
     """
-    Check whether extended key is no longer than 112 characters.
-    https://bitcoin.stackexchange.com/questions/78553/what-is-the-typical-size-for-an-extended-public-key
+    Check whether extended key is 111 characters.
 
     :param value: extended key
     :return: extended key
     """
-    #TODO better validation - lower bound or even exact size 111 ?
-    if len(value) > 112:
+    if len(value) != 111:
         raise argparse.ArgumentError(
             argument=None,
-            message="Bitcoin extended key cannot be longer than 112 characters"
+            message="Extended key has to be 111 characters long"
         )
     return value
 
