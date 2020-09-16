@@ -19,11 +19,11 @@ source btc-hd-wallet/bin/activate
 # upgrade pip, setuptools and wheel (optional)
 pip install -U pip setuptools wheel
 # install project
-python setup.py install
+python3 setup.py install
 # run unittests (optional)
-python setup.py test
+python3 setup.py test
 # to run test without setup - run below command in project root (btc-hd-wallet)
-python -m unittest -v
+python3 -m unittest -v
 ```
 
 # CLI
@@ -32,7 +32,7 @@ them into a file.
 
 ##### General help message
 ```shell script
-python -m btc_hd_wallet --help
+python3 -m btc_hd_wallet --help
 ```
 ```text
 usage: __main__.py [-h] [-f FILE] [--testnet] [--paranoia] [--account ACCOUNT]
@@ -63,7 +63,7 @@ commands:
 ##### Subcommand help messages
 * new
 ```shell script
-python -m btc_hd_wallet new --help
+python3 -m btc_hd_wallet new --help
 ```
 ```text
 usage: __main__.py new [-h] [--password PASSWORD]
@@ -77,7 +77,7 @@ optional arguments:
 ```
 * from-master-xprv
 ```shell script
-python -m btc_hd_wallet from-master-xprv --help
+python3 -m btc_hd_wallet from-master-xprv --help
 ```
 ```text
 usage: __main__.py from-master-xprv [-h] master_xprv
@@ -90,7 +90,7 @@ optional arguments:
 ```
 * from-mnemonic
 ```shell script
-python -m btc_hd_wallet from-mnemonic --help
+python3 -m btc_hd_wallet from-mnemonic --help
 ```
 ```text
 usage: __main__.py from-mnemonic [-h] [--password PASSWORD] mnemonic
@@ -104,7 +104,7 @@ optional arguments:
 ```
 * from-bip39-seed
 ```shell script
-python -m btc_hd_wallet from-bip39-seed --help
+python3 -m btc_hd_wallet from-bip39-seed --help
 ```
 ```text
 usage: __main__.py from-bip39-seed [-h] seed_hex
@@ -117,7 +117,7 @@ optional arguments:
 ```
 * from-entropy-hex
 ```shell script
-python -m btc_hd_wallet from-entropy-hex --help
+python3 -m btc_hd_wallet from-entropy-hex --help
 ```
 ```text
 usage: __main__.py from-entropy-hex [-h] [--password PASSWORD] entropy_hex
