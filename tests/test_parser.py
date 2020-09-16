@@ -192,7 +192,7 @@ class TestArgumentParsing(unittest.TestCase):
 
     @patch('sys.stderr', new_callable=StringIO)
     def test_invalid_file_argument(self, mock_stderr):
-        non_writable_path = "/etc/more"
+        non_writable_path = "/etc/more4684151"
         with self.assertRaises(SystemExit):
             parse_args(["--file", non_writable_path, "new"])
         self.assertRegexpMatches(
