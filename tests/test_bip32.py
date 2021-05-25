@@ -241,15 +241,42 @@ class TestBip32(unittest.TestCase):
         # chain m/44'
         xpub = "xpub695cM7RLktQbMS9DgS2SmkGF6W4msU7dW3ZkshyPV5PVWsWyoNxtvSBtm6VPSbcBR3a1NSp9BYy3v3QhUTi8T1HDa6rMShYmF682N6BaYpk"
         xpriv = "xprv9v6FwbtSvWrJ8x4kaQVSQcKWYUEHU1Pn8peA5KZmvjrWe5BqFqeeNdsQuqDXN9JqeAxmAvs5v682JLDQZJsB8Up4guNVPSGidN19N2iH1Lr"
-        m44h = m.ckd(index=44 + 2**31)
-        self.assertEqual(m44h.extended_public_key(), xpub)
-        self.assertEqual(m44h.extended_private_key(), xpriv)
-        self.assertEqual(m44h.__repr__(), "m/44'")
+        m0h = m.ckd(index=44 + 2**31)
+        self.assertEqual(m0h.extended_public_key(), xpub)
+        self.assertEqual(m0h.extended_private_key(), xpriv)
+        self.assertEqual(m0h.__repr__(), "m/44'")
 
         # chain m/44'/0'
         xpub = "xpub6Begh3MMx7oX2KoJb5D9sfJruuqsqsrqBZTBBznYMRfk7RBo8EcKDodYJm529ykTr2wrK1KBKXCbdSPu74pA37hZmPxkCP3hbEJBuqJgruy"
         xpriv = "xprv9xfLHXpU7kFDoqiqV3g9WXN8Mt1PSR8ypLXaPcNvo68mEcreahJ4g1K4TWqn4qu6HCKByGeivW9neAEzSS7idYdpGaGXJgvb79fxvV4qhse"
-        m44h0h = m44h.ckd(index=2 ** 31)
-        self.assertEqual(m44h0h.extended_public_key(), xpub)
-        self.assertEqual(m44h0h.extended_private_key(), xpriv)
-        self.assertEqual(m44h0h.__repr__(), "m/44'/0'")
+        m0h0h = m0h.ckd(index=2 ** 31)
+        self.assertEqual(m0h0h.extended_public_key(), xpub)
+        self.assertEqual(m0h0h.extended_private_key(), xpriv)
+        self.assertEqual(m0h0h.__repr__(), "m/44'/0'")
+
+    def test_vector_5(self):
+        # https://github.com/bitcoin/bips/pull/1030
+        # Chain m
+        seed = "3ddd5602285899a946114506157c7997e5444528f3003f6134712147db19b678"
+        xpub = "xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa"
+        xpriv = "xprv9s21ZrQH143K48vGoLGRPxgo2JNkJ3J3fqkirQC2zVdk5Dgd5w14S7fRDyHH4dWNHUgkvsvNDCkvAwcSHNAQwhwgNMgZhLtQC63zxwhQmRv"
+        m = PrvKeyNode.master_key(bip39_seed=bytes.fromhex(seed))
+        self.assertEqual(m.extended_public_key(), xpub)
+        self.assertEqual(m.extended_private_key(), xpriv)
+        self.assertEqual(m.__repr__(), "m")
+
+        # chain m/0'
+        xpub = "xpub69AUMk3qDBi3uW1sXgjCmVjJ2G6WQoYSnNHyzkmdCHEhSZ4tBok37xfFEqHd2AddP56Tqp4o56AePAgCjYdvpW2PU2jbUPFKsav5ut6Ch1m"
+        xpriv = "xprv9vB7xEWwNp9kh1wQRfCCQMnZUEG21LpbR9NPCNN1dwhiZkjjeGRnaALmPXCX7SgjFTiCTT6bXes17boXtjq3xLpcDjzEuGLQBM5ohqkao9G"
+        m0h = m.ckd(index=2**31)
+        self.assertEqual(m0h.extended_public_key(), xpub)
+        self.assertEqual(m0h.extended_private_key(), xpriv)
+        self.assertEqual(m0h.__repr__(), "m/0'")
+
+        # chain m/0'/1'
+        xpub = "xpub6BJA1jSqiukeaesWfxe6sNK9CCGaujFFSJLomWHprUL9DePQ4JDkM5d88n49sMGJxrhpjazuXYWdMf17C9T5XnxkopaeS7jGk1GyyVziaMt"
+        xpriv = "xprv9xJocDuwtYCMNAo3Zw76WENQeAS6WGXQ55RCy7tDJ8oALr4FWkuVoHJeHVAcAqiZLE7Je3vZJHxspZdFHfnBEjHqU5hG1Jaj32dVoS6XLT1"
+        m0h1h = m0h.ckd(index=1 + 2 ** 31)
+        self.assertEqual(m0h1h.extended_public_key(), xpub)
+        self.assertEqual(m0h1h.extended_private_key(), xpriv)
+        self.assertEqual(m0h1h.__repr__(), "m/0'/1'")
