@@ -225,3 +225,31 @@ class TestBip32(unittest.TestCase):
         self.assertEqual(m0h.extended_public_key(), xpub)
         self.assertEqual(m0h.extended_private_key(), xpriv)
         self.assertEqual(m0h.__repr__(), "m/0'")
+
+    def test_vector_4(self):
+        # https://blog.polychainlabs.com/bitcoin,/bip32,/bip39,/kdf/2021/05/17/inconsistent-bip32-derivations.html
+        # https://github.com/btcsuite/btcutil/issues/172
+        # Chain m
+        seed = "1cae71ac5ed584ff88a078a119512d12bb61e5398521785e123b6d08809d44b2"
+        xpub = "xpub661MyMwAqRbcEmwzw5S7mHW26Urp4kngnBFwoZUXSgakbHGs5bgZ7RYsqX9nyCP3YKqrJ2gVfaJc6waZBJC2VFsnmJB7iPSNA5LvmZpcBcQ"
+        xpriv = "xprv9s21ZrQH143K2HsXq3u7Q9ZHYT2KfJ4qQxLM1B4utM3miUwiY4NJZdEPzDpzbH7xxtMr3QfT2VH13rabABKkw1eLU83YC1QMeXsX3DBe2yP"
+        m = PrvKeyNode.master_key(bip39_seed=bytes.fromhex(seed))
+        self.assertEqual(m.extended_public_key(), xpub)
+        self.assertEqual(m.extended_private_key(), xpriv)
+        self.assertEqual(m.__repr__(), "m")
+
+        # chain m/44'
+        xpub = "xpub695cM7RLktQbMS9DgS2SmkGF6W4msU7dW3ZkshyPV5PVWsWyoNxtvSBtm6VPSbcBR3a1NSp9BYy3v3QhUTi8T1HDa6rMShYmF682N6BaYpk"
+        xpriv = "xprv9v6FwbtSvWrJ8x4kaQVSQcKWYUEHU1Pn8peA5KZmvjrWe5BqFqeeNdsQuqDXN9JqeAxmAvs5v682JLDQZJsB8Up4guNVPSGidN19N2iH1Lr"
+        m44h = m.ckd(index=44 + 2**31)
+        self.assertEqual(m44h.extended_public_key(), xpub)
+        self.assertEqual(m44h.extended_private_key(), xpriv)
+        self.assertEqual(m44h.__repr__(), "m/44'")
+
+        # chain m/44'/0'
+        xpub = "xpub6Begh3MMx7oX2KoJb5D9sfJruuqsqsrqBZTBBznYMRfk7RBo8EcKDodYJm529ykTr2wrK1KBKXCbdSPu74pA37hZmPxkCP3hbEJBuqJgruy"
+        xpriv = "xprv9xfLHXpU7kFDoqiqV3g9WXN8Mt1PSR8ypLXaPcNvo68mEcreahJ4g1K4TWqn4qu6HCKByGeivW9neAEzSS7idYdpGaGXJgvb79fxvV4qhse"
+        m44h0h = m44h.ckd(index=2 ** 31)
+        self.assertEqual(m44h0h.extended_public_key(), xpub)
+        self.assertEqual(m44h0h.extended_private_key(), xpriv)
+        self.assertEqual(m44h0h.__repr__(), "m/44'/0'")
