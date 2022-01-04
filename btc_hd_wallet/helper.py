@@ -143,7 +143,7 @@ def encode_varint(i: int) -> bytes:
 
 def b58decode_addr(s: str) -> bytes:
     """
-    Base58 decode + remove first byte (mostly testnet/mainnet marker)
+    Base58 decode + remove first byte (script + testnet/mainnet marker)
 
     :param s: base58 encoded
     :return: decoded with first byte removed
