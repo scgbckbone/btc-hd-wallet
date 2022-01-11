@@ -89,7 +89,7 @@ class TestArgumentParsing(unittest.TestCase):
         ):
             with self.assertRaises(SystemExit):
                 parse_args([cmd])
-            self.assertRegexpMatches(
+            self.assertRegex(
                 mock_stderr.getvalue(), err_msg
             )
 
@@ -97,20 +97,20 @@ class TestArgumentParsing(unittest.TestCase):
     def test_invalid_mnemonic_length(self, mock_stderr):
         with self.assertRaises(SystemExit):
             parse_args(["new", "--mnemonic-len", "25"])
-        self.assertRegexpMatches(mock_stderr.getvalue(), r"invalid choice")
+        self.assertRegex(mock_stderr.getvalue(), r"invalid choice")
 
     @patch('sys.stderr', new_callable=StringIO)
     def test_invalid_account_index(self,  mock_stderr):
         with self.assertRaises(SystemExit):
             parse_args(["--account", "-1", "new"])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"Account index has to be between 0 inclusive and 2147483647"
         )
 
         with self.assertRaises(SystemExit):
             parse_args(["--account", "2147483647", "new"])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"Account index has to be between 0 inclusive and 2147483647"
         )
@@ -119,14 +119,14 @@ class TestArgumentParsing(unittest.TestCase):
     def test_invalid_address_index(self,  mock_stderr):
         with self.assertRaises(SystemExit):
             parse_args(["--interval", "-1", "100", "new"])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"Address index has to be between 0 inclusive and 4294967295"
         )
 
         with self.assertRaises(SystemExit):
             parse_args(["--interval", "4294967290", "4294967295", "new"])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"Address index has to be between 0 inclusive and 4294967295"
         )
@@ -136,7 +136,7 @@ class TestArgumentParsing(unittest.TestCase):
         invalid_xprv = "xprv9yg2hgdKSVridAPC7kYvC3nYXZZoSMfLnQHFrsmKiC4m9ywrLS59suprG9CiMmtna6up5RKXou8rALdaDxvkjxJ2wrXGCpN3U5Lujx5JyPj00"
         with self.assertRaises(SystemExit):
             parse_args(["from-master-xprv", invalid_xprv])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"Extended key has to be 111 characters long"
         )
@@ -151,7 +151,7 @@ class TestArgumentParsing(unittest.TestCase):
         for invalid_bip39_seed in invalid_bip39_seed_values:
             with self.assertRaises(SystemExit):
                 parse_args(["from-bip39-seed", invalid_bip39_seed])
-            self.assertRegexpMatches(
+            self.assertRegex(
                 mock_stderr.getvalue(),
                 r"BIP39 seed has to be 64 bytes long - 128 characters"
             )
@@ -166,7 +166,7 @@ class TestArgumentParsing(unittest.TestCase):
         for invalid_entropy_hex in invalid_entropy_values:
             with self.assertRaises(SystemExit):
                 parse_args(["from-entropy-hex", invalid_entropy_hex])
-            self.assertRegexpMatches(
+            self.assertRegex(
                 mock_stderr.getvalue(),
                 r"Entropy hex has to have one of "
                 r"128, 160, 192, 224, 256 bit lengths"
@@ -185,7 +185,7 @@ class TestArgumentParsing(unittest.TestCase):
         for invalid_mnemonic in invalid_mnemonic_values:
             with self.assertRaises(SystemExit):
                 parse_args(["from-mnemonic", invalid_mnemonic])
-            self.assertRegexpMatches(
+            self.assertRegex(
                 mock_stderr.getvalue(),
                 r"Mnemonic sentence length has to be one of 12, 15, 18, 21, 24"
             )
@@ -195,21 +195,21 @@ class TestArgumentParsing(unittest.TestCase):
         non_writable_path = "/etc/more4684151"
         with self.assertRaises(SystemExit):
             parse_args(["--file", non_writable_path, "new"])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"not writable"
         )
         directory_path = "/"
         with self.assertRaises(SystemExit):
             parse_args(["--file", directory_path, "new"])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"is directory"
         )
         existing_file = "tests/test_parser.py"
         with self.assertRaises(SystemExit):
             parse_args(["--file", existing_file, "new"])
-        self.assertRegexpMatches(
+        self.assertRegex(
             mock_stderr.getvalue(),
             r"already exists"
         )

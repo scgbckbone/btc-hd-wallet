@@ -254,15 +254,9 @@ p2wpkh = pk.address()
 # SEC encoding (bytes)
 sec = pk.sec()
 
-# elliptic curve point
-point = pk.point
-
 # public key can also be parsed from sec
 sec_str = "030975d7fc3e27bcb3d37dd83a84f5ae2f48cec392e781e35ec849142bcc6e2cce"
 pk = PublicKey.parse(bytes.fromhex(sec_str))
-
-# or from ecdsa Point or PointJacobi
-pk = PublicKey.from_point(point)
 ```
 
 ##### Bip39 related methods

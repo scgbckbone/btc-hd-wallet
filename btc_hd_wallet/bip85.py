@@ -1,8 +1,7 @@
 import base64
-
-from btc_hd_wallet.bip32 import PrvKeyNode, InvalidKeyError, CURVE_ORDER
+from btc_hd_wallet.bip32 import PrvKeyNode
 from btc_hd_wallet.wallet_utils import Bip32Path
-from btc_hd_wallet.helper import hmac_sha512, big_endian_to_int
+from btc_hd_wallet.helper import hmac_sha512
 from btc_hd_wallet.keys import PrivateKey
 from btc_hd_wallet.bip39 import mnemonic_from_entropy, CORRECT_MNEMONIC_LENGTH
 
@@ -76,21 +75,14 @@ class BIP85DeterministicEntropy(object):
         return (word_count - 1) * 11 // 8 + 1
 
     @staticmethod
-    def correct_key(key: int) -> None:
+    def correct_key(key_bytes: bytes) -> None:
         """
         Checks key validity. Invalid key: parse256(IL) ≥ n or is 0
 
         :param key: secret exponent
         :return: None
         """
-        if key == 0:
-            raise InvalidKeyError("key is zero")
-        if key >= CURVE_ORDER:
-            raise InvalidKeyError(
-                "key {} is greater/equal to curve order".format(
-                    key
-                )
-            )
+        PrivateKey.verify(key_bytes)
 
     def bip39_mnemonic(self, word_count: int = 24, index: int = 0) -> str:
         """
@@ -117,9 +109,8 @@ class BIP85DeterministicEntropy(object):
         """
         path = "m/83696968'/2'/{}'".format(index)
         entropy = self.entropy(path=path)
-        key_int = big_endian_to_int(entropy[:32])
-        self.correct_key(key=key_int)
-        prv_key = PrivateKey(sec_exp=key_int)
+        self.correct_key(key_bytes=entropy[:32])
+        prv_key = PrivateKey(sec_exp=entropy[:32])
         return prv_key.wif()
 
     def xprv(self, index: int = 0) -> str:
@@ -133,7 +124,7 @@ class BIP85DeterministicEntropy(object):
         path = "m/83696968'/32'/{}'".format(index)
         entropy = self.entropy(path=path)
         left, right = entropy[:32], entropy[32:]
-        self.correct_key(big_endian_to_int(right))
+        self.correct_key(right)
         prv_node = PrvKeyNode(key=right, chain_code=left)
         return prv_node.extended_private_key()
 

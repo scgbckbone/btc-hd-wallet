@@ -147,16 +147,8 @@ class TestPublicKey(unittest.TestCase):
                 bytes.fromhex(uncompressed)
             )
             self.assertEqual(
-                pubkey.point,
-                PublicKey.parse(bytes.fromhex(uncompressed)).point
-            )
-            self.assertEqual(
                 pubkey.sec(compressed=True),
                 bytes.fromhex(compressed)
-            )
-            self.assertEqual(
-                pubkey.point,
-                PublicKey.parse(bytes.fromhex(compressed)).point
             )
 
     def test_incorrect_address_type(self):
@@ -273,10 +265,6 @@ class TestPublicKey(unittest.TestCase):
         ))
         self.assertEqual(pk, pk1)
 
-        pk = PublicKey.from_point(point=pk.point)
-        pk1 = PublicKey.from_point(point=pk1.point)
-
-        self.assertEqual(pk, pk1)
         self.assertEqual(sk.K, sk1.K)
 
         pk2 = PublicKey.parse(key_bytes=bytes.fromhex(

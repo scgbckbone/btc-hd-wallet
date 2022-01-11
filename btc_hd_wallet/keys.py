@@ -1,39 +1,37 @@
-import ecdsa
 from typing import Union
 
-from btc_hd_wallet.helper import (
-    encode_base58_checksum, decode_base58_checksum, big_endian_to_int,
-    hash160, h160_to_p2wpkh_address, h160_to_p2pkh_address
+from pysecp256k1 import (
+    ec_seckey_verify, ec_pubkey_create, ec_pubkey_serialize, ec_pubkey_parse,
+    ec_seckey_tweak_add, ec_pubkey_tweak_add,
 )
-
-
-SECP256k1 = ecdsa.curves.SECP256k1
-Point_or_PointJacobi = Union[
-    ecdsa.ellipticcurve.Point,
-    ecdsa.ellipticcurve.PointJacobi
-]
+from btc_hd_wallet.helper import (
+    encode_base58_checksum, decode_base58_checksum,
+    hash160, h160_to_p2wpkh_address, h160_to_p2pkh_address, int_to_big_endian,
+)
 
 
 class PrivateKey(object):
 
     __slots__ = (
-        "sec_exp",
         "k",
         "K"
     )
 
-    def __init__(self, sec_exp: int):
+    def __init__(self, sec_exp: Union[bytes, int]):
         """
-        Initializes private key from secret exponent.
+        Initializes private key.
 
         :param sec_exp: secret
         """
-        self.sec_exp = sec_exp
-        self.k = ecdsa.SigningKey.from_secret_exponent(
-            secexp=sec_exp,
-            curve=SECP256k1
-        )
-        self.K = PublicKey(key=self.k.get_verifying_key())
+        if isinstance(sec_exp, int):
+            sec_exp = int_to_big_endian(sec_exp, 32)
+        self.k = sec_exp
+        ec_seckey_verify(self.k)
+        self.K = PublicKey(ec_pubkey_create(self.k))
+
+    @staticmethod
+    def verify(key_bytes: bytes) -> None:
+        ec_seckey_verify(key_bytes)
 
     def __bytes__(self) -> bytes:
         """
@@ -41,7 +39,7 @@ class PrivateKey(object):
 
         :return: byte representation of PrivateKey object
         """
-        return self.k.to_string()
+        return self.k
 
     def __eq__(self, other: "PrivateKey") -> bool:
         """
@@ -49,7 +47,7 @@ class PrivateKey(object):
 
         :param other: other private key
         """
-        return self.sec_exp == other.sec_exp
+        return self.k == other.k
 
     def wif(self, compressed: bool = True, testnet: bool = False) -> str:
         """
@@ -62,6 +60,10 @@ class PrivateKey(object):
         prefix = b"\xef" if testnet else b"\x80"
         suffix = b"\x01" if compressed else b""
         return encode_base58_checksum(prefix + bytes(self) + suffix)
+
+    def tweak_add(self, tweak32: bytes) -> "PrivateKey":
+        tweaked = ec_seckey_tweak_add(self.k, tweak32)
+        return PrivateKey(sec_exp=tweaked)
 
     @classmethod
     def from_wif(cls, wif_str: str) -> "PrivateKey":
@@ -76,7 +78,7 @@ class PrivateKey(object):
             # compressed key --> so remove last byte that has to be 01
             assert decoded[-1] == 1
             decoded = decoded[:-1]
-        return cls(sec_exp=big_endian_to_int(decoded[1:]))
+        return cls(sec_exp=decoded[1:])
 
     @classmethod
     def parse(cls, key_bytes: bytes) -> "PrivateKey":
@@ -86,7 +88,11 @@ class PrivateKey(object):
         :param key_bytes: byte representation of private key
         :return: private key
         """
-        return cls(sec_exp=big_endian_to_int(key_bytes))
+        return cls(sec_exp=key_bytes)
+
+    @classmethod
+    def from_int(cls, sec_exp: int) -> "Privatekey":
+        return cls(sec_exp=int_to_big_endian(sec_exp, 32))
 
 
 class PublicKey(object):
@@ -95,13 +101,13 @@ class PublicKey(object):
         "K"
     )
 
-    def __init__(self, key: ecdsa.VerifyingKey):
+    def __init__(self, pub_key):
         """
-        Initializes PublicKey object from ecdsa verifying key
+        Initializes PublicKey object. 
 
-        :param key: ecdsa verifying key
+        :param key: secp256k1 pubkey
         """
-        self.K = key
+        self.K = pub_key
 
     def __eq__(self, other: "PublicKey") -> bool:
         """
@@ -111,15 +117,6 @@ class PublicKey(object):
         """
         return self.sec() == other.sec()
 
-    @property
-    def point(self) -> ecdsa.ellipticcurve.Point:
-        """
-        Point on curve (x and y coordinates).
-
-        :return: point on curve
-        """
-        return self.K.pubkey.point
-
     def sec(self, compressed: bool = True) -> bytes:
         """
         Encodes public key to SEC format.
@@ -127,9 +124,10 @@ class PublicKey(object):
         :param compressed: whether to use compressed format (default=True)
         :return: SEC encoded public key
         """
-        if compressed:
-            return self.K.to_string(encoding="compressed")
-        return self.K.to_string(encoding="uncompressed")
+        return ec_pubkey_serialize(self.K, compressed=compressed)
+
+    def tweak_add(self, tweak32: bytes) -> "PublicKey":
+        return PublicKey(pub_key=ec_pubkey_tweak_add(self.K, tweak32))
 
     @classmethod
     def parse(cls, key_bytes: bytes) -> "PublicKey":
@@ -139,17 +137,7 @@ class PublicKey(object):
         :param key_bytes: byte representation of public key
         :return: public key
         """
-        return cls(ecdsa.VerifyingKey.from_string(key_bytes, curve=SECP256k1))
-
-    @classmethod
-    def from_point(cls, point: Point_or_PointJacobi) -> "PublicKey":
-        """
-        Initializes public key from point on elliptic curve.
-
-        :param point: point on elliptic curve
-        :return: public key
-        """
-        return cls(ecdsa.VerifyingKey.from_public_point(point, curve=SECP256k1))
+        return cls(pub_key=ec_pubkey_parse(key_bytes))
 
     def h160(self, compressed: bool = True) -> bytes:
         """

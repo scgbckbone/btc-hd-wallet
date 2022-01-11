@@ -3,14 +3,14 @@
 from setuptools import setup
 import os
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 
 here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md')) as f:
     README = f.read()
 
 install_requires = [
-    "ecdsa>=0.15"
+    'python-secp256k1==0.2.0',
 ]
 
 setup(
