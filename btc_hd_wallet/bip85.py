@@ -1,3 +1,5 @@
+import base64
+
 from btc_hd_wallet.bip32 import PrvKeyNode, InvalidKeyError, CURVE_ORDER
 from btc_hd_wallet.wallet_utils import Bip32Path
 from btc_hd_wallet.helper import hmac_sha512, big_endian_to_int
@@ -150,3 +152,11 @@ class BIP85DeterministicEntropy(object):
         path = "m/83696968'/128169'/{}'/{}'".format(num_bytes, index)
         entropy = self.entropy(path=path)
         return entropy[:num_bytes].hex()
+
+    def pwd(self, num_bytes: int = 17, index: int = 0) -> str:
+        if not 16 <= num_bytes <= 64:
+            raise ValueError("Incorrect number of bytes specified."
+                             " Has to be in closed interval <16-64>")
+        path = "m/83696968'/707764'/{}'/{}'".format(num_bytes, index)
+        entropy = self.entropy(path=path)
+        return base64.b64encode(entropy[:num_bytes]).decode().strip()

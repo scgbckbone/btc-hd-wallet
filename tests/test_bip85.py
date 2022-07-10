@@ -101,3 +101,19 @@ class TestBIP85DeterministicEntropy(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             self.bip85.hex(65)
+
+    def test_entropy_to_pwd(self):
+        expected = "161h1KdldcW613P+60AplJA="
+        self.assertEqual(expected, self.bip85.pwd(num_bytes=17, index=0))
+
+        expected = "Zj5ByJfRqr9POHKLzSvaNoh1Ia642qf5+71Lm1xNEDc="
+        self.assertEqual(expected, self.bip85.pwd(num_bytes=32, index=0))
+
+        expected = "HBqosVLBhKneX8ZCZgLdvmA8biOdUV2S/AteE5Rs8sMT0pfG3aItk/IrHGEpY9um6Xzf8kdB3nY6NWX6jsKxnw=="
+        self.assertEqual(expected, self.bip85.pwd(num_bytes=64, index=1234))
+
+        with self.assertRaises(ValueError):
+            self.bip85.hex(15)
+
+        with self.assertRaises(ValueError):
+            self.bip85.hex(65)
