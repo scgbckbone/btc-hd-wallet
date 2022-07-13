@@ -103,17 +103,28 @@ class TestBIP85DeterministicEntropy(unittest.TestCase):
             self.bip85.hex(65)
 
     def test_entropy_to_pwd(self):
-        expected = "161h1KdldcW613P+60AplJA="
-        self.assertEqual(expected, self.bip85.pwd(num_bytes=17, index=0))
+        expected = "RrH7uVI0XlpddCbiuYV+"
+        assert len(expected) == 20
+        self.assertEqual(expected, self.bip85.pwd(pwd_len=20, index=0))
 
-        expected = "Zj5ByJfRqr9POHKLzSvaNoh1Ia642qf5+71Lm1xNEDc="
-        self.assertEqual(expected, self.bip85.pwd(num_bytes=32, index=0))
+        expected = "vtV6sdNQTKpuefUMOHOKwUp1"
+        assert len(expected) == 24
+        self.assertEqual(expected, self.bip85.pwd(pwd_len=24, index=0))
 
-        expected = "HBqosVLBhKneX8ZCZgLdvmA8biOdUV2S/AteE5Rs8sMT0pfG3aItk/IrHGEpY9um6Xzf8kdB3nY6NWX6jsKxnw=="
-        self.assertEqual(expected, self.bip85.pwd(num_bytes=64, index=1234))
+        expected = "mBhJgXCJd6IpdOu1cc/D1wU+5sxj/1tK"
+        assert len(expected) == 32
+        self.assertEqual(expected, self.bip85.pwd(pwd_len=32, index=1234))
+
+        expected = "HBqosVLBhKneX8ZCZgLdvmA8biOdUV2S/AteE5Rs8sMT0pfG3aItk/IrHGEpY9um"
+        assert len(expected) == 64
+        self.assertEqual(expected, self.bip85.pwd(pwd_len=64, index=1234))
+
+        expected = "7n3VQ63qjgY6OJBQxqWYToNRfzzN5J8DwN1D8JqlZfnsF+1LdPXG3gkOXighX4iKyKip8nRIhVVVObh/G41F7g"
+        assert len(expected) == 86
+        self.assertEqual(expected, self.bip85.pwd(pwd_len=86, index=1234))
 
         with self.assertRaises(ValueError):
-            self.bip85.hex(15)
+            self.bip85.pwd(pwd_len=19)
 
         with self.assertRaises(ValueError):
-            self.bip85.hex(65)
+            self.bip85.pwd(pwd_len=87)
