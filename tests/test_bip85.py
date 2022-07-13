@@ -107,6 +107,10 @@ class TestBIP85DeterministicEntropy(unittest.TestCase):
         assert len(expected) == 20
         self.assertEqual(expected, self.bip85.pwd(pwd_len=20, index=0))
 
+        expected = "dKLoepugzdVJvdL56ogNV"
+        assert len(expected) == 21
+        self.assertEqual(expected, self.bip85.pwd(pwd_len=21, index=0))
+
         expected = "vtV6sdNQTKpuefUMOHOKwUp1"
         assert len(expected) == 24
         self.assertEqual(expected, self.bip85.pwd(pwd_len=24, index=0))
