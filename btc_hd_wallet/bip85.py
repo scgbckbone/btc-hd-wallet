@@ -153,7 +153,7 @@ class BIP85DeterministicEntropy(object):
         entropy = self.entropy(path=path)
         return entropy[:num_bytes].hex()
 
-    def pwd(self, pwd_len: int = 17, index: int = 0) -> str:
+    def pwd(self, pwd_len: int = 21, index: int = 0) -> str:
         """
         Entropy calculated log2(64 ** pwd_len)
 
