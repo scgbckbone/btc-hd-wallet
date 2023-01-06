@@ -161,3 +161,7 @@ class TestBip32Path(unittest.TestCase):
         self.assertEqual(path.bip(), 1)
         path = Bip32Path(purpose=84 + (2 ** 31))
         self.assertEqual(path.bip(), 2)
+
+    def test_hardened_marker(self):
+        self.assertEqual(str(Bip32Path.parse("m/44h/0h/0h/0/0")), "m/44'/0'/0'/0/0")
+        self.assertEqual(str(Bip32Path.parse("m/44'/0h/0h/0/0")), "m/44'/0'/0'/0/0")  # do not do this
