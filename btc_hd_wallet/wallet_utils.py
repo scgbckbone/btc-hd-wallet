@@ -425,7 +425,7 @@ class Bip32Path(object):
         :param str_int: string representation of number
         :return: number
         """
-        if str_int[-1] == "'":
+        if str_int[-1] in ("'", "h"):
             return int(str_int[:-1]) + (2 ** 31)
         return int(str_int)
 
