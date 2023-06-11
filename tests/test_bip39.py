@@ -7,7 +7,7 @@ from btc_hd_wallet.bip39 import (
 )
 
 
-class TestData(object):
+class DataChunk(object):
     __slots__ = (
         "entropy",
         "mnemonic",
@@ -172,7 +172,7 @@ class TestMnemonic(unittest.TestCase):
 
     def test_bip39_vectors(self):
         for data in self.test_data:
-            data = TestData(data)
+            data = DataChunk(data)
             mnemonic_sentence = mnemonic_from_entropy(data.entropy)
             self.assertEqual(data.mnemonic, mnemonic_sentence)
             seed = bip39_seed_from_mnemonic(mnemonic_sentence, password="TREZOR")
