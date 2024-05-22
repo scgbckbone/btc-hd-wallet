@@ -2,16 +2,17 @@ import unittest
 from btc_hd_wallet.helper import int_to_big_endian
 try:
     from pysecp256k1.low_level.secp256k1 import Libsecp256k1Exception
-
-    CURVE_ORDER = int_to_big_endian(
-        0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141, 32)
     exc0 = Libsecp256k1Exception
 except ImportError:
-    from btc_hd_wallet.bip32 import CURVE_ORDER, InvalidKeyError
+    from btc_hd_wallet.bip32 import InvalidKeyError
     exc0 = InvalidKeyError
 from btc_hd_wallet.base_wallet import BaseWallet
 from btc_hd_wallet.bip85 import BIP85DeterministicEntropy
 from btc_hd_wallet.bip39 import CORRECT_MNEMONIC_LENGTH
+
+
+CURVE_ORDER = int_to_big_endian(
+    0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141, 32)
 
 
 class TestBIP85DeterministicEntropy(unittest.TestCase):

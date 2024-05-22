@@ -150,6 +150,16 @@ class TestPublicKey(unittest.TestCase):
                 pubkey.sec(compressed=True),
                 bytes.fromhex(compressed)
             )
+            try:
+                self.assertEqual(
+                    pubkey.point,
+                    PublicKey.parse(bytes.fromhex(compressed)).point
+                )
+                self.assertEqual(
+                    pubkey.point,
+                    PublicKey.parse(bytes.fromhex(uncompressed)).point
+                )
+            except AttributeError: pass # pysecp
 
     def test_incorrect_address_type(self):
         pubkey = PrivateKey(sec_exp=6516151654156).K
@@ -264,6 +274,13 @@ class TestPublicKey(unittest.TestCase):
             "0311f16bf6194093aea6bde62a44ffe7ca054daa4e779e6f427e100eff578bc4fd"
         ))
         self.assertEqual(pk, pk1)
+
+        try:
+            pk = PublicKey.from_point(point=pk.point)
+            pk1 = PublicKey.from_point(point=pk1.point)
+
+            self.assertEqual(pk, pk1)
+        except AttributeError: pass  # pysecp
 
         self.assertEqual(sk.K, sk1.K)
 
