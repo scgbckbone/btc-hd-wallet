@@ -1,9 +1,13 @@
 import base64
-from btc_hd_wallet.bip32 import PrvKeyNode
+from btc_hd_wallet.bip32 import PrvKeyNode, InvalidKeyError
 from btc_hd_wallet.wallet_utils import Bip32Path
-from btc_hd_wallet.helper import hmac_sha512
+from btc_hd_wallet.helper import hmac_sha512, big_endian_to_int
 from btc_hd_wallet.keys import PrivateKey
 from btc_hd_wallet.bip39 import mnemonic_from_entropy, CORRECT_MNEMONIC_LENGTH
+try:
+    from pysecp256k1 import ec_seckey_verify
+except ImportError:
+    from btc_hd_wallet.keys import CURVE_ORDER
 
 
 class BIP85DeterministicEntropy(object):
@@ -79,10 +83,21 @@ class BIP85DeterministicEntropy(object):
         """
         Checks key validity. Invalid key: parse256(IL) ≥ n or is 0
 
-        :param key: secret exponent
+        :param key: key_bytes
         :return: None
         """
-        PrivateKey.verify(key_bytes)
+        try:
+            ec_seckey_verify(key_bytes)
+        except NameError:
+            key = big_endian_to_int(key_bytes)
+            if key == 0:
+                raise InvalidKeyError("key is zero")
+            if key >= CURVE_ORDER:
+                raise InvalidKeyError(
+                    "key {} is greater/equal to curve order".format(
+                        key
+                    )
+                )
 
     def bip39_mnemonic(self, word_count: int = 24, index: int = 0) -> str:
         """
