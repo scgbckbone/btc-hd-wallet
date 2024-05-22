@@ -12,6 +12,12 @@ HARDENED = 2 ** 31
 
 Prv_or_PubKeyNode = Union["PrvKeyNode", "PubKeyNode"]
 
+try:
+    from pysecp256k1 import ec_seckey_verify
+except ImportError:
+    import ecdsa
+    from btc_hd_wallet.keys import CURVE_ORDER, INFINITY
+
 
 class InvalidKeyError(Exception):
     """Raised when derived key is invalid"""
@@ -270,7 +276,20 @@ class PubKeyNode(object):
         )
         IL, IR = I[:32], I[32:]
         # TODO this does not check whether IL is not zero (secp256k1 also does not check)
-        Ki = self.public_key.tweak_add(IL)
+        try:
+            Ki = self.public_key.tweak_add(IL)
+        except NameError:
+            if big_endian_to_int(IL) >= CURVE_ORDER:
+                InvalidKeyError(
+                    "public key {} is greater/equal to curve order".format(
+                        big_endian_to_int(IL)
+                    )
+                )
+            point = PrivateKey.parse(IL).K.point + self.public_key.point
+            if point == INFINITY:
+                raise InvalidKeyError("public key is a point at infinity")
+            Ki = PublicKey.from_point(point=point)
+
         child = self.__class__(
             key=Ki.sec(),
             chain_code=IR,
@@ -366,7 +385,15 @@ class PrvKeyNode(PubKeyNode):
         int_left_key = big_endian_to_int(IL)
         if int_left_key == 0:
             raise InvalidKeyError("master key is zero")
-        PrivateKey.verify(IL)
+        try:
+            ec_seckey_verify(IL)
+        except NameError:
+            if int_left_key >= CURVE_ORDER:
+                raise InvalidKeyError(
+                    "master key {} is greater/equal to curve order".format(
+                        int_left_key
+                    )
+                )
         # chain code
         IR = I[32:]
         return cls(
@@ -425,9 +452,23 @@ class PrvKeyNode(PubKeyNode):
             data = self.public_key.sec() + int_to_big_endian(index, 4)
         I = hmac_sha512(key=self.chain_code, msg=data)
         IL, IR = I[:32], I[32:]
-        ki = self.private_key.tweak_add(IL)
-        #if ki == PrivateKey.from_int(0):
-        #    InvalidKeyError("private key is zero")
+        try:
+            ki = self.private_key.tweak_add(IL)
+            # if ki == PrivateKey.from_int(0):
+            #    InvalidKeyError("private key is zero")
+        except NameError:
+            if big_endian_to_int(IL) >= CURVE_ORDER:
+                InvalidKeyError(
+                    "private key {} is greater/equal to curve order".format(
+                        big_endian_to_int(IL)
+                    )
+                )
+            ki = (int.from_bytes(IL, "big") +
+                  big_endian_to_int(bytes(self.private_key))) % CURVE_ORDER
+            if ki == 0:
+                InvalidKeyError("private key is zero")
+            ki = int_to_big_endian(ki, 32)
+
         child = self.__class__(
             key=bytes(ki),
             chain_code=IR,

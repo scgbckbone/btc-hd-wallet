@@ -1,11 +1,18 @@
 import unittest
-from pysecp256k1.low_level.secp256k1 import Libsecp256k1Exception
+from btc_hd_wallet.helper import int_to_big_endian
+try:
+    from pysecp256k1.low_level.secp256k1 import Libsecp256k1Exception
+
+    CURVE_ORDER = int_to_big_endian(
+        0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141, 32)
+    exc0 = Libsecp256k1Exception
+except ImportError:
+    from btc_hd_wallet.bip32 import CURVE_ORDER, InvalidKeyError
+    exc0 = InvalidKeyError
 from btc_hd_wallet.base_wallet import BaseWallet
 from btc_hd_wallet.bip85 import BIP85DeterministicEntropy
 from btc_hd_wallet.bip39 import CORRECT_MNEMONIC_LENGTH
-from btc_hd_wallet.helper import int_to_big_endian
 
-CURVE_ORDER=int_to_big_endian(0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141, 32)
 
 class TestBIP85DeterministicEntropy(unittest.TestCase):
     XPRV = 'xprv9s21ZrQH143K2LBWUUQRFXhucrQqBpKdRRxNVq2zBqsx8HVqFk2uYo8kmbaLLHRdqtQpUm98uKfu3vca1LqdGhUtyoFnCNkfmXRyPXLjbKb'
@@ -13,10 +20,10 @@ class TestBIP85DeterministicEntropy(unittest.TestCase):
     bip85 = BIP85DeterministicEntropy(master_node=w.master)
 
     def test_incorrect_key(self):
-        with self.assertRaises(Libsecp256k1Exception):
+        with self.assertRaises(exc0):
             self.bip85.correct_key(key_bytes=b"\x00" * 32)
 
-        with self.assertRaises(Libsecp256k1Exception):
+        with self.assertRaises(exc0):
             self.bip85.correct_key(key_bytes=CURVE_ORDER)
 
     def test_byte_count_from_word_count(self):
