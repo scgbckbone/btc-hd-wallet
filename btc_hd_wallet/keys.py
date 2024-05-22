@@ -15,7 +15,7 @@ except ImportError:
 
 
 from btc_hd_wallet.helper import (
-    encode_base58_checksum, decode_base58_checksum, big_endian_to_int,
+    encode_base58_checksum, decode_base58_checksum,
     hash160, h160_to_p2wpkh_address, h160_to_p2pkh_address, int_to_big_endian,
 )
 
