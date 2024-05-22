@@ -3,6 +3,7 @@ import hashlib
 from io import BytesIO
 from typing import List, Any, Generator
 
+from btc_hd_wallet.ripemd import ripemd160
 import btc_hd_wallet.bech32 as bech32
 
 
@@ -158,7 +159,7 @@ def hash160(s: bytes) -> bytes:
     :param s: data
     :return: hashed data
     """
-    return hashlib.new('ripemd160', hashlib.sha256(s).digest()).digest()
+    return ripemd160(hashlib.sha256(s).digest())
 
 
 def hash256(s: bytes) -> bytes:
