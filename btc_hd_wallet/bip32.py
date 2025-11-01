@@ -253,7 +253,7 @@ class PubKeyNode(object):
         extended public key from the parent extended public key.
         It is only defined for non-hardened child keys.
 
-        * Check whether i ≥ 231 (whether the child is a hardened key).
+        * Check whether i ≥ 2**31 (whether the child is a hardened key).
         * If so (hardened child):
             return failure
         * If not (normal child):
